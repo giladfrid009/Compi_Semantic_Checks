@@ -1,6 +1,9 @@
 %{
 
+#include "hw3_output.hpp"
 #include "SyntaxNode.hpp"
+
+#define YYSTYPE class AST_Node*
 
 extern int yylex();
 void yyerror(const char* message);
@@ -118,6 +121,6 @@ int main()
 
 void yyerror(const char* message)
 {
-    //TODO: handle error
+    output::ErrorSyn(yylineno);
 	exit(0); 
 }

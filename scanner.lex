@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "parser.tab.hpp"
+#include "hw3_output.hpp"
 
 %}
 
@@ -43,6 +44,6 @@ continue                           return CONTINUE;
 [a-zA-Z][a-zA-Z0-9]*               return ID;
 0|[1-9][0-9]*                      return NUM;
 \"([^\n\r\"\\]|\\[rnt"\\])+\"      return STRING;
-.                                  { /*TODO: handle errors*/ }
+.                                  { output::ErrorLex(yylineno); exit(0); }
 
 %%
