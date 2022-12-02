@@ -44,6 +44,6 @@ continue                           return CONTINUE;
 [a-zA-Z][a-zA-Z0-9]*               return ID;
 0|[1-9][0-9]*                      return NUM;
 \"([^\n\r\"\\]|\\[rnt"\\])+\"      return STRING;
-.                                  { output::ErrorLex(yylineno); exit(0); }
+.                                  { output::errorLex(yylineno); exit(0); }
 
 %%

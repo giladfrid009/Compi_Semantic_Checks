@@ -115,12 +115,12 @@ Exp 		: LPAREN Exp RPAREN	                                        { } // $$ = $2
 %%
 
 int main()
-{ 
+{
 	return yyparse();
 }
 
 void yyerror(const char* message)
 {
-    output::ErrorSyn(yylineno);
+    output::errorSyn(yylineno);
 	exit(0); 
 }
