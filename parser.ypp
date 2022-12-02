@@ -1,5 +1,7 @@
 %{
 
+#include "SyntaxNode.hpp"
+
 extern int yylex();
 void yyerror(const char* message);
 extern int yylineno;
@@ -81,30 +83,30 @@ Statement	: LBRACE Statements RBRACE                                  { } // new
 Call 		: ID LPAREN ExpList RPAREN                                  { } // new CallExpression()
  			| ID LPAREN RPAREN                                          { } // new CallExpression()
 			;
-ExpList 	: Exp                                                       { } // new ExpList($1)
+ExpList 	: Exp                                                       { } // new ExpressionListSyntax($1)
  			| Exp COMMA ExpList                                         { } // $$ = $3.Concat($1)
 			;
-Type 		: INT                                                       { } // new TypeNode("int")
-			| BYTE                                                      { } // new TypeNode("byte")
-			| BOOL                                                      { } // new TypeNode("bool")
+Type 		: INT                                                       { } // new TypeSyntax()
+			| BYTE                                                      { } // new TypeSyntax()
+			| BOOL                                                      { } // new TypeSyntax()
 			;
 Exp 		: LPAREN Exp RPAREN	                                        { } // $$ = $2
-            | Exp IF LPAREN Exp RPAREN ELSE Exp                         { } // new TernaryAssignOp()
-			| Exp ADDOP Exp                                             { } // new BinaryExpression()
-            | Exp MULOP Exp                                             { } // new BinaryExpression()
-			| ID                                                        { } // new IdentifierExpression()
+            | Exp IF LPAREN Exp RPAREN ELSE Exp                         { } // new ConditionalExpressionSyntax()
+			| Exp ADDOP Exp                                             { } // new ArithmeticExpressionSyntax()
+            | Exp MULOP Exp                                             { } // new ArithmeticExpressionSyntax()
+			| ID                                                        { } // new IdentifierExpressionSyntax()
 			| Call                                                      { } // $$ = $1
-			| NUM                                                       { } // new ConstExpression()
-			| NUM B                                                     { } // new ConstExpression()
-			| STRING                                                    { } // new ConstExpression()
-			| TRUE                                                      { } // new ConstExpression()
-			| FALSE                                                     { } // new ConstExpression()
-			| NOT Exp                                                   { } // new BinaryExpression()
-			| Exp AND Exp                                               { } // new BinaryExpression()
-			| Exp OR Exp                                                { } // new BinaryExpression()
-			| Exp RELOP Exp                                             { } // new BinaryExpression()
-            | Exp EQOP Exp                                              { } // new BinaryExpression() 
-			| LPAREN Type RPAREN Exp                                    { } // new UnaryExpression()
+			| NUM                                                       { } // new LiteralExpressionSyntax()
+			| NUM B                                                     { } // new LiteralExpressionSyntax()
+			| STRING                                                    { } // new LiteralExpressionSyntax()
+			| TRUE                                                      { } // new LiteralExpressionSyntax()
+			| FALSE                                                     { } // new LiteralExpressionSyntax()
+			| NOT Exp                                                   { } // new NotExpressionSyntax()
+			| Exp AND Exp                                               { } // new ConditionalExpressionSyntax()
+			| Exp OR Exp                                                { } // new ConditionalExpressionSyntax()
+			| Exp RELOP Exp                                             { } // new ComparisonExpressionSyntax()
+            | Exp EQOP Exp                                              { } // new EqualityExpressionSyntax() 
+			| LPAREN Type RPAREN Exp                                    { } // new CastExpressionSyntax()
 			;
 
 %%

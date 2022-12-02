@@ -17,6 +17,18 @@
         "typeinfo": "cpp",
         "*.tcc": "cpp",
         "cmath": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "bit": "cpp",
+        "unordered_map": "cpp",
+        "algorithm": "cpp",
+        "memory": "cpp",
+        "memory_resource": "cpp",
+        "optional": "cpp",
+        "tuple": "cpp",
+        "limits": "cpp",
+        "stdexcept": "cpp",
+        "utility": "cpp",
+        "exception": "cpp",
+        "vector": "cpp"
     }
 }
