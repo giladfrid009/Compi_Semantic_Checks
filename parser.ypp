@@ -1,7 +1,7 @@
 %{
 
 #include "hw3_output.hpp"
-#include "SyntaxNode.hpp"
+#include "ast_nodes.hpp"
 
 #define YYSTYPE class AST_Node*
 

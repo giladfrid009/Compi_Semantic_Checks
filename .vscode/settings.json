@@ -29,6 +29,7 @@
         "stdexcept": "cpp",
         "utility": "cpp",
         "exception": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "cstddef": "cpp"
     }
 }
