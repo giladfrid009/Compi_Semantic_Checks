@@ -1,12 +1,8 @@
 %{
 
-#include "output.hpp"
-
 extern int yylex();
 void yyerror(const char* message);
 extern int yylineno;
-
-using output::printProductionRule;
 
 %}
 
@@ -44,66 +40,67 @@ using output::printProductionRule;
 
 %%
 
-Program 	: Funcs 													{ printProductionRule(1); }
+Program 	: Funcs 													{ }
 			;
-Funcs   	: /*epsilon*/												{ printProductionRule(2); }
-      		| FuncDecl Funcs											{ printProductionRule(3); }
+Funcs   	: /*epsilon*/												{ }
+      		| FuncDecl Funcs											{ }
 			;
-FuncDecl 	: RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE { printProductionRule(4); }
+FuncDecl 	: RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE { }
 			;
-RetType 	: Type                                                      { printProductionRule(5); }
-        	| VOID                                                      { printProductionRule(6); }
+RetType 	: Type                                                      { }
+        	| VOID                                                      { }
 			;
-Formals 	: /*epsilon*/                                               { printProductionRule(7); }
-        	| FormalsList                                               { printProductionRule(8); }
+Formals 	: /*epsilon*/                                               { }
+        	| FormalsList                                               { }
 			;
-FormalsList : FormalDecl                                                { printProductionRule(9); }
-			| FormalDecl COMMA FormalsList                              { printProductionRule(10); }
+FormalsList : FormalDecl                                                { }
+			| FormalDecl COMMA FormalsList                              { }
 			;
-FormalDecl 	: Type ID                                                   { printProductionRule(11); }
+FormalDecl 	: Type ID                                                   { }
 			;
-Statements	: Statement	                                                { printProductionRule(12); }
- 			| Statements Statement                                      { printProductionRule(13); }
+Statements	: Statement	                                                { }
+ 			| Statements Statement                                      { }
 			;
-Statement	: LBRACE Statements RBRACE                                  { printProductionRule(14); }
-			| Type ID SC                                                { printProductionRule(15); }
-			| Type ID ASSIGN Exp SC                                     { printProductionRule(16); }
-			| ID ASSIGN Exp SC                                          { printProductionRule(17); }
-			| Call SC                                                   { printProductionRule(18); }
-			| RETURN SC	                                                { printProductionRule(19); }
-			| RETURN Exp SC                                             { printProductionRule(20); }
-			| IF LPAREN Exp RPAREN Statement                            { printProductionRule(21); }
-			| IF LPAREN Exp RPAREN Statement ELSE Statement             { printProductionRule(22); }
-			| WHILE LPAREN Exp RPAREN Statement                         { printProductionRule(23); }
-			| BREAK SC                                                  { printProductionRule(24); }
-			| CONTINUE SC                                               { printProductionRule(25); }
+Statement	: LBRACE Statements RBRACE                                  { }
+			| Type ID SC                                                { }
+			| Type ID ASSIGN Exp SC                                     { }
+			| ID ASSIGN Exp SC                                          { }
+			| Call SC                                                   { }
+			| RETURN SC	                                                { }
+			| RETURN Exp SC                                             { }
+			| IF LPAREN Exp RPAREN Statement                            { }
+			| IF LPAREN Exp RPAREN Statement ELSE Statement             { }
+			| WHILE LPAREN Exp RPAREN Statement                         { }
+			| BREAK SC                                                  { }
+			| CONTINUE SC                                               { }
 			;
-Call 		: ID LPAREN ExpList RPAREN                                  { printProductionRule(26); }
- 			| ID LPAREN RPAREN                                          { printProductionRule(27); }
+Call 		: ID LPAREN ExpList RPAREN                                  { }
+ 			| ID LPAREN RPAREN                                          { }
 			;
-ExpList 	: Exp                                                       { printProductionRule(28); }
- 			| Exp COMMA ExpList                                         { printProductionRule(29); }
+ExpList 	: Exp                                                       { }
+ 			| Exp COMMA ExpList                                         { }
 			;
-Type 		: INT                                                       { printProductionRule(30); }
-			| BYTE                                                      { printProductionRule(31); }
-			| BOOL                                                      { printProductionRule(32); }
+Type 		: INT                                                       { }
+			| BYTE                                                      { }
+			| BOOL                                                      { }
 			;
-Exp 		: LPAREN Exp RPAREN	                                        { printProductionRule(33); }
-			| Exp ADDOP Exp                                             { printProductionRule(34); }
-            | Exp MULOP Exp                                             { printProductionRule(34); }
-			| ID                                                        { printProductionRule(35); }
-			| Call                                                      { printProductionRule(36); }
-			| NUM                                                       { printProductionRule(37); }
-			| NUM B                                                     { printProductionRule(38); }
-			| STRING                                                    { printProductionRule(39); }
-			| TRUE                                                      { printProductionRule(40); }
-			| FALSE                                                     { printProductionRule(41); }
-			| NOT Exp                                                   { printProductionRule(42); }
-			| Exp AND Exp                                               { printProductionRule(43); }
-			| Exp OR Exp                                                { printProductionRule(44); }
-			| Exp RELOP Exp                                             { printProductionRule(45); }
-            | Exp EQOP Exp                                              { printProductionRule(45); }
-			| LPAREN Type RPAREN Exp                                    { printProductionRule(46); }
+Exp 		: LPAREN Exp RPAREN	                                        { }
+            | Exp IF LPAREN Exp RPAREN ELSE Exp                         { /*TODO: handle this new rule*/ }
+			| Exp ADDOP Exp                                             { }
+            | Exp MULOP Exp                                             { }
+			| ID                                                        { }
+			| Call                                                      { }
+			| NUM                                                       { }
+			| NUM B                                                     { }
+			| STRING                                                    { }
+			| TRUE                                                      { }
+			| FALSE                                                     { }
+			| NOT Exp                                                   { }
+			| Exp AND Exp                                               { }
+			| Exp OR Exp                                                { }
+			| Exp RELOP Exp                                             { }
+            | Exp EQOP Exp                                              { }
+			| LPAREN Type RPAREN Exp                                    { }
 			;
 
 %%
@@ -115,6 +112,6 @@ int main()
 
 void yyerror(const char* message)
 {
-	output::errorSyn(yylineno);
+    //TODO: handle error
 	exit(0); 
 }

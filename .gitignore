@@ -6,3 +6,4 @@
 *.zip
 lex.yy.c
 parser.tab.*pp
+hw3
