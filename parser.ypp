@@ -85,30 +85,30 @@ extern int yylineno;
 
 Program 	: Funcs 													{ $$ = new root_syntax($1); }
 			;
-Funcs   	: /*epsilon*/												{ } // new FuncList()
-      		| FuncDecl Funcs											{ } // $$ = $2.Concat($1)
+Funcs   	: /*epsilon*/												{ $$ = new list_syntax<function_declaration_syntax>(); } // new FuncList()
+      		| FuncDecl Funcs											{ $$ = $2->append($1); }
 			;
-FuncDecl 	: RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE { } // FuncDeclaration($1, $4, $7)
+FuncDecl 	: RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE { }
 			;
-RetType 	: Type                                                      { } // $$ = $1
-        	| VOID                                                      { } // new TypeNode(ObjectType::Void)
+RetType 	: Type                                                      { $$ = $1; }
+        	| VOID                                                      { $$ = new type_syntax(fundamental_type::Void); }
 			;
-Formals 	: /*epsilon*/                                               { } // new ParameterList()
-        	| FormalsList                                               { } // $$ = $1
+Formals 	: /*epsilon*/                                               { $$ = new list_syntax<formal_syntax>(); }
+        	| FormalsList                                               { $$ = $1; }
 			;
-FormalsList : FormalDecl                                                { } // new ParameterList($1);
-			| FormalDecl COMMA FormalsList                              { } // $$ = $3.Concat($1)
+FormalsList : FormalDecl                                                { $$ = new list_syntax<formal_syntax>($1); }
+			| FormalDecl COMMA FormalsList                              { $$ = $3->append($1); }
 			;
 FormalDecl 	: Type ID                                                   { }
 			;
-Statements	: Statement	                                                { } // new StatementsList()
- 			| Statements Statement                                      { } // $$ = $1.Concat($2)
+Statements	: Statement	                                                { $$ = new list_syntax<statement_syntax>($1); }
+ 			| Statements Statement                                      { $$ = $1->append($2); }
 			;
-Statement	: LBRACE Statements RBRACE                                  { } // new BlockStatement($2)
-			| Type ID SC                                                { } // new DeclarationStatement()
-			| Type ID ASSIGN Exp SC                                     { } // new DeclarationStatement($4)
-			| ID ASSIGN Exp SC                                          { } // new AssignExpression($3)
-			| Call SC                                                   { } // new CallStatement($1)
+Statement	: LBRACE Statements RBRACE                                  { $$ = new block_statement_syntax($2); }
+			| Type ID SC                                                { }
+			| Type ID ASSIGN Exp SC                                     { }
+			| ID ASSIGN Exp SC                                          { }
+			| Call SC                                                   { $$ = new expression_statement_syntax($1); }
 			| RETURN SC	                                                { $$ = new return_statement_syntax(); }
 			| RETURN Exp SC                                             { $$ = new return_statement_syntax($2); }
 			| IF LPAREN Exp RPAREN Statement                            { $$ = new if_statement_syntax($3, $5); }
@@ -116,8 +116,8 @@ Statement	: LBRACE Statements RBRACE                                  { } // new
 			| WHILE LPAREN Exp RPAREN Statement                         { $$ = new while_statement_syntax($3, $5); }
 			| BREAK SC                                                  { $$ = new branch_statement_syntax(branch_type::Break); }
 			| CONTINUE SC                                               { $$ = new branch_statement_syntax(branch_type::Continue); }
-Call 		: ID LPAREN ExpList RPAREN                                  { } // new CallExpression()
- 			| ID LPAREN RPAREN                                          { } // new CallExpression()
+Call 		: ID LPAREN ExpList RPAREN                                  { }
+ 			| ID LPAREN RPAREN                                          { }
 			;
 ExpList 	: Exp                                                       { $$ = new list_syntax<expression_syntax>($1); }
  			| Exp COMMA ExpList                                         { $$ = $3->append($1); }
