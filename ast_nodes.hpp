@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-enum class types { Void, Int, Bool, Byte, String };
+enum class fundamental_type { Void, Int, Bool, Byte, String };
 
 enum class logical_operator { And, Or };
 
@@ -29,20 +29,20 @@ class type_syntax final : public ast_node
 {
     public:
 
-    const types type;
+    const fundamental_type type;
 
-    type_syntax(types type) : type(type)
+    type_syntax(fundamental_type type) : type(type)
     {
     }
 
     bool is_numeric()
     {
-        return type == types::Int || type == types::Byte;
+        return type == fundamental_type::Int || type == fundamental_type::Byte;
     }
 
     bool is_special()
     {
-        return type == types::String || type == types::Void;
+        return type == fundamental_type::String || type == fundamental_type::Void;
     }
 
     std::vector<ast_node*> children() override
@@ -57,9 +57,9 @@ class expression_syntax : public ast_node
 {
     public:
 
-    const types return_type;
+    const fundamental_type expression_return_type;
 
-    expression_syntax(types return_type) : return_type(return_type)
+    expression_syntax(fundamental_type return_type) : expression_return_type(return_type)
     {
         if (is_special())
         {
@@ -69,12 +69,12 @@ class expression_syntax : public ast_node
 
     bool is_numeric()
     {
-        return return_type == types::Int || return_type == types::Byte;
+        return expression_return_type == fundamental_type::Int || expression_return_type == fundamental_type::Byte;
     }
 
     bool is_special()
     {
-        return return_type == types::String || return_type == types::Void;
+        return expression_return_type == fundamental_type::String || expression_return_type == fundamental_type::Void;
     }
 
     virtual ~expression_syntax() = default;
@@ -96,18 +96,18 @@ class cast_expression_syntax final : public expression_syntax
 {
     public:
 
-    type_syntax* const dest_type;
+    type_syntax* const destination_type;
     expression_syntax* const expression;
 
-    cast_expression_syntax(type_syntax* dest_type, expression_syntax* expression) :
-        dest_type(dest_type), expression(expression), expression_syntax(dest_type->type)
+    cast_expression_syntax(type_syntax* destination_type, expression_syntax* expression) :
+        destination_type(destination_type), expression(expression), expression_syntax(destination_type->type)
     {
         if (expression->is_numeric() == false)
         {
             // todo: handle illigal cast
         }
 
-        if (dest_type->is_numeric() == false)
+        if (destination_type->is_numeric() == false)
         {
             // todo: handle illigal cast
         }
@@ -115,7 +115,7 @@ class cast_expression_syntax final : public expression_syntax
 
     std::vector<ast_node*> children() override
     {
-        return std::vector<ast_node*>{dest_type, expression};
+        return std::vector<ast_node*>{destination_type, expression};
     }
 };
 
@@ -126,9 +126,9 @@ class not_expression_syntax final : public expression_syntax
     expression_syntax* const expression;
 
     not_expression_syntax(expression_syntax* expression) :
-        expression(expression), expression_syntax(expression->return_type)
+        expression(expression), expression_syntax(fundamental_type::Bool)
     {
-        if (expression->return_type != types::Bool)
+        if (expression->expression_return_type != fundamental_type::Bool)
         {
             // todo: handle illigal return_type
         }
@@ -149,9 +149,9 @@ class logical_expression_syntax final : public expression_syntax
     const logical_operator oper;
 
     logical_expression_syntax(expression_syntax* left, expression_syntax* right, logical_operator oper) :
-        left(left), right(right), oper(oper), expression_syntax(types::Bool)
+        left(left), right(right), oper(oper), expression_syntax(fundamental_type::Bool)
     {
-        if (left->return_type != types::Bool || right->return_type != types::Bool)
+        if (left->expression_return_type != fundamental_type::Bool || right->expression_return_type != fundamental_type::Bool)
         {
             // todo: handle error
         }
@@ -185,19 +185,19 @@ class arithmetic_expression_syntax final : public expression_syntax
         }
     }
 
-    types get_return_type(expression_syntax* left, expression_syntax* right)
+    fundamental_type get_return_type(expression_syntax* left, expression_syntax* right)
     {
         if (left->is_numeric() && right->is_numeric())
         {
-            if (left->return_type == types::Int || right->return_type == types::Int)
+            if (left->expression_return_type == fundamental_type::Int || right->expression_return_type == fundamental_type::Int)
             {
-                return types::Int;
+                return fundamental_type::Int;
             }
 
-            return types::Byte;
+            return fundamental_type::Byte;
         }
 
-        return types::Void;
+        return fundamental_type::Void;
     }
 
     std::vector<ast_node*> children() override
@@ -215,9 +215,9 @@ class equality_expression_syntax final : public expression_syntax
     const equality_operator oper;
 
     equality_expression_syntax(expression_syntax* left, expression_syntax* right, equality_operator oper) :
-        left(left), right(right), oper(oper), expression_syntax(types::Bool)
+        left(left), right(right), oper(oper), expression_syntax(fundamental_type::Bool)
     {
-        if ((left->is_numeric() == false || right->is_numeric() == false) && left->return_type != right->return_type)
+        if ((left->is_numeric() == false || right->is_numeric() == false) && left->expression_return_type != right->expression_return_type)
         {
             //todo: handle error        
         }
@@ -229,7 +229,7 @@ class equality_expression_syntax final : public expression_syntax
     }
 };
 
-class comparison_expression_syntax final : public expression_syntax
+class relational_expression_syntax final : public expression_syntax
 {
     public:
 
@@ -237,8 +237,8 @@ class comparison_expression_syntax final : public expression_syntax
     expression_syntax* const right;
     const comparison_operator oper;
 
-    comparison_expression_syntax(expression_syntax* left, expression_syntax* right, comparison_operator oper) :
-        left(left), right(right), oper(oper), expression_syntax(types::Bool)
+    relational_expression_syntax(expression_syntax* left, expression_syntax* right, comparison_operator oper) :
+        left(left), right(right), oper(oper), expression_syntax(fundamental_type::Bool)
     {
         if (left->is_numeric() == false || right->is_numeric() == false)
         {
@@ -274,7 +274,7 @@ class literal_expression_syntax final : public expression_syntax
     };
 
     const literal value;
-    const types return_type;
+    const fundamental_type type;
 
     std::vector<ast_node*> children() override
     {
@@ -294,7 +294,7 @@ class identifier_expression_syntax final : public expression_syntax
     }
 };
 
-class call_expression_syntax final : public expression_syntax
+class invocation_expression_syntax final : public expression_syntax
 {
     public:
 
@@ -361,7 +361,7 @@ class branch_statement_syntax final : public statement_syntax
 {
     public:
 
-    const branch_type return_type;
+    const branch_type type;
 
     std::vector<ast_node*> children() override
     {
@@ -411,7 +411,7 @@ class declaration_statement_syntax final : public statement_syntax
     public:
 
     const std::string identifier;
-    const types return_type;
+    const fundamental_type type;
     expression_syntax* const value;
 
     std::vector<ast_node*> children() override
@@ -440,7 +440,7 @@ class formal_syntax final : public ast_node
 {
     public:
 
-    const types return_type;
+    const fundamental_type type;
     const std::string identifier;
 
     std::vector<ast_node*> children() override
