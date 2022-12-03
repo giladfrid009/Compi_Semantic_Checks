@@ -119,6 +119,11 @@ class not_expression_syntax : public expression_syntax
             // todo: handle illigal return_type
         }
     }
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>{expression};
+    }
 };
 
 class logical_expression_syntax : public expression_syntax
@@ -136,6 +141,11 @@ class logical_expression_syntax : public expression_syntax
         {
             // todo: handle error
         }
+    }
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>{left, right};
     }
 };
 
@@ -175,6 +185,11 @@ class arithmetic_expression_syntax : public expression_syntax
 
         return types::Void;
     }
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>{left, right};
+    }
 };
 
 class equality_expression_syntax : public expression_syntax
@@ -193,6 +208,11 @@ class equality_expression_syntax : public expression_syntax
             //todo: handle error        
         }
     }
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>{left, right};
+    }
 };
 
 class comparison_expression_syntax : public expression_syntax
@@ -210,6 +230,11 @@ class comparison_expression_syntax : public expression_syntax
         {
             //todo: handle error        
         }
+    }
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>{left, right};
     }
 };
 
@@ -236,6 +261,11 @@ class literal_expression_syntax : public expression_syntax
 
     const literal value;
     const types return_type;
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>();
+    }
 };
 
 class identifier_expression_syntax : public expression_syntax
@@ -243,6 +273,11 @@ class identifier_expression_syntax : public expression_syntax
     public:
 
     const std::string identifier;
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>();
+    }
 };
 
 class call_expression_syntax : public expression_syntax
@@ -251,6 +286,11 @@ class call_expression_syntax : public expression_syntax
 
     const std::string identifier;
     expression_list_syntax* const expression_list;
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>{expression_list};
+    }
 };
 
 // end expressions
@@ -260,14 +300,18 @@ class call_expression_syntax : public expression_syntax
 class statement_syntax : public ast_node
 {
     public:
-
 };
 
-class Statement_list_syntax : public ast_node
+class statement_list_syntax : public ast_node
 {
     public:
 
     const std::vector<statement_syntax*> statements;
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>(statements.begin(), statements.end());
+    }
 };
 
 class if_statement_syntax : public statement_syntax
@@ -276,7 +320,12 @@ class if_statement_syntax : public statement_syntax
 
     expression_syntax* const condition;
     statement_syntax* const body;
-    const expression_syntax* else_clause;
+    expression_syntax* const else_clause;
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>{condition, body, else_clause};
+    }
 };
 
 class while_statement_syntax : public statement_syntax
@@ -285,6 +334,11 @@ class while_statement_syntax : public statement_syntax
 
     expression_syntax* const condition;
     statement_syntax* const body;
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>{condition, body};
+    }
 };
 
 class branch_statement_syntax : public statement_syntax
@@ -292,6 +346,11 @@ class branch_statement_syntax : public statement_syntax
     public:
 
     const branch_type return_type;
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>();
+    }
 };
 
 class return_statement_syntax : public statement_syntax
@@ -299,6 +358,11 @@ class return_statement_syntax : public statement_syntax
     public:
 
     expression_syntax* const expression;
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>{expression};
+    }
 };
 
 class expression_statement_syntax : public statement_syntax
@@ -306,6 +370,11 @@ class expression_statement_syntax : public statement_syntax
     public:
 
     expression_syntax* const expression;
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>{expression};
+    }
 };
 
 class assignment_statement_syntax : public statement_syntax
@@ -314,6 +383,11 @@ class assignment_statement_syntax : public statement_syntax
 
     const std::string identifier;
     expression_syntax* const value;
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>{value};
+    }
 };
 
 class declaration_statement_syntax : public statement_syntax
@@ -323,13 +397,23 @@ class declaration_statement_syntax : public statement_syntax
     const std::string identifier;
     const types return_type;
     expression_syntax* const value;
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>{value};
+    }
 };
 
 class block_statement_syntax : public statement_syntax
 {
     public:
 
-    Statement_list_syntax* const statement_list;
+    statement_list_syntax* const statement_list;
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>{statement_list};
+    }
 };
 
 // end statements
@@ -342,6 +426,11 @@ class formal_syntax : public ast_node
 
     const types return_type;
     const std::string identifier;
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>();
+    }
 };
 
 class formal_list_syntax : public ast_node
@@ -349,6 +438,11 @@ class formal_list_syntax : public ast_node
     public:
 
     const std::vector<formal_syntax*> formals;
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>(formals.begin(), formals.end());
+    }
 };
 
 class function_declaration_syntax : public ast_node
@@ -358,7 +452,12 @@ class function_declaration_syntax : public ast_node
     type_syntax* const return_type;
     const std::string identifier;
     formal_list_syntax* const formal_list;
-    Statement_list_syntax* const body;
+    statement_list_syntax* const body;
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>{return_type, formal_list, body};
+    }
 };
 
 class function_list_syntax : public ast_node
@@ -378,6 +477,11 @@ class function_list_syntax : public ast_node
     function_list_syntax(std::vector<function_declaration_syntax*> functions) : functions(functions)
     {
     }
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>(functions.begin(), functions.end());
+    }
 };
 
 class global_syntax : public ast_node
@@ -388,6 +492,11 @@ class global_syntax : public ast_node
 
     global_syntax(function_list_syntax* function_list) : function_list(function_list)
     {
+    }
+
+    std::vector<ast_node*> children() override
+    {
+        return std::vector<ast_node*>{function_list};
     }
 };
 
