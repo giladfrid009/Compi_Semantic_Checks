@@ -76,6 +76,8 @@ class expression_syntax : public ast_node
     {
         return return_type == types::String || return_type == types::Void;
     }
+
+    virtual ~expression_syntax() = default;
 };
 
 class expression_list_syntax final : public ast_node
@@ -312,6 +314,8 @@ class call_expression_syntax final : public expression_syntax
 class statement_syntax : public ast_node
 {
     public:
+
+    virtual ~statement_syntax() = default;
 };
 
 class statement_list_syntax final : public ast_node
