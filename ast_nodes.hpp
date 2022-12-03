@@ -104,6 +104,16 @@ class type_syntax final : public syntax_base
     {
         return std::vector<syntax_base*>();
     }
+
+    ~type_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
+    }
 };
 
 template<typename element_type> class list_syntax final : public syntax_base
@@ -144,19 +154,52 @@ template<typename element_type> class list_syntax final : public syntax_base
     {
         return std::vector<syntax_base*>(values.begin(), values.end());
     }
+
+    ~list_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
+    }
 };
 
 class formal_syntax final : public syntax_base
 {
     public:
 
-    const fundamental_type type;
+    type_syntax* const type;
     const std::string identifier;
+
+    formal_syntax(type_syntax* type, std::string identifier) : type(type), identifier(identifier), syntax_base()
+    {
+        if (type->type == fundamental_type::Void)
+        {
+            //todo: handle error
+        }
+
+        //todo: make sure identifier doesnt shadow anyone else.
+
+        type->register_parent(this);
+    }
 
     std::vector<syntax_base*> children() override
     {
-        return std::vector<syntax_base*>();
+        return std::vector<syntax_base*>{type};
     }
+
+    ~formal_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
+    }
+    
 };
 
 class function_declaration_syntax final : public syntax_base
@@ -168,9 +211,29 @@ class function_declaration_syntax final : public syntax_base
     list_syntax<formal_syntax>* const formal_list;
     list_syntax<statement_syntax>* const body;
 
+    function_declaration_syntax(type_syntax* return_type, std::string identifier, list_syntax<formal_syntax>* formal_list, list_syntax<statement_syntax>* body) : 
+        return_type(return_type), identifier(identifier), formal_list(formal_list), body(body), syntax_base()
+    {
+        // todo: check that identifier is free
+
+        return_type->register_parent(this);
+        formal_list->register_parent(this);
+        body->register_parent(this);
+    }
+
     std::vector<syntax_base*> children() override
     {
         return std::vector<syntax_base*>{return_type, formal_list, body};
+    }
+
+    ~function_declaration_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
     }
 };
 
@@ -182,11 +245,22 @@ class root_syntax final : public syntax_base
 
     root_syntax(list_syntax<function_declaration_syntax>* function_list) : function_list(function_list)
     {
+        function_list->register_parent(this);
     }
 
     std::vector<syntax_base*> children() override
     {
         return std::vector<syntax_base*>{function_list};
+    }
+    
+    ~root_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
     }
 };
 
@@ -220,6 +294,16 @@ class cast_expression_syntax final : public expression_syntax
     {
         return std::vector<syntax_base*>{destination_type, expression};
     }
+
+    ~cast_expression_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
+    }
 };
 
 class not_expression_syntax final : public expression_syntax
@@ -242,6 +326,16 @@ class not_expression_syntax final : public expression_syntax
     std::vector<syntax_base*> children() override
     {
         return std::vector<syntax_base*>{expression};
+    }
+
+    ~not_expression_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
     }
 };
 
@@ -268,6 +362,15 @@ class logical_expression_syntax final : public expression_syntax
     std::vector<syntax_base*> children() override
     {
         return std::vector<syntax_base*>{left, right};
+    }
+    ~logical_expression_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
     }
 };
 
@@ -310,6 +413,16 @@ class arithmetic_expression_syntax final : public expression_syntax
     {
         return std::vector<syntax_base*>{left, right};
     }
+
+    ~arithmetic_expression_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
+    }
 };
 
 class relational_expression_syntax final : public expression_syntax
@@ -335,6 +448,16 @@ class relational_expression_syntax final : public expression_syntax
     std::vector<syntax_base*> children() override
     {
         return std::vector<syntax_base*>{left, right};
+    }
+
+    ~relational_expression_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
     }
 };
 
@@ -362,6 +485,11 @@ class conditional_expression_syntax final : public expression_syntax
         false_value->register_parent(this);
     }
 
+    std::vector<syntax_base*> children() override
+    {
+        return std::vector<syntax_base*>{true_value, condition, false_value};
+    }
+
     fundamental_type get_return_type(expression_syntax* left, expression_syntax* right)
     {
         if (left->is_numeric() && right->is_numeric())
@@ -380,6 +508,16 @@ class conditional_expression_syntax final : public expression_syntax
         }
 
         return fundamental_type::Void;
+    }
+
+    ~conditional_expression_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
     }
 };
 
@@ -430,6 +568,16 @@ template<typename literal_type> class literal_expression_syntax final : public e
 
         return fundamental_type::Void;
     }
+    
+    ~literal_expression_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
+    }
 };
 
 class identifier_expression_syntax final : public expression_syntax
@@ -438,8 +586,7 @@ class identifier_expression_syntax final : public expression_syntax
 
     const std::string identifier;
 
-    identifier_expression_syntax(std::string identifier) : 
-        identifier(identifier), expression_syntax(get_return_type(identifier))
+    identifier_expression_syntax(std::string identifier) : identifier(identifier), expression_syntax(get_return_type(identifier))
     {
         //todo: add checks if identifier exists in symbol table
     }
@@ -454,6 +601,16 @@ class identifier_expression_syntax final : public expression_syntax
         //todo: implement with symbol table
         return fundamental_type::Void;
     }
+
+    ~identifier_expression_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
+    }
 };
 
 class invocation_expression_syntax final : public expression_syntax
@@ -462,6 +619,12 @@ class invocation_expression_syntax final : public expression_syntax
 
     const std::string identifier;
     list_syntax<expression_syntax>* const expression_list;
+
+    invocation_expression_syntax(std::string identifier) :
+        identifier(identifier), expression_list(nullptr), expression_syntax(get_return_type(identifier))
+    {
+        // todo: check that identifier exists    
+    }
 
     invocation_expression_syntax(std::string identifier, list_syntax<expression_syntax>* expression_list) :
         identifier(identifier), expression_list(expression_list), expression_syntax(get_return_type(identifier))
@@ -482,6 +645,16 @@ class invocation_expression_syntax final : public expression_syntax
         //todo: implement with symbol table
         return fundamental_type::Void;
     }
+    
+    ~invocation_expression_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
+    }
 };
 
 // statements
@@ -493,6 +666,18 @@ class if_statement_syntax final : public statement_syntax
     expression_syntax* const condition;
     statement_syntax* const body;
     expression_syntax* const else_clause;
+
+    if_statement_syntax(expression_syntax* condition, statement_syntax* body) : 
+        condition(condition), body(body), else_clause(nullptr), statement_syntax()
+    {
+        if (condition->expression_return_type != fundamental_type::Bool)
+        {
+            // todo: handle error
+        }
+
+        condition->register_parent(this);
+        body->register_parent(this);
+    }
 
     if_statement_syntax(expression_syntax* condition, statement_syntax* body, expression_syntax* else_clause) : 
         condition(condition), body(body), else_clause(else_clause), statement_syntax()
@@ -510,6 +695,16 @@ class if_statement_syntax final : public statement_syntax
     std::vector<syntax_base*> children() override
     {
         return std::vector<syntax_base*>{condition, body, else_clause};
+    }
+
+    ~if_statement_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
     }
 };
 
@@ -536,6 +731,16 @@ class while_statement_syntax final : public statement_syntax
     {
         return std::vector<syntax_base*>{condition, body};
     }
+
+    ~while_statement_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
+    }
 };
 
 class branch_statement_syntax final : public statement_syntax
@@ -552,6 +757,16 @@ class branch_statement_syntax final : public statement_syntax
     std::vector<syntax_base*> children() override
     {
         return std::vector<syntax_base*>();
+    }
+
+    ~branch_statement_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
     }
 };
 
@@ -575,6 +790,16 @@ class return_statement_syntax final : public statement_syntax
     {
         return std::vector<syntax_base*>{expression};
     }
+    
+    ~return_statement_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
+    }
 };
 
 class expression_statement_syntax final : public statement_syntax
@@ -591,6 +816,16 @@ class expression_statement_syntax final : public statement_syntax
     std::vector<syntax_base*> children() override
     {
         return std::vector<syntax_base*>{expression};
+    }
+    
+    ~expression_statement_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
     }
 };
 
@@ -613,19 +848,70 @@ class assignment_statement_syntax final : public statement_syntax
     {
         return std::vector<syntax_base*>{value};
     }
+    
+    ~assignment_statement_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
+    }
 };
 
 class declaration_statement_syntax final : public statement_syntax
 {
     public:
 
+    type_syntax* const type;
     const std::string identifier;
-    const fundamental_type type;
     expression_syntax* const value;
+
+    declaration_statement_syntax(type_syntax* type, std::string identifier) : 
+        type(type), identifier(identifier), value(nullptr), statement_syntax()
+    {
+        if (type->is_special())
+        {
+            //todo: handle illigal type
+        }
+
+        type->register_parent(this);
+    }
+    
+    declaration_statement_syntax(type_syntax* type, std::string identifier, expression_syntax* value) : 
+        type(type), identifier(identifier), value(value), statement_syntax()
+    {
+        if (type->is_special() || value->is_special())
+        {
+            //todo: handle illigal type
+        }
+
+        if (type->type != value->expression_return_type)
+        {
+            if (type->type != fundamental_type::Int || value->expression_return_type != fundamental_type::Byte)
+            {
+                // todo: handle error
+            }
+        }
+
+        type->register_parent(this);
+        value->register_parent(this);
+    }
 
     std::vector<syntax_base*> children() override
     {
         return std::vector<syntax_base*>{value};
+    }
+
+    ~declaration_statement_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
     }
 };
 
@@ -638,6 +924,21 @@ class block_statement_syntax final : public statement_syntax
     std::vector<syntax_base*> children() override
     {
         return std::vector<syntax_base*>{statement_list};
+    }
+
+    block_statement_syntax(list_syntax<statement_syntax>* statement_list) : statement_list(statement_list), statement_syntax()
+    {
+        statement_list->register_parent(this);
+    }
+
+    ~block_statement_syntax()
+    {
+        auto nodes = children();
+
+        for (syntax_base* child : nodes)
+        {
+            delete child;
+        }
     }
 };
 
