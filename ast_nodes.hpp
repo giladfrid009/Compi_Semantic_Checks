@@ -21,9 +21,11 @@ class ast_node
     protected:
 
     virtual std::vector<ast_node*> children() = 0;
+
+    virtual ~ast_node() = default;
 };
 
-class type_syntax : public ast_node
+class type_syntax final : public ast_node
 {
     public:
 
@@ -36,6 +38,11 @@ class type_syntax : public ast_node
     bool is_numeric()
     {
         return type == types::Int || type == types::Byte;
+    }
+
+    bool is_special()
+    {
+        return type == types::String || type == types::Void;
     }
 
     std::vector<ast_node*> children() override
@@ -54,9 +61,9 @@ class expression_syntax : public ast_node
 
     expression_syntax(types return_type) : return_type(return_type)
     {
-        if (return_type == types::Void)
+        if (is_special())
         {
-            //todo: handle error
+            //todo: handle illigal type
         }
     }
 
@@ -64,9 +71,14 @@ class expression_syntax : public ast_node
     {
         return return_type == types::Int || return_type == types::Byte;
     }
+
+    bool is_special()
+    {
+        return return_type == types::String || return_type == types::Void;
+    }
 };
 
-class expression_list_syntax : public ast_node
+class expression_list_syntax final : public ast_node
 {
     public:
 
@@ -78,7 +90,7 @@ class expression_list_syntax : public ast_node
     }
 };
 
-class cast_expression_syntax : public expression_syntax
+class cast_expression_syntax final : public expression_syntax
 {
     public:
 
@@ -105,7 +117,7 @@ class cast_expression_syntax : public expression_syntax
     }
 };
 
-class not_expression_syntax : public expression_syntax
+class not_expression_syntax final : public expression_syntax
 {
     public:
 
@@ -126,7 +138,7 @@ class not_expression_syntax : public expression_syntax
     }
 };
 
-class logical_expression_syntax : public expression_syntax
+class logical_expression_syntax final : public expression_syntax
 {
     public:
 
@@ -149,7 +161,7 @@ class logical_expression_syntax : public expression_syntax
     }
 };
 
-class arithmetic_expression_syntax : public expression_syntax
+class arithmetic_expression_syntax final : public expression_syntax
 {
     public:
 
@@ -192,7 +204,7 @@ class arithmetic_expression_syntax : public expression_syntax
     }
 };
 
-class equality_expression_syntax : public expression_syntax
+class equality_expression_syntax final : public expression_syntax
 {
     public:
 
@@ -215,7 +227,7 @@ class equality_expression_syntax : public expression_syntax
     }
 };
 
-class comparison_expression_syntax : public expression_syntax
+class comparison_expression_syntax final : public expression_syntax
 {
     public:
 
@@ -238,7 +250,7 @@ class comparison_expression_syntax : public expression_syntax
     }
 };
 
-class conditional_expression_syntax : public expression_syntax
+class conditional_expression_syntax final : public expression_syntax
 {
     public:
 
@@ -247,7 +259,7 @@ class conditional_expression_syntax : public expression_syntax
     const expression_syntax* false_value;
 };
 
-class literal_expression_syntax : public expression_syntax
+class literal_expression_syntax final : public expression_syntax
 {
     public:
 
@@ -268,7 +280,7 @@ class literal_expression_syntax : public expression_syntax
     }
 };
 
-class identifier_expression_syntax : public expression_syntax
+class identifier_expression_syntax final : public expression_syntax
 {
     public:
 
@@ -280,7 +292,7 @@ class identifier_expression_syntax : public expression_syntax
     }
 };
 
-class call_expression_syntax : public expression_syntax
+class call_expression_syntax final : public expression_syntax
 {
     public:
 
@@ -302,7 +314,7 @@ class statement_syntax : public ast_node
     public:
 };
 
-class statement_list_syntax : public ast_node
+class statement_list_syntax final : public ast_node
 {
     public:
 
@@ -314,7 +326,7 @@ class statement_list_syntax : public ast_node
     }
 };
 
-class if_statement_syntax : public statement_syntax
+class if_statement_syntax final : public statement_syntax
 {
     public:
 
@@ -328,7 +340,7 @@ class if_statement_syntax : public statement_syntax
     }
 };
 
-class while_statement_syntax : public statement_syntax
+class while_statement_syntax final : public statement_syntax
 {
     public:
 
@@ -341,7 +353,7 @@ class while_statement_syntax : public statement_syntax
     }
 };
 
-class branch_statement_syntax : public statement_syntax
+class branch_statement_syntax final : public statement_syntax
 {
     public:
 
@@ -353,7 +365,7 @@ class branch_statement_syntax : public statement_syntax
     }
 };
 
-class return_statement_syntax : public statement_syntax
+class return_statement_syntax final : public statement_syntax
 {
     public:
 
@@ -365,7 +377,7 @@ class return_statement_syntax : public statement_syntax
     }
 };
 
-class expression_statement_syntax : public statement_syntax
+class expression_statement_syntax final : public statement_syntax
 {
     public:
 
@@ -377,7 +389,7 @@ class expression_statement_syntax : public statement_syntax
     }
 };
 
-class assignment_statement_syntax : public statement_syntax
+class assignment_statement_syntax final : public statement_syntax
 {
     public:
 
@@ -390,7 +402,7 @@ class assignment_statement_syntax : public statement_syntax
     }
 };
 
-class declaration_statement_syntax : public statement_syntax
+class declaration_statement_syntax final : public statement_syntax
 {
     public:
 
@@ -404,7 +416,7 @@ class declaration_statement_syntax : public statement_syntax
     }
 };
 
-class block_statement_syntax : public statement_syntax
+class block_statement_syntax final : public statement_syntax
 {
     public:
 
@@ -420,7 +432,7 @@ class block_statement_syntax : public statement_syntax
 
 // generic types
 
-class formal_syntax : public ast_node
+class formal_syntax final : public ast_node
 {
     public:
 
@@ -433,7 +445,7 @@ class formal_syntax : public ast_node
     }
 };
 
-class formal_list_syntax : public ast_node
+class formal_list_syntax final : public ast_node
 {
     public:
 
@@ -445,7 +457,7 @@ class formal_list_syntax : public ast_node
     }
 };
 
-class function_declaration_syntax : public ast_node
+class function_declaration_syntax final : public ast_node
 {
     public:
 
@@ -460,7 +472,7 @@ class function_declaration_syntax : public ast_node
     }
 };
 
-class function_list_syntax : public ast_node
+class function_list_syntax final : public ast_node
 {
     public:
 
@@ -484,7 +496,7 @@ class function_list_syntax : public ast_node
     }
 };
 
-class global_syntax : public ast_node
+class global_syntax final : public ast_node
 {
     public:
 
