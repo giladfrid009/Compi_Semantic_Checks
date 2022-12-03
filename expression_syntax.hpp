@@ -279,27 +279,27 @@ template<typename literal_type> class literal_expression_syntax final : public e
 
     fundamental_type get_return_type(literal_type value)
     {
-        if (std::is_same_v<literal_type, char>)
+        if (std::is_same<literal_type, char>::value)
         {
             return fundamental_type::Byte;
         }
 
-        if (std::is_same_v<literal_type, int>)
+        if (std::is_same<literal_type, int>::value)
         {
             return fundamental_type::Byte;
         }
 
-        if (std::is_same_v<literal_type, bool>)
+        if (std::is_same<literal_type, bool>::value)
         {
             return fundamental_type::Bool;
         }
 
-        if (std::is_same_v<literal_type, std::string>)
+        if (std::is_same<literal_type, std::string>::value)
         {
             return fundamental_type::String;
         }
 
-        if (std::is_same_v<literal_type, void>)
+        if (std::is_same<literal_type, void>::value)
         {
             return fundamental_type::Void;
         }

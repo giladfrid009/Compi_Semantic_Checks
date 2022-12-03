@@ -134,8 +134,8 @@ Exp 		: LPAREN Exp RPAREN	                                        { $$ = $2; }
 			| TRUE                                                      { $$ = new literal_expression_syntax<bool>(true);}
 			| FALSE                                                     { $$ = new literal_expression_syntax<bool>(false); }
 			| NOT Exp                                                   { $$ = new not_expression_syntax($2); }
-			| Exp AND Exp                                               { }
-			| Exp OR Exp                                                { }
+			| Exp AND Exp                                               { $$ = new logical_expression_syntax($1, $3, logical_operator::And); }
+			| Exp OR Exp                                                { $$ = new logical_expression_syntax($1, $3, logical_operator::Or); }
 			| Exp RELOP Exp                                             { }
             | Exp EQOP Exp                                              { } 
 			| LPAREN Type RPAREN Exp                                    { $$ = new cast_expression_syntax($2, $4); }
