@@ -13,7 +13,7 @@ class if_statement_syntax final : public statement_syntax
 
     expression_syntax* const condition;
     statement_syntax* const body;
-    expression_syntax* const else_clause;
+    statement_syntax* const else_clause;
 
     if_statement_syntax(expression_syntax* condition, statement_syntax* body) : 
         condition(condition), body(body), else_clause(nullptr), statement_syntax()
@@ -27,7 +27,7 @@ class if_statement_syntax final : public statement_syntax
         body->register_parent(this);
     }
 
-    if_statement_syntax(expression_syntax* condition, statement_syntax* body, expression_syntax* else_clause) : 
+    if_statement_syntax(expression_syntax* condition, statement_syntax* body, statement_syntax* else_clause) : 
         condition(condition), body(body), else_clause(else_clause), statement_syntax()
     {
         if (condition->expression_return_type != fundamental_type::Bool)

@@ -20,6 +20,10 @@ class syntax_base
 
     public:
 
+    syntax_base()
+    {
+    }
+
     virtual std::vector<syntax_base*> children() = 0;
 
     syntax_base* parent()

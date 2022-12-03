@@ -46,14 +46,14 @@ template<typename element_type> class list_syntax final : public syntax_base
 {
     public:
 
-    const std::vector<element_type*> values;
+    std::vector<element_type*> values;
 
     list_syntax() : values(), syntax_base()
     {
         static_assert(std::is_base_of<syntax_base, element_type>::value, "Must be of type syntax_base");
     }
 
-    list_syntax(element_type* element) : values(element), syntax_base()
+    list_syntax(element_type* element) : values{element}, syntax_base()
     {
         static_assert(std::is_base_of<syntax_base, element_type>::value, "Must be of type syntax_base");
 

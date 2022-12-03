@@ -83,7 +83,7 @@ extern int yylineno;
 
 %%
 
-Program 	: Funcs 													{ $$ = new root_syntax(nullptr); } // new GlobalScope($1)
+Program 	: Funcs 													{ $$ = new root_syntax($1); }
 			;
 Funcs   	: /*epsilon*/												{ } // new FuncList()
       		| FuncDecl Funcs											{ } // $$ = $2.Concat($1)
@@ -109,41 +109,40 @@ Statement	: LBRACE Statements RBRACE                                  { } // new
 			| Type ID ASSIGN Exp SC                                     { } // new DeclarationStatement($4)
 			| ID ASSIGN Exp SC                                          { } // new AssignExpression($3)
 			| Call SC                                                   { } // new CallStatement($1)
-			| RETURN SC	                                                { } // new ReturnStatement()
-			| RETURN Exp SC                                             { } // new ReturnStatement($2)
-			| IF LPAREN Exp RPAREN Statement                            { } // new IfStatement($3, $5)
-			| IF LPAREN Exp RPAREN Statement ELSE Statement             { } // new IfStatement($3, $5, $7) 
-			| WHILE LPAREN Exp RPAREN Statement                         { } // new WhileStatement($3, $5)
-			| BREAK SC                                                  { } // new BranchStatment()
-			| CONTINUE SC                                               { } // new BranchStatment()
-			;
+			| RETURN SC	                                                { $$ = new return_statement_syntax(); }
+			| RETURN Exp SC                                             { $$ = new return_statement_syntax($2); }
+			| IF LPAREN Exp RPAREN Statement                            { $$ = new if_statement_syntax($3, $5); }
+			| IF LPAREN Exp RPAREN Statement ELSE Statement             { $$ = new if_statement_syntax($3, $5, $7); }
+			| WHILE LPAREN Exp RPAREN Statement                         { $$ = new while_statement_syntax($3, $5); }
+			| BREAK SC                                                  { $$ = new branch_statement_syntax(branch_type::Break); }
+			| CONTINUE SC                                               { $$ = new branch_statement_syntax(branch_type::Continue); }
 Call 		: ID LPAREN ExpList RPAREN                                  { } // new CallExpression()
  			| ID LPAREN RPAREN                                          { } // new CallExpression()
 			;
-ExpList 	: Exp                                                       { } // new ExpressionListSyntax($1)
- 			| Exp COMMA ExpList                                         { } // $$ = $3.Concat($1)
+ExpList 	: Exp                                                       { $$ = new list_syntax<expression_syntax>($1); }
+ 			| Exp COMMA ExpList                                         { $$ = $3->append($1); }
 			;
-Type 		: INT                                                       { } // new TypeSyntax()
-			| BYTE                                                      { } // new TypeSyntax()
-			| BOOL                                                      { } // new TypeSyntax()
+Type 		: INT                                                       { $$ = new type_syntax(fundamental_type::Int); }
+			| BYTE                                                      { $$ = new type_syntax(fundamental_type::Byte); }
+			| BOOL                                                      { $$ = new type_syntax(fundamental_type::Bool); }
 			;
-Exp 		: LPAREN Exp RPAREN	                                        { } // $$ = $2
-            | Exp IF LPAREN Exp RPAREN ELSE Exp                         { } // new ConditionalExpressionSyntax()
-			| Exp ADDOP Exp                                             { } // new ArithmeticExpressionSyntax()
-            | Exp MULOP Exp                                             { } // new ArithmeticExpressionSyntax()
-			| ID                                                        { } // new IdentifierExpressionSyntax()
-			| Call                                                      { } // $$ = $1
-			| NUM                                                       { } // new LiteralExpressionSyntax()
-			| NUM B                                                     { } // new LiteralExpressionSyntax()
-			| STRING                                                    { } // new LiteralExpressionSyntax()
-			| TRUE                                                      { } // new LiteralExpressionSyntax()
-			| FALSE                                                     { } // new LiteralExpressionSyntax()
-			| NOT Exp                                                   { } // new NotExpressionSyntax()
-			| Exp AND Exp                                               { } // new ConditionalExpressionSyntax()
-			| Exp OR Exp                                                { } // new ConditionalExpressionSyntax()
-			| Exp RELOP Exp                                             { } // new ComparisonExpressionSyntax()
-            | Exp EQOP Exp                                              { } // new EqualityExpressionSyntax() 
-			| LPAREN Type RPAREN Exp                                    { } // new CastExpressionSyntax()
+Exp 		: LPAREN Exp RPAREN	                                        { $$ = $2; }
+            | Exp IF LPAREN Exp RPAREN ELSE Exp                         { $$ = new conditional_expression_syntax($1, $4, $7); }
+			| Exp ADDOP Exp                                             { }
+            | Exp MULOP Exp                                             { }
+			| ID                                                        { }
+			| Call                                                      { $$ = $1; }
+			| NUM                                                       { }
+			| NUM B                                                     { }
+			| STRING                                                    { }
+			| TRUE                                                      { $$ = new literal_expression_syntax<bool>(true);}
+			| FALSE                                                     { $$ = new literal_expression_syntax<bool>(false); }
+			| NOT Exp                                                   { $$ = new not_expression_syntax($2); }
+			| Exp AND Exp                                               { }
+			| Exp OR Exp                                                { }
+			| Exp RELOP Exp                                             { }
+            | Exp EQOP Exp                                              { } 
+			| LPAREN Type RPAREN Exp                                    { $$ = new cast_expression_syntax($2, $4); }
 			;
 
 %%
