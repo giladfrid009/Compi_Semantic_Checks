@@ -1,15 +1,18 @@
 %{
 
 #include "hw3_output.hpp"
-#include "ast_nodes.hpp"
-
-#define YYSTYPE syntax_base*
 
 extern int yylex();
 void yyerror(const char* message);
 extern int yylineno;
 
 %}
+
+%code requires 
+{
+    #include "ast_nodes.hpp"
+    #include "syntax_base.hpp"  
+}
 
 %token VOID
 %token INT
@@ -47,9 +50,38 @@ extern int yylineno;
 %left  RPAREN
 %left  ELSE
 
+%union 
+{ 
+    class root_syntax*                              root;
+    class list_syntax<function_declaration_syntax>* function_list;
+	class function_declaration_syntax*              function;
+    class type_syntax*                              type;                  
+    class list_syntax<formal_syntax>*               formal_list;	
+    class formal_syntax*                            formal;                 
+    class statement_syntax*                         statement; 			
+    class list_syntax<statement_syntax>*            statement_list;
+    class invocation_expression_syntax*             invocation;
+    class list_syntax<expression_syntax>*           expression_list;                
+    class expression_syntax*                        expression;           
+ };
+
+%type <root>            Program
+%type <function_list>   Funcs
+%type <function>        FuncDecl
+%type <type>            RetType
+%type <formal_list> 	Formals
+%type <formal_list>     FormalsList
+%type <formal>          FormalDecl
+%type <statement_list>  Statements
+%type <statement>   	Statement
+%type <invocation>      Call
+%type <expression_list> ExpList
+%type <type>			Type
+%type <expression>      Exp
+
 %%
 
-Program 	: Funcs 													{ } // new GlobalScope($1)
+Program 	: Funcs 													{ $$ = new root_syntax(nullptr); } // new GlobalScope($1)
 			;
 Funcs   	: /*epsilon*/												{ } // new FuncList()
       		| FuncDecl Funcs											{ } // $$ = $2.Concat($1)

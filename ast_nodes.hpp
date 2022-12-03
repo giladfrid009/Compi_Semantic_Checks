@@ -1,6 +1,8 @@
 #ifndef AST_NODES_HPP
 #define AST_NODES_HPP
 
+#include "syntax_base.hpp"
+
 #include <vector>
 #include <string>
 #include <type_traits>
@@ -16,29 +18,6 @@ enum class relational_operator { Less, Greater, LessEqual, GreaterEqual, Equal, 
 enum class branch_type { Break, Continue };
 
 // base
-
-class syntax_base
-{
-    private:
-
-    syntax_base* parent_syntax = nullptr;
-
-    public:
-
-    virtual std::vector<syntax_base*> children() = 0;
-
-    virtual ~syntax_base() = 0;
-
-    syntax_base* parent()
-    {
-        return parent_syntax;
-    }
-
-    void register_parent(syntax_base* new_parent)
-    {
-        parent_syntax = new_parent;
-    }
-};
 
 class expression_syntax : public syntax_base
 {
@@ -64,7 +43,7 @@ class expression_syntax : public syntax_base
         return expression_return_type == fundamental_type::String || expression_return_type == fundamental_type::Void;
     }
 
-    virtual ~expression_syntax() = 0;
+    virtual ~expression_syntax() = default;
 
     virtual std::vector<syntax_base*> children() = 0;
 };
@@ -73,7 +52,7 @@ class statement_syntax : public syntax_base
 {
     public:
 
-    virtual ~statement_syntax() = 0;
+    virtual ~statement_syntax() = default;
 
     virtual std::vector<syntax_base*> children() = 0;
 };
