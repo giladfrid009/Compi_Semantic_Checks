@@ -3,7 +3,7 @@
 #include "hw3_output.hpp"
 #include "ast_nodes.hpp"
 
-#define YYSTYPE class AST_Node*
+#define YYSTYPE ast_node*
 
 extern int yylex();
 void yyerror(const char* message);
