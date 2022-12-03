@@ -14,13 +14,15 @@ enum class relational_operator { Less, Greater, LessEqual, GreaterEqual, Equal, 
 
 enum class branch_type { Break, Continue };
 
+// base
+
 class syntax_base
 {
     protected:
 
-    virtual std::vector<syntax_base*> children() = 0;
+    virtual ~syntax_base() = 0;
 
-    virtual ~syntax_base() = default;
+    virtual std::vector<syntax_base*> children() = 0;
 };
 
 class expression_syntax : public syntax_base
@@ -47,14 +49,18 @@ class expression_syntax : public syntax_base
         return expression_return_type == fundamental_type::String || expression_return_type == fundamental_type::Void;
     }
 
-    virtual ~expression_syntax() = default;
+    virtual ~expression_syntax() = 0;
+
+    virtual std::vector<syntax_base*> children() = 0;
 };
 
 class statement_syntax : public syntax_base
 {
     public:
 
-    virtual ~statement_syntax() = default;
+    virtual ~statement_syntax() = 0;
+
+    virtual std::vector<syntax_base*> children() = 0;
 };
 
 // generic
