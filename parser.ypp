@@ -26,7 +26,6 @@ extern int yylineno;
     class formal_syntax*                            formal;                 
     class statement_syntax*                         statement; 			
     class list_syntax<statement_syntax>*            statement_list;
-    class invocation_expression_syntax*             invocation;
     class list_syntax<expression_syntax>*           expression_list;                
     class expression_syntax*                        expression;           
  };
@@ -72,7 +71,7 @@ extern int yylineno;
 %type <formal>          FormalDecl
 %type <statement_list>  Statements
 %type <statement>   	Statement
-%type <invocation>      Call
+%type <expression>      Call
 %type <expression_list> ExpList
 %type <type>			Type
 %type <expression>      Exp
