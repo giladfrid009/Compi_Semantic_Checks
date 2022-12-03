@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <string>
-#include <algorithm>
 #include <type_traits>
 
 enum class fundamental_type { Void, Int, Bool, Byte, String };
@@ -24,18 +23,16 @@ class syntax_base
 
     syntax_base* parent_syntax = nullptr;
 
-    protected:
+    public:
+
+    virtual std::vector<syntax_base*> children() = 0;
+
+    virtual ~syntax_base() = 0;
 
     syntax_base* parent()
     {
         return parent_syntax;
     }
-
-    virtual ~syntax_base() = 0;
-
-    virtual std::vector<syntax_base*> children() = 0;
-
-    public:
 
     void register_parent(syntax_base* new_parent)
     {
@@ -113,25 +110,28 @@ template<typename element_type> class list_syntax final : public syntax_base
 {
     public:
 
-    std::vector<element_type*> values;
+    const std::vector<element_type*> values;
 
-    list_syntax()
+    list_syntax() : values(), syntax_base()
     {
         static_assert(std::is_base_of<syntax_base, element_type>::value, "Must be of type syntax_base");
     }
 
-    list_syntax(element_type* element) : list_syntax()
+    list_syntax(element_type* element) : values(element), syntax_base()
     {
-        element->register_parent(this);
+        static_assert(std::is_base_of<syntax_base, element_type>::value, "Must be of type syntax_base");
 
-        values = std::vector<element_type*>{ element };
+        element->register_parent(this);
     }
 
-    list_syntax(std::vector<element_type*> elements) : list_syntax()
+    list_syntax(std::vector<element_type*> elements) : values(elements), syntax_base()
     {
-        for_each(elements.first(), elements.last(), [this](element_type* e) {e->register_parent(this);});
+        static_assert(std::is_base_of<syntax_base, element_type>::value, "Must be of type syntax_base");
 
-        values = elements;
+        for (element_type* element : elements)
+        {
+            element->register_parent(this);
+        }
     }
 
     list_syntax<element_type>* append(element_type* element)
