@@ -111,6 +111,7 @@ Statement	: LBRACE Statements RBRACE                                  { $$ = new
 			| WHILE LPAREN Exp RPAREN Statement                         { $$ = new while_statement_syntax($3, $5); }
 			| BREAK SC                                                  { $$ = new branch_statement_syntax(branch_type::Break); }
 			| CONTINUE SC                                               { $$ = new branch_statement_syntax(branch_type::Continue); }
+            ;
 Call 		: ID LPAREN ExpList RPAREN                                  { }
  			| ID LPAREN RPAREN                                          { }
 			;
