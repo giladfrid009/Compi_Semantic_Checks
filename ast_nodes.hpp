@@ -10,9 +10,7 @@ enum class logical_operator { And, Or };
 
 enum class arithmetic_operator { Add, Sub, Mul, Div };
 
-enum class equality_operator { Equal, NotEqual };
-
-enum class comparison_operator { Less, Greater, LessEqual, GreaterEqual };
+enum class relational_operator { Less, Greater, LessEqual, GreaterEqual, Equal, NotEqual };
 
 enum class branch_type { Break, Continue };
 
@@ -174,12 +172,7 @@ class arithmetic_expression_syntax final : public expression_syntax
     arithmetic_expression_syntax(expression_syntax* left, expression_syntax* right, arithmetic_operator oper) :
         left(left), right(right), oper(oper), expression_syntax(get_return_type(left, right))
     {
-        if (left->is_numeric() == false)
-        {
-            // todo: handle error
-        }
-
-        if (right->is_numeric() == false)
+        if (left->is_numeric() == false || right->is_numeric() == false)
         {
             // todo: handle error
         }
@@ -206,38 +199,15 @@ class arithmetic_expression_syntax final : public expression_syntax
     }
 };
 
-class equality_expression_syntax final : public expression_syntax
-{
-    public:
-
-    expression_syntax* const left;
-    expression_syntax* const right;
-    const equality_operator oper;
-
-    equality_expression_syntax(expression_syntax* left, expression_syntax* right, equality_operator oper) :
-        left(left), right(right), oper(oper), expression_syntax(fundamental_type::Bool)
-    {
-        if ((left->is_numeric() == false || right->is_numeric() == false) && left->expression_return_type != right->expression_return_type)
-        {
-            //todo: handle error        
-        }
-    }
-
-    std::vector<ast_node*> children() override
-    {
-        return std::vector<ast_node*>{left, right};
-    }
-};
-
 class relational_expression_syntax final : public expression_syntax
 {
     public:
 
     expression_syntax* const left;
     expression_syntax* const right;
-    const comparison_operator oper;
+    const relational_operator oper;
 
-    relational_expression_syntax(expression_syntax* left, expression_syntax* right, comparison_operator oper) :
+    relational_expression_syntax(expression_syntax* left, expression_syntax* right, relational_operator oper) :
         left(left), right(right), oper(oper), expression_syntax(fundamental_type::Bool)
     {
         if (left->is_numeric() == false || right->is_numeric() == false)
