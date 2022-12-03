@@ -52,17 +52,17 @@ extern int yylineno;
 
 %union 
 { 
-    class root_syntax*                              root;
-    class list_syntax<function_declaration_syntax>* function_list;
-	class function_declaration_syntax*              function;
-    class type_syntax*                              type;                  
-    class list_syntax<formal_syntax>*               formal_list;	
-    class formal_syntax*                            formal;                 
-    class statement_syntax*                         statement; 			
-    class list_syntax<statement_syntax>*            statement_list;
-    class invocation_expression_syntax*             invocation;
-    class list_syntax<expression_syntax>*           expression_list;                
-    class expression_syntax*                        expression;           
+    root_syntax*                              root;
+    list_syntax<function_declaration_syntax>* function_list;
+	function_declaration_syntax*              function;
+    type_syntax*                              type;                  
+    list_syntax<formal_syntax>*               formal_list;	
+    formal_syntax*                            formal;                 
+    statement_syntax*                         statement; 			
+    list_syntax<statement_syntax>*            statement_list;
+    invocation_expression_syntax*             invocation;
+    list_syntax<expression_syntax>*           expression_list;                
+    expression_syntax*                        expression;           
  };
 
 %type <root>            Program

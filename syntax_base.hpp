@@ -3,6 +3,8 @@
 
 #include <vector>
 
+enum class fundamental_type { Void, Int, Bool, Byte, String };
+
 class syntax_base
 {
     private:

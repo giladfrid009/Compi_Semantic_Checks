@@ -44,6 +44,7 @@
         "iosfwd": "cpp",
         "new": "cpp",
         "cinttypes": "cpp",
-        "iterator": "cpp"
+        "iterator": "cpp",
+        "syntax_base.hpp": "c"
     }
 }
