@@ -25,7 +25,7 @@ class cast_expression_syntax final : public expression_syntax
         {
             // todo: handle illigal cast
         }
-        
+
         destination_type->register_parent(this);
         expression->register_parent(this);
     }
@@ -59,7 +59,7 @@ class not_expression_syntax final : public expression_syntax
         {
             // todo: handle illigal return_type
         }
-        
+
         expression->register_parent(this);
     }
 
@@ -269,7 +269,7 @@ template<typename literal_type> class literal_expression_syntax final : public e
 
     literal_expression_syntax(literal_type value) : value(value), expression_syntax(get_return_type(value))
     {
-        
+
     }
 
     std::vector<syntax_base*> children() override
@@ -283,7 +283,7 @@ template<typename literal_type> class literal_expression_syntax final : public e
         {
             return fundamental_type::Byte;
         }
-        
+
         if (std::is_same_v<literal_type, int>)
         {
             return fundamental_type::Byte;
@@ -308,7 +308,7 @@ template<typename literal_type> class literal_expression_syntax final : public e
 
         return fundamental_type::Void;
     }
-    
+
     ~literal_expression_syntax()
     {
         auto nodes = children();
@@ -371,7 +371,7 @@ class invocation_expression_syntax final : public expression_syntax
     {
         // todo: check that identifier exists
         // todo: check that expression_list matches signature
-        
+
         expression_list->register_parent(this);
     }
 
@@ -385,7 +385,7 @@ class invocation_expression_syntax final : public expression_syntax
         //todo: implement with symbol table
         return fundamental_type::Void;
     }
-    
+
     ~invocation_expression_syntax()
     {
         auto nodes = children();

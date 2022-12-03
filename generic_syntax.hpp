@@ -53,7 +53,7 @@ template<typename element_type> class list_syntax final : public syntax_base
         static_assert(std::is_base_of<syntax_base, element_type>::value, "Must be of type syntax_base");
     }
 
-    list_syntax(element_type* element) : values{element}, syntax_base()
+    list_syntax(element_type* element) : values{ element }, syntax_base()
     {
         static_assert(std::is_base_of<syntax_base, element_type>::value, "Must be of type syntax_base");
 
@@ -125,7 +125,7 @@ class formal_syntax final : public syntax_base
             delete child;
         }
     }
-    
+
 };
 
 class function_declaration_syntax final : public syntax_base
@@ -137,7 +137,7 @@ class function_declaration_syntax final : public syntax_base
     list_syntax<formal_syntax>* const formal_list;
     list_syntax<statement_syntax>* const body;
 
-    function_declaration_syntax(type_syntax* return_type, std::string identifier, list_syntax<formal_syntax>* formal_list, list_syntax<statement_syntax>* body) : 
+    function_declaration_syntax(type_syntax* return_type, std::string identifier, list_syntax<formal_syntax>* formal_list, list_syntax<statement_syntax>* body) :
         return_type(return_type), identifier(identifier), formal_list(formal_list), body(body), syntax_base()
     {
         // todo: check that identifier is free
@@ -178,7 +178,7 @@ class root_syntax final : public syntax_base
     {
         return std::vector<syntax_base*>{function_list};
     }
-    
+
     ~root_syntax()
     {
         auto nodes = children();

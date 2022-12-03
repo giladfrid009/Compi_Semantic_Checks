@@ -15,7 +15,7 @@ class if_statement_syntax final : public statement_syntax
     statement_syntax* const body;
     statement_syntax* const else_clause;
 
-    if_statement_syntax(expression_syntax* condition, statement_syntax* body) : 
+    if_statement_syntax(expression_syntax* condition, statement_syntax* body) :
         condition(condition), body(body), else_clause(nullptr), statement_syntax()
     {
         if (condition->expression_return_type != fundamental_type::Bool)
@@ -27,7 +27,7 @@ class if_statement_syntax final : public statement_syntax
         body->register_parent(this);
     }
 
-    if_statement_syntax(expression_syntax* condition, statement_syntax* body, statement_syntax* else_clause) : 
+    if_statement_syntax(expression_syntax* condition, statement_syntax* body, statement_syntax* else_clause) :
         condition(condition), body(body), else_clause(else_clause), statement_syntax()
     {
         if (condition->expression_return_type != fundamental_type::Bool)
@@ -63,7 +63,7 @@ class while_statement_syntax final : public statement_syntax
     expression_syntax* const condition;
     statement_syntax* const body;
 
-    while_statement_syntax(expression_syntax* condition, statement_syntax* body) : 
+    while_statement_syntax(expression_syntax* condition, statement_syntax* body) :
         condition(condition), body(body), statement_syntax()
     {
         if (condition->expression_return_type != fundamental_type::Bool)
@@ -96,10 +96,10 @@ class branch_statement_syntax final : public statement_syntax
     public:
 
     const branch_type type;
-    
+
     branch_statement_syntax(branch_type type) : type(type), statement_syntax()
     {
-        
+
     }
 
     std::vector<syntax_base*> children() override
@@ -138,7 +138,7 @@ class return_statement_syntax final : public statement_syntax
     {
         return std::vector<syntax_base*>{expression};
     }
-    
+
     ~return_statement_syntax()
     {
         auto nodes = children();
@@ -165,7 +165,7 @@ class expression_statement_syntax final : public statement_syntax
     {
         return std::vector<syntax_base*>{expression};
     }
-    
+
     ~expression_statement_syntax()
     {
         auto nodes = children();
@@ -184,11 +184,11 @@ class assignment_statement_syntax final : public statement_syntax
     const std::string identifier;
     expression_syntax* const value;
 
-    assignment_statement_syntax(std::string identifier, expression_syntax* value) : 
+    assignment_statement_syntax(std::string identifier, expression_syntax* value) :
         identifier(identifier), value(value), statement_syntax()
     {
         // todo: verify that value type matches identifier type
-        
+
         value->register_parent(this);
     }
 
@@ -196,7 +196,7 @@ class assignment_statement_syntax final : public statement_syntax
     {
         return std::vector<syntax_base*>{value};
     }
-    
+
     ~assignment_statement_syntax()
     {
         auto nodes = children();
@@ -216,7 +216,7 @@ class declaration_statement_syntax final : public statement_syntax
     const std::string identifier;
     expression_syntax* const value;
 
-    declaration_statement_syntax(type_syntax* type, std::string identifier) : 
+    declaration_statement_syntax(type_syntax* type, std::string identifier) :
         type(type), identifier(identifier), value(nullptr), statement_syntax()
     {
         if (type->is_special())
@@ -226,8 +226,8 @@ class declaration_statement_syntax final : public statement_syntax
 
         type->register_parent(this);
     }
-    
-    declaration_statement_syntax(type_syntax* type, std::string identifier, expression_syntax* value) : 
+
+    declaration_statement_syntax(type_syntax* type, std::string identifier, expression_syntax* value) :
         type(type), identifier(identifier), value(value), statement_syntax()
     {
         if (type->is_special() || value->is_special())
