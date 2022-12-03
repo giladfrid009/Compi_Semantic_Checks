@@ -14,44 +14,16 @@ enum class relational_operator { Less, Greater, LessEqual, GreaterEqual, Equal, 
 
 enum class branch_type { Break, Continue };
 
-class ast_node
+class syntax_base
 {
     protected:
 
-    virtual std::vector<ast_node*> children() = 0;
+    virtual std::vector<syntax_base*> children() = 0;
 
-    virtual ~ast_node() = default;
+    virtual ~syntax_base() = default;
 };
 
-class type_syntax final : public ast_node
-{
-    public:
-
-    const fundamental_type type;
-
-    type_syntax(fundamental_type type) : type(type)
-    {
-    }
-
-    bool is_numeric()
-    {
-        return type == fundamental_type::Int || type == fundamental_type::Byte;
-    }
-
-    bool is_special()
-    {
-        return type == fundamental_type::String || type == fundamental_type::Void;
-    }
-
-    std::vector<ast_node*> children() override
-    {
-        return std::vector<ast_node*>();
-    }
-};
-
-// expressions
-
-class expression_syntax : public ast_node
+class expression_syntax : public syntax_base
 {
     public:
 
@@ -78,17 +50,103 @@ class expression_syntax : public ast_node
     virtual ~expression_syntax() = default;
 };
 
-class expression_list_syntax final : public ast_node
+class statement_syntax : public syntax_base
 {
     public:
 
-    std::vector<expression_syntax*> arguments;
+    virtual ~statement_syntax() = default;
+};
 
-    std::vector<ast_node*> children() override
+// generic
+
+class type_syntax final : public syntax_base
+{
+    public:
+
+    const fundamental_type type;
+
+    type_syntax(fundamental_type type) : type(type)
     {
-        return std::vector<ast_node*>(arguments.begin(), arguments.end());
+    }
+
+    bool is_numeric()
+    {
+        return type == fundamental_type::Int || type == fundamental_type::Byte;
+    }
+
+    bool is_special()
+    {
+        return type == fundamental_type::String || type == fundamental_type::Void;
+    }
+
+    std::vector<syntax_base*> children() override
+    {
+        return std::vector<syntax_base*>();
     }
 };
+
+template<typename element_type> class list_syntax final : public syntax_base
+{
+    public:
+
+    std::vector<element_type*> values;
+
+    list_syntax()
+    {
+        static_assert(std::is_base_of<syntax_base, element_type>::value, "Must be of type syntax_base");
+    }
+
+    std::vector<syntax_base*> children() override
+    {
+        return std::vector<syntax_base*>(values.begin(), values.end());
+    }
+};
+
+class formal_syntax final : public syntax_base
+{
+    public:
+
+    const fundamental_type type;
+    const std::string identifier;
+
+    std::vector<syntax_base*> children() override
+    {
+        return std::vector<syntax_base*>();
+    }
+};
+
+class function_declaration_syntax final : public syntax_base
+{
+    public:
+
+    type_syntax* const return_type;
+    const std::string identifier;
+    list_syntax<formal_syntax>* const formal_list;
+    list_syntax<statement_syntax>* const body;
+
+    std::vector<syntax_base*> children() override
+    {
+        return std::vector<syntax_base*>{return_type, formal_list, body};
+    }
+};
+
+class root_syntax final : public syntax_base
+{
+    public:
+
+    list_syntax<function_declaration_syntax>* const function_list;
+
+    root_syntax(list_syntax<function_declaration_syntax>* function_list) : function_list(function_list)
+    {
+    }
+
+    std::vector<syntax_base*> children() override
+    {
+        return std::vector<syntax_base*>{function_list};
+    }
+};
+
+// expressions
 
 class cast_expression_syntax final : public expression_syntax
 {
@@ -111,9 +169,9 @@ class cast_expression_syntax final : public expression_syntax
         }
     }
 
-    std::vector<ast_node*> children() override
+    std::vector<syntax_base*> children() override
     {
-        return std::vector<ast_node*>{destination_type, expression};
+        return std::vector<syntax_base*>{destination_type, expression};
     }
 };
 
@@ -132,9 +190,9 @@ class not_expression_syntax final : public expression_syntax
         }
     }
 
-    std::vector<ast_node*> children() override
+    std::vector<syntax_base*> children() override
     {
-        return std::vector<ast_node*>{expression};
+        return std::vector<syntax_base*>{expression};
     }
 };
 
@@ -155,9 +213,9 @@ class logical_expression_syntax final : public expression_syntax
         }
     }
 
-    std::vector<ast_node*> children() override
+    std::vector<syntax_base*> children() override
     {
-        return std::vector<ast_node*>{left, right};
+        return std::vector<syntax_base*>{left, right};
     }
 };
 
@@ -193,9 +251,9 @@ class arithmetic_expression_syntax final : public expression_syntax
         return fundamental_type::Void;
     }
 
-    std::vector<ast_node*> children() override
+    std::vector<syntax_base*> children() override
     {
-        return std::vector<ast_node*>{left, right};
+        return std::vector<syntax_base*>{left, right};
     }
 };
 
@@ -216,9 +274,9 @@ class relational_expression_syntax final : public expression_syntax
         }
     }
 
-    std::vector<ast_node*> children() override
+    std::vector<syntax_base*> children() override
     {
-        return std::vector<ast_node*>{left, right};
+        return std::vector<syntax_base*>{left, right};
     }
 };
 
@@ -231,24 +289,16 @@ class conditional_expression_syntax final : public expression_syntax
     const expression_syntax* false_value;
 };
 
-class literal_expression_syntax final : public expression_syntax
+template<typename literal_type> class literal_expression_syntax final : public expression_syntax
 {
     public:
 
-    union literal
-    {
-        int as_int;
-        bool as_bool;
-        char as_byte;
-        std::string* as_str;
-    };
-
-    const literal value;
+    const literal_type value;
     const fundamental_type type;
 
-    std::vector<ast_node*> children() override
+    std::vector<syntax_base*> children() override
     {
-        return std::vector<ast_node*>();
+        return std::vector<syntax_base*>();
     }
 };
 
@@ -258,9 +308,9 @@ class identifier_expression_syntax final : public expression_syntax
 
     const std::string identifier;
 
-    std::vector<ast_node*> children() override
+    std::vector<syntax_base*> children() override
     {
-        return std::vector<ast_node*>();
+        return std::vector<syntax_base*>();
     }
 };
 
@@ -269,36 +319,15 @@ class invocation_expression_syntax final : public expression_syntax
     public:
 
     const std::string identifier;
-    expression_list_syntax* const expression_list;
+    list_syntax<expression_syntax>* const expression_list;
 
-    std::vector<ast_node*> children() override
+    std::vector<syntax_base*> children() override
     {
-        return std::vector<ast_node*>{expression_list};
+        return std::vector<syntax_base*>{expression_list};
     }
 };
-
-// end expressions
 
 // statements
-
-class statement_syntax : public ast_node
-{
-    public:
-
-    virtual ~statement_syntax() = default;
-};
-
-class statement_list_syntax final : public ast_node
-{
-    public:
-
-    const std::vector<statement_syntax*> statements;
-
-    std::vector<ast_node*> children() override
-    {
-        return std::vector<ast_node*>(statements.begin(), statements.end());
-    }
-};
 
 class if_statement_syntax final : public statement_syntax
 {
@@ -308,9 +337,9 @@ class if_statement_syntax final : public statement_syntax
     statement_syntax* const body;
     expression_syntax* const else_clause;
 
-    std::vector<ast_node*> children() override
+    std::vector<syntax_base*> children() override
     {
-        return std::vector<ast_node*>{condition, body, else_clause};
+        return std::vector<syntax_base*>{condition, body, else_clause};
     }
 };
 
@@ -321,9 +350,9 @@ class while_statement_syntax final : public statement_syntax
     expression_syntax* const condition;
     statement_syntax* const body;
 
-    std::vector<ast_node*> children() override
+    std::vector<syntax_base*> children() override
     {
-        return std::vector<ast_node*>{condition, body};
+        return std::vector<syntax_base*>{condition, body};
     }
 };
 
@@ -333,9 +362,9 @@ class branch_statement_syntax final : public statement_syntax
 
     const branch_type type;
 
-    std::vector<ast_node*> children() override
+    std::vector<syntax_base*> children() override
     {
-        return std::vector<ast_node*>();
+        return std::vector<syntax_base*>();
     }
 };
 
@@ -345,9 +374,9 @@ class return_statement_syntax final : public statement_syntax
 
     expression_syntax* const expression;
 
-    std::vector<ast_node*> children() override
+    std::vector<syntax_base*> children() override
     {
-        return std::vector<ast_node*>{expression};
+        return std::vector<syntax_base*>{expression};
     }
 };
 
@@ -357,9 +386,9 @@ class expression_statement_syntax final : public statement_syntax
 
     expression_syntax* const expression;
 
-    std::vector<ast_node*> children() override
+    std::vector<syntax_base*> children() override
     {
-        return std::vector<ast_node*>{expression};
+        return std::vector<syntax_base*>{expression};
     }
 };
 
@@ -370,9 +399,9 @@ class assignment_statement_syntax final : public statement_syntax
     const std::string identifier;
     expression_syntax* const value;
 
-    std::vector<ast_node*> children() override
+    std::vector<syntax_base*> children() override
     {
-        return std::vector<ast_node*>{value};
+        return std::vector<syntax_base*>{value};
     }
 };
 
@@ -384,9 +413,9 @@ class declaration_statement_syntax final : public statement_syntax
     const fundamental_type type;
     expression_syntax* const value;
 
-    std::vector<ast_node*> children() override
+    std::vector<syntax_base*> children() override
     {
-        return std::vector<ast_node*>{value};
+        return std::vector<syntax_base*>{value};
     }
 };
 
@@ -394,95 +423,11 @@ class block_statement_syntax final : public statement_syntax
 {
     public:
 
-    statement_list_syntax* const statement_list;
+    list_syntax<statement_syntax>* const statement_list;
 
-    std::vector<ast_node*> children() override
+    std::vector<syntax_base*> children() override
     {
-        return std::vector<ast_node*>{statement_list};
-    }
-};
-
-// end statements
-
-// generic types
-
-class formal_syntax final : public ast_node
-{
-    public:
-
-    const fundamental_type type;
-    const std::string identifier;
-
-    std::vector<ast_node*> children() override
-    {
-        return std::vector<ast_node*>();
-    }
-};
-
-class formal_list_syntax final : public ast_node
-{
-    public:
-
-    const std::vector<formal_syntax*> formals;
-
-    std::vector<ast_node*> children() override
-    {
-        return std::vector<ast_node*>(formals.begin(), formals.end());
-    }
-};
-
-class function_declaration_syntax final : public ast_node
-{
-    public:
-
-    type_syntax* const return_type;
-    const std::string identifier;
-    formal_list_syntax* const formal_list;
-    statement_list_syntax* const body;
-
-    std::vector<ast_node*> children() override
-    {
-        return std::vector<ast_node*>{return_type, formal_list, body};
-    }
-};
-
-class function_list_syntax final : public ast_node
-{
-    public:
-
-    const std::vector<function_declaration_syntax*> functions;
-
-    function_list_syntax()
-    {
-    }
-
-    function_list_syntax(function_declaration_syntax* function) : functions(std::vector<function_declaration_syntax*> {function})
-    {
-    }
-
-    function_list_syntax(std::vector<function_declaration_syntax*> functions) : functions(functions)
-    {
-    }
-
-    std::vector<ast_node*> children() override
-    {
-        return std::vector<ast_node*>(functions.begin(), functions.end());
-    }
-};
-
-class global_syntax final : public ast_node
-{
-    public:
-
-    function_list_syntax* const function_list;
-
-    global_syntax(function_list_syntax* function_list) : function_list(function_list)
-    {
-    }
-
-    std::vector<ast_node*> children() override
-    {
-        return std::vector<ast_node*>{function_list};
+        return std::vector<syntax_base*>{statement_list};
     }
 };
 
