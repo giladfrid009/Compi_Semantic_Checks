@@ -16,6 +16,21 @@ extern int yylineno;
     #include "statement_syntax.hpp" 
 }
 
+%union 
+{ 
+    class root_syntax*                              root;
+    class list_syntax<function_declaration_syntax>* function_list;
+	class function_declaration_syntax*              function;
+    class type_syntax*                              type;                  
+    class list_syntax<formal_syntax>*               formal_list;	
+    class formal_syntax*                            formal;                 
+    class statement_syntax*                         statement; 			
+    class list_syntax<statement_syntax>*            statement_list;
+    class invocation_expression_syntax*             invocation;
+    class list_syntax<expression_syntax>*           expression_list;                
+    class expression_syntax*                        expression;           
+ };
+
 %token VOID
 %token INT
 %token BYTE
@@ -36,10 +51,7 @@ extern int yylineno;
 %token STRING
 
 %right ASSIGN
-
-// TODO: VERIFY IF IN RIGHT POSITION
-%nonassoc IF
-
+%nonassoc IF // TODO: VERIFY IF IN RIGHT POSITION
 %left  OR
 %left  AND
 %left  EQOP
@@ -47,25 +59,9 @@ extern int yylineno;
 %left  ADDOP
 %left  MULOP
 %right NOT
-
 %right LPAREN
 %left  RPAREN
 %left  ELSE
-
-%union 
-{ 
-    class root_syntax*                              root;
-    class list_syntax<function_declaration_syntax>* function_list;
-	class function_declaration_syntax*              function;
-    class type_syntax*                              type;                  
-    class list_syntax<formal_syntax>*               formal_list;	
-    class formal_syntax*                            formal;                 
-    class statement_syntax*                         statement; 			
-    class list_syntax<statement_syntax>*            statement_list;
-    class invocation_expression_syntax*             invocation;
-    class list_syntax<expression_syntax>*           expression_list;                
-    class expression_syntax*                        expression;           
- };
 
 %type <root>            Program
 %type <function_list>   Funcs
@@ -85,7 +81,7 @@ extern int yylineno;
 
 Program 	: Funcs 													{ $$ = new root_syntax($1); }
 			;
-Funcs   	: /*epsilon*/												{ $$ = new list_syntax<function_declaration_syntax>(); } // new FuncList()
+Funcs   	: /*epsilon*/												{ $$ = new list_syntax<function_declaration_syntax>(); }
       		| FuncDecl Funcs											{ $$ = $2->append($1); }
 			;
 FuncDecl 	: RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE { }
