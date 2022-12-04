@@ -24,8 +24,6 @@ class syntax_base
     {
     }
 
-    virtual std::vector<syntax_base*> get_children() = 0;
-
     syntax_base* get_parent()
     {
         return parent;
@@ -37,6 +35,8 @@ class syntax_base
     }
 
     virtual ~syntax_base() = default;
+
+    virtual std::vector<syntax_base*> get_children() = 0;
 };
 
 class expression_syntax : public syntax_base

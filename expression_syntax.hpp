@@ -102,7 +102,6 @@ class logical_expression_syntax final : public expression_syntax
     logical_expression_syntax(expression_syntax* left, expression_syntax* right, std::string oper_token) :
         logical_expression_syntax(left, right, get_operator_from_token(oper_token))
     {
-
     }
 
     logical_operator get_operator_from_token(std::string token)
@@ -152,7 +151,6 @@ class arithmetic_expression_syntax final : public expression_syntax
     arithmetic_expression_syntax(expression_syntax* left, expression_syntax* right, std::string oper_token) :
         arithmetic_expression_syntax(left, right, get_operator_from_token(oper_token))
     {
-
     }
 
     fundamental_type get_return_type(expression_syntax* left, expression_syntax* right)
@@ -219,7 +217,6 @@ class relational_expression_syntax final : public expression_syntax
     relational_expression_syntax(expression_syntax* left, expression_syntax* right, std::string oper_token) :
         relational_expression_syntax(left, right, get_operator_from_token(oper_token))
     {
-
     }
 
     relational_operator get_operator_from_token(std::string token)
@@ -318,7 +315,6 @@ template<typename literal_type> class literal_expression_syntax final : public e
 
     literal_expression_syntax(literal_type value) : value(value), expression_syntax(get_return_type(value))
     {
-
     }
 
     std::vector<syntax_base*> get_children() override
@@ -328,30 +324,11 @@ template<typename literal_type> class literal_expression_syntax final : public e
 
     fundamental_type get_return_type(literal_type value)
     {
-        if (std::is_same<literal_type, char>::value)
-        {
-            return fundamental_type::Byte;
-        }
-
-        if (std::is_same<literal_type, int>::value)
-        {
-            return fundamental_type::Byte;
-        }
-
-        if (std::is_same<literal_type, bool>::value)
-        {
-            return fundamental_type::Bool;
-        }
-
-        if (std::is_same<literal_type, std::string>::value)
-        {
-            return fundamental_type::String;
-        }
-
-        if (std::is_same<literal_type, void>::value)
-        {
-            return fundamental_type::Void;
-        }
+        if (std::is_same<literal_type, char>::value) return fundamental_type::Byte;
+        if (std::is_same<literal_type, int>::value) return fundamental_type::Byte;
+        if (std::is_same<literal_type, bool>::value) return fundamental_type::Bool;
+        if (std::is_same<literal_type, std::string>::value) return fundamental_type::String;
+        if (std::is_same<literal_type, void>::value) return fundamental_type::Void;
 
         // todo: throw an exception
 

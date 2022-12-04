@@ -99,7 +99,6 @@ class branch_statement_syntax final : public statement_syntax
 
     branch_statement_syntax(branch_type type) : type(type), statement_syntax()
     {
-
     }
 
     std::vector<syntax_base*> get_children() override
@@ -126,7 +125,6 @@ class return_statement_syntax final : public statement_syntax
 
     return_statement_syntax() : expression(nullptr), statement_syntax()
     {
-
     }
 
     return_statement_syntax(expression_syntax* expression) : expression(expression), statement_syntax()
