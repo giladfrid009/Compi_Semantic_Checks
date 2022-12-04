@@ -26,14 +26,14 @@ class type_syntax final : public syntax_base
         return type == fundamental_type::String || type == fundamental_type::Void;
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>();
     }
 
     ~type_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {
@@ -76,14 +76,14 @@ template<typename element_type> class list_syntax final : public syntax_base
         return this;
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>(values.begin(), values.end());
     }
 
     ~list_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {
@@ -111,14 +111,14 @@ class formal_syntax final : public syntax_base
         type->set_parent(this);
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>{type};
     }
 
     ~formal_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {
@@ -147,14 +147,14 @@ class function_declaration_syntax final : public syntax_base
         body->set_parent(this);
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>{return_type, formal_list, body};
     }
 
     ~function_declaration_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {
@@ -174,14 +174,14 @@ class root_syntax final : public syntax_base
         function_list->set_parent(this);
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>{function_list};
     }
 
     ~root_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {

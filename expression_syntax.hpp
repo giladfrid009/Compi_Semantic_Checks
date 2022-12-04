@@ -30,14 +30,14 @@ class cast_expression_syntax final : public expression_syntax
         expression->set_parent(this);
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>{destination_type, expression};
     }
 
     ~cast_expression_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {
@@ -63,14 +63,14 @@ class not_expression_syntax final : public expression_syntax
         expression->set_parent(this);
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>{expression};
     }
 
     ~not_expression_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {
@@ -99,13 +99,13 @@ class logical_expression_syntax final : public expression_syntax
         right->set_parent(this);
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>{left, right};
     }
     ~logical_expression_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {
@@ -149,14 +149,14 @@ class arithmetic_expression_syntax final : public expression_syntax
         return fundamental_type::Void;
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>{left, right};
     }
 
     ~arithmetic_expression_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {
@@ -185,14 +185,14 @@ class relational_expression_syntax final : public expression_syntax
         right->set_parent(this);
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>{left, right};
     }
 
     ~relational_expression_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {
@@ -225,7 +225,7 @@ class conditional_expression_syntax final : public expression_syntax
         false_value->set_parent(this);
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>{true_value, condition, false_value};
     }
@@ -252,7 +252,7 @@ class conditional_expression_syntax final : public expression_syntax
 
     ~conditional_expression_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {
@@ -272,7 +272,7 @@ template<typename literal_type> class literal_expression_syntax final : public e
 
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>();
     }
@@ -311,7 +311,7 @@ template<typename literal_type> class literal_expression_syntax final : public e
 
     ~literal_expression_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {
@@ -331,7 +331,7 @@ class identifier_expression_syntax final : public expression_syntax
         //todo: add checks if identifier exists in symbol table
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>();
     }
@@ -344,7 +344,7 @@ class identifier_expression_syntax final : public expression_syntax
 
     ~identifier_expression_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {
@@ -375,7 +375,7 @@ class invocation_expression_syntax final : public expression_syntax
         expression_list->set_parent(this);
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>{expression_list};
     }
@@ -388,7 +388,7 @@ class invocation_expression_syntax final : public expression_syntax
 
     ~invocation_expression_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {

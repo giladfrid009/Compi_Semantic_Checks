@@ -40,14 +40,14 @@ class if_statement_syntax final : public statement_syntax
         else_clause->set_parent(this);
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>{condition, body, else_clause};
     }
 
     ~if_statement_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {
@@ -75,14 +75,14 @@ class while_statement_syntax final : public statement_syntax
         body->set_parent(this);
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>{condition, body};
     }
 
     ~while_statement_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {
@@ -102,14 +102,14 @@ class branch_statement_syntax final : public statement_syntax
 
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>();
     }
 
     ~branch_statement_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {
@@ -134,14 +134,14 @@ class return_statement_syntax final : public statement_syntax
         expression->set_parent(this);
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>{expression};
     }
 
     ~return_statement_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {
@@ -161,14 +161,14 @@ class expression_statement_syntax final : public statement_syntax
         expression->set_parent(this);
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>{expression};
     }
 
     ~expression_statement_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {
@@ -192,14 +192,14 @@ class assignment_statement_syntax final : public statement_syntax
         value->set_parent(this);
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>{value};
     }
 
     ~assignment_statement_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {
@@ -247,14 +247,14 @@ class declaration_statement_syntax final : public statement_syntax
         value->set_parent(this);
     }
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>{value};
     }
 
     ~declaration_statement_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {
@@ -269,7 +269,7 @@ class block_statement_syntax final : public statement_syntax
 
     list_syntax<statement_syntax>* const statement_list;
 
-    std::vector<syntax_base*> children() override
+    std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>{statement_list};
     }
@@ -281,7 +281,7 @@ class block_statement_syntax final : public statement_syntax
 
     ~block_statement_syntax()
     {
-        auto nodes = children();
+        auto nodes = get_children();
 
         for (syntax_base* child : nodes)
         {

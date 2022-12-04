@@ -24,7 +24,7 @@ class syntax_base
     {
     }
 
-    virtual std::vector<syntax_base*> children() = 0;
+    virtual std::vector<syntax_base*> get_children() = 0;
 
     syntax_base* get_parent()
     {
@@ -65,7 +65,7 @@ class expression_syntax : public syntax_base
 
     virtual ~expression_syntax() = default;
 
-    virtual std::vector<syntax_base*> children() = 0;
+    virtual std::vector<syntax_base*> get_children() = 0;
 };
 
 enum class branch_type { Break, Continue };
@@ -76,7 +76,7 @@ class statement_syntax : public syntax_base
 
     virtual ~statement_syntax() = default;
 
-    virtual std::vector<syntax_base*> children() = 0;
+    virtual std::vector<syntax_base*> get_children() = 0;
 };
 
 #endif
