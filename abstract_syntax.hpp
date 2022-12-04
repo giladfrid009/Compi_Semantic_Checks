@@ -12,6 +12,8 @@ enum class relational_operator { Less, LessEqual, Greater, GreaterEqual, Equal, 
 
 enum class fundamental_type { Void, Int, Bool, Byte, String };
 
+enum class branch_type { Break, Continue };
+
 class syntax_base
 {
     private:
@@ -67,8 +69,6 @@ class expression_syntax : public syntax_base
 
     virtual std::vector<syntax_base*> get_children() = 0;
 };
-
-enum class branch_type { Break, Continue };
 
 class statement_syntax : public syntax_base
 {
