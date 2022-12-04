@@ -12,12 +12,14 @@ void yyerror(const char* message);
 {
     #include "abstract_syntax.hpp" 
     #include "generic_syntax.hpp" 
-    #include "expression_syntax.hpp" 
+    #include "expression_syntax.hpp"
     #include "statement_syntax.hpp" 
 }
 
 %union 
 { 
+    int                                       num;
+    char*                                     str;
     root_syntax*                              root;
     type_syntax*                              type;                  
     formal_syntax*                            formal;     
@@ -45,22 +47,22 @@ void yyerror(const char* message);
 %token COMMA
 %token LBRACE
 %token RBRACE
-%token ID
-%token NUM
-%token STRING
+%token <str> ID
+%token <num> NUM
+%token <str> STRING
 
 %right ASSIGN
 %nonassoc IF // TODO: VERIFY IF IN RIGHT POSITION
-%left  OR
-%left  AND
-%left  EQOP
-%left  RELOP
-%left  ADDOP
-%left  MULOP
+%left OR
+%left AND
+%left <str> EQOP
+%left <str> RELOP
+%left <str> ADDOP
+%left <str> MULOP
 %right NOT
 %right LPAREN
-%left  RPAREN
-%left  ELSE
+%left RPAREN
+%left ELSE
 
 %type <root>            Program
 %type <function_list>   Funcs

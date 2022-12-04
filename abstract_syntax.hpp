@@ -8,7 +8,7 @@ enum class logical_operator { And, Or };
 
 enum class arithmetic_operator { Add, Sub, Mul, Div };
 
-enum class relational_operator { Less, Greater, LessEqual, GreaterEqual, Equal, NotEqual };
+enum class relational_operator { Less, LessEqual, Greater, GreaterEqual, Equal, NotEqual };
 
 enum class fundamental_type { Void, Int, Bool, Byte, String };
 

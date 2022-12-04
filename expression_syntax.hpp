@@ -99,10 +99,25 @@ class logical_expression_syntax final : public expression_syntax
         right->set_parent(this);
     }
 
+    logical_expression_syntax(expression_syntax* left, expression_syntax* right, std::string oper_token) :
+        logical_expression_syntax(left, right, get_operator_from_token(oper_token))
+    {
+
+    }
+
+    logical_operator get_operator_from_token(std::string token)
+    {
+        if (token == "and") return logical_operator::And;
+        if (token == "or") return logical_operator::Or;
+
+        // todo: throw an exception
+    }
+
     std::vector<syntax_base*> get_children() override
     {
         return std::vector<syntax_base*>{left, right};
     }
+
     ~logical_expression_syntax()
     {
         auto nodes = get_children();
@@ -134,6 +149,12 @@ class arithmetic_expression_syntax final : public expression_syntax
         right->set_parent(this);
     }
 
+    arithmetic_expression_syntax(expression_syntax* left, expression_syntax* right, std::string oper_token) :
+        arithmetic_expression_syntax(left, right, get_operator_from_token(oper_token))
+    {
+
+    }
+
     fundamental_type get_return_type(expression_syntax* left, expression_syntax* right)
     {
         if (left->is_numeric() && right->is_numeric())
@@ -147,6 +168,16 @@ class arithmetic_expression_syntax final : public expression_syntax
         }
 
         return fundamental_type::Void;
+    }
+
+    arithmetic_operator get_operator_from_token(std::string token)
+    {
+        if (token == "+") return arithmetic_operator::Add;
+        if (token == "-") return arithmetic_operator::Sub;
+        if (token == "*") return arithmetic_operator::Mul;
+        if (token == "/") return arithmetic_operator::Div;
+
+        // todo: throw an exception
     }
 
     std::vector<syntax_base*> get_children() override
@@ -183,6 +214,24 @@ class relational_expression_syntax final : public expression_syntax
 
         left->set_parent(this);
         right->set_parent(this);
+    }
+
+    relational_expression_syntax(expression_syntax* left, expression_syntax* right, std::string oper_token) :
+        relational_expression_syntax(left, right, get_operator_from_token(oper_token))
+    {
+
+    }
+
+    relational_operator get_operator_from_token(std::string token)
+    {
+        if (token == "<") return relational_operator::Less;
+        if (token == "<=") return relational_operator::LessEqual;
+        if (token == ">") return relational_operator::Greater;
+        if (token == ">=") return relational_operator::GreaterEqual;
+        if (token == "==") return relational_operator::Equal;
+        if (token == "!=") return relational_operator::NotEqual;
+
+        // todo: throw an exception
     }
 
     std::vector<syntax_base*> get_children() override
