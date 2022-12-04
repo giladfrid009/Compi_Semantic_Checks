@@ -2,9 +2,9 @@
 
 #include "hw3_output.hpp"
 
+extern int yylineno;
 extern int yylex();
 void yyerror(const char* message);
-extern int yylineno;
 
 %}
 
@@ -18,16 +18,16 @@ extern int yylineno;
 
 %union 
 { 
-    class root_syntax*                              root;
-    class list_syntax<function_declaration_syntax>* function_list;
-	class function_declaration_syntax*              function;
-    class type_syntax*                              type;                  
-    class list_syntax<formal_syntax>*               formal_list;	
-    class formal_syntax*                            formal;                 
-    class statement_syntax*                         statement; 			
-    class list_syntax<statement_syntax>*            statement_list;
-    class list_syntax<expression_syntax>*           expression_list;                
-    class expression_syntax*                        expression;           
+    root_syntax*                              root;
+    type_syntax*                              type;                  
+    formal_syntax*                            formal;     
+    function_declaration_syntax*              function;            
+    statement_syntax*                         statement; 	
+    expression_syntax*                        expression;  
+    list_syntax<formal_syntax>*               formal_list;		         
+    list_syntax<function_declaration_syntax>* function_list;	
+    list_syntax<statement_syntax>*            statement_list;
+    list_syntax<expression_syntax>*           expression_list;                
  };
 
 %token VOID
