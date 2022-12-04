@@ -2,192 +2,122 @@
 #define _GENERIC_SYNTAX_HPP_
 
 #include "abstract_syntax.hpp"
+#include <list>
 #include <vector>
 #include <string>
 #include <type_traits>
 
-class type_syntax final : public syntax_base
-{
-    public:
-
-    const fundamental_type type;
-
-    type_syntax(fundamental_type type) : type(type)
-    {
-    }
-
-    bool is_numeric()
-    {
-        return type == fundamental_type::Int || type == fundamental_type::Byte;
-    }
-
-    bool is_special()
-    {
-        return type == fundamental_type::String || type == fundamental_type::Void;
-    }
-
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>();
-    }
-
-    ~type_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
-};
-
 template<typename element_type> class list_syntax final : public syntax_base
 {
-    public:
+	private:
 
-    std::vector<element_type*> values;
+	std::list<element_type*> elements;
 
-    list_syntax() : values(), syntax_base()
-    {
-        static_assert(std::is_base_of<syntax_base, element_type>::value, "Must be of type syntax_base");
-    }
+	public:
 
-    list_syntax(element_type* element) : values{ element }, syntax_base()
-    {
-        static_assert(std::is_base_of<syntax_base, element_type>::value, "Must be of type syntax_base");
+	list_syntax() : elements(), syntax_base()
+	{
+		static_assert(std::is_base_of<syntax_base, element_type>::value, "must be of type syntax_base");
+	}
 
-        element->set_parent(this);
-    }
+	list_syntax(element_type* element) : elements{ element }, syntax_base()
+	{
+		static_assert(std::is_base_of<syntax_base, element_type>::value, "must be of type syntax_base");
 
-    list_syntax(std::vector<element_type*> elements) : values(elements), syntax_base()
-    {
-        static_assert(std::is_base_of<syntax_base, element_type>::value, "Must be of type syntax_base");
+		element->set_parent(this);
+	}
 
-        for (element_type* element : elements)
-        {
-            element->set_parent(this);
-        }
-    }
+	list_syntax<element_type>* push_back(element_type* element)
+	{
+		elements.push_back(element);
+		return this;
+	}
 
-    list_syntax<element_type>* append(element_type* element)
-    {
-        values.push_back(element);
-        return this;
-    }
+	list_syntax<element_type>* push_front(element_type* element)
+	{
+		elements.push_front(element);
+		return this;
+	}
 
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>(values.begin(), values.end());
-    }
+	std::vector<element_type*> get_elements() const
+	{
+		return std::vector<element_type*>(elements.begin(), elements.end());
+	}
 
-    ~list_syntax()
-    {
-        auto nodes = get_children();
+	std::vector<syntax_base*> get_children() const override
+	{
+		return std::vector<syntax_base*>(elements.begin(), elements.end());
+	}
 
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
+	~list_syntax()
+	{
+		auto nodes = get_children();
+
+		for (syntax_base* child : nodes)
+		{
+			delete child;
+		}
+	}
+};
+
+class type_syntax final : public syntax_base
+{
+	public:
+
+	const fundamental_type type;
+
+	type_syntax(fundamental_type type);
+
+	bool is_numeric() const;
+
+	bool is_special() const;
+
+	std::vector<syntax_base*> get_children() const override;
+
+	~type_syntax();
 };
 
 class formal_syntax final : public syntax_base
 {
-    public:
+	public:
 
-    type_syntax* const type;
-    const std::string identifier;
+	type_syntax* const type;
+	const std::string identifier;
 
-    formal_syntax(type_syntax* type, std::string identifier) : type(type), identifier(identifier), syntax_base()
-    {
-        if (type->type == fundamental_type::Void)
-        {
-            //todo: handle error
-        }
+	formal_syntax(type_syntax* type, std::string identifier);
 
-        //todo: make sure identifier doesnt shadow anyone else.
+	std::vector<syntax_base*> get_children() const override;
 
-        type->set_parent(this);
-    }
-
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>{type};
-    }
-
-    ~formal_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
-
+	~formal_syntax();
 };
 
 class function_declaration_syntax final : public syntax_base
 {
-    public:
+	public:
 
-    type_syntax* const return_type;
-    const std::string identifier;
-    list_syntax<formal_syntax>* const formal_list;
-    list_syntax<statement_syntax>* const body;
+	type_syntax* const return_type;
+	const std::string identifier;
+	list_syntax<formal_syntax>* const formal_list;
+	list_syntax<statement_syntax>* const body;
 
-    function_declaration_syntax(type_syntax* return_type, std::string identifier, list_syntax<formal_syntax>* formal_list, list_syntax<statement_syntax>* body) :
-        return_type(return_type), identifier(identifier), formal_list(formal_list), body(body), syntax_base()
-    {
-        // todo: check that identifier is free
+	function_declaration_syntax(type_syntax* return_type, std::string identifier, list_syntax<formal_syntax>* formal_list, list_syntax<statement_syntax>* body);
 
-        return_type->set_parent(this);
-        formal_list->set_parent(this);
-        body->set_parent(this);
-    }
+	std::vector<syntax_base*> get_children() const override;
 
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>{return_type, formal_list, body};
-    }
-
-    ~function_declaration_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
+	~function_declaration_syntax();
 };
 
 class root_syntax final : public syntax_base
 {
-    public:
+	public:
 
-    list_syntax<function_declaration_syntax>* const function_list;
+	list_syntax<function_declaration_syntax>* const function_list;
 
-    root_syntax(list_syntax<function_declaration_syntax>* function_list) : function_list(function_list)
-    {
-        function_list->set_parent(this);
-    }
+	root_syntax(list_syntax<function_declaration_syntax>* function_list);
 
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>{function_list};
-    }
+	std::vector<syntax_base*> get_children() const override;
 
-    ~root_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
+	~root_syntax();
 };
 
 #endif

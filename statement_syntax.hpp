@@ -9,283 +9,118 @@
 
 class if_statement_syntax final : public statement_syntax
 {
-    public:
+	public:
 
-    expression_syntax* const condition;
-    statement_syntax* const body;
-    statement_syntax* const else_clause;
+	expression_syntax* const condition;
+	statement_syntax* const body;
+	statement_syntax* const else_clause;
 
-    if_statement_syntax(expression_syntax* condition, statement_syntax* body) :
-        condition(condition), body(body), else_clause(nullptr), statement_syntax()
-    {
-        if (condition->expression_return_type != fundamental_type::Bool)
-        {
-            // todo: handle error
-        }
+	if_statement_syntax(expression_syntax* condition, statement_syntax* body);
 
-        condition->set_parent(this);
-        body->set_parent(this);
-    }
+	if_statement_syntax(expression_syntax* condition, statement_syntax* body, statement_syntax* else_clause);
 
-    if_statement_syntax(expression_syntax* condition, statement_syntax* body, statement_syntax* else_clause) :
-        condition(condition), body(body), else_clause(else_clause), statement_syntax()
-    {
-        if (condition->expression_return_type != fundamental_type::Bool)
-        {
-            // todo: handle error
-        }
+	std::vector<syntax_base*> get_children() const override;
 
-        condition->set_parent(this);
-        body->set_parent(this);
-        else_clause->set_parent(this);
-    }
-
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>{condition, body, else_clause};
-    }
-
-    ~if_statement_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
+	~if_statement_syntax();
 };
 
 class while_statement_syntax final : public statement_syntax
 {
-    public:
+	public:
 
-    expression_syntax* const condition;
-    statement_syntax* const body;
+	expression_syntax* const condition;
+	statement_syntax* const body;
 
-    while_statement_syntax(expression_syntax* condition, statement_syntax* body) :
-        condition(condition), body(body), statement_syntax()
-    {
-        if (condition->expression_return_type != fundamental_type::Bool)
-        {
-            // todo: handle error
-        }
+	while_statement_syntax(expression_syntax* condition, statement_syntax* body);
 
-        condition->set_parent(this);
-        body->set_parent(this);
-    }
+	std::vector<syntax_base*> get_children() const override;
 
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>{condition, body};
-    }
-
-    ~while_statement_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
+	~while_statement_syntax();
 };
 
 class branch_statement_syntax final : public statement_syntax
 {
-    public:
+	public:
 
-    const branch_type type;
+	const branch_type type;
 
-    branch_statement_syntax(branch_type type) : type(type), statement_syntax()
-    {
-    }
+	branch_statement_syntax(branch_type type);
 
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>();
-    }
+	std::vector<syntax_base*> get_children() const override;
 
-    ~branch_statement_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
+	~branch_statement_syntax();
 };
 
 class return_statement_syntax final : public statement_syntax
 {
-    public:
+	public:
 
-    expression_syntax* const expression;
+	expression_syntax* const expression;
 
-    return_statement_syntax() : expression(nullptr), statement_syntax()
-    {
-    }
+	return_statement_syntax();
 
-    return_statement_syntax(expression_syntax* expression) : expression(expression), statement_syntax()
-    {
-        expression->set_parent(this);
-    }
+	return_statement_syntax(expression_syntax* expression);
 
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>{expression};
-    }
+	std::vector<syntax_base*> get_children() const override;
 
-    ~return_statement_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
+	~return_statement_syntax();
 };
 
 class expression_statement_syntax final : public statement_syntax
 {
-    public:
+	public:
 
-    expression_syntax* const expression;
+	expression_syntax* const expression;
 
-    expression_statement_syntax(expression_syntax* expression) : expression(expression), statement_syntax()
-    {
-        expression->set_parent(this);
-    }
+	expression_statement_syntax(expression_syntax* expression);
 
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>{expression};
-    }
+	std::vector<syntax_base*> get_children() const override;
 
-    ~expression_statement_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
+	~expression_statement_syntax();
 };
 
 class assignment_statement_syntax final : public statement_syntax
 {
-    public:
+	public:
 
-    const std::string identifier;
-    expression_syntax* const value;
+	const std::string identifier;
+	expression_syntax* const value;
 
-    assignment_statement_syntax(std::string identifier, expression_syntax* value) :
-        identifier(identifier), value(value), statement_syntax()
-    {
-        // todo: verify that value type matches identifier type
+	assignment_statement_syntax(std::string identifier, expression_syntax* value);
 
-        value->set_parent(this);
-    }
+	std::vector<syntax_base*> get_children() const override;
 
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>{value};
-    }
-
-    ~assignment_statement_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
+	~assignment_statement_syntax();
 };
 
 class declaration_statement_syntax final : public statement_syntax
 {
-    public:
+	public:
 
-    type_syntax* const type;
-    const std::string identifier;
-    expression_syntax* const value;
+	type_syntax* const type;
+	const std::string identifier;
+	expression_syntax* const value;
 
-    declaration_statement_syntax(type_syntax* type, std::string identifier) :
-        type(type), identifier(identifier), value(nullptr), statement_syntax()
-    {
-        if (type->is_special())
-        {
-            //todo: handle illigal type
-        }
+	declaration_statement_syntax(type_syntax* type, std::string identifier);
 
-        type->set_parent(this);
-    }
+	declaration_statement_syntax(type_syntax* type, std::string identifier, expression_syntax* value);
 
-    declaration_statement_syntax(type_syntax* type, std::string identifier, expression_syntax* value) :
-        type(type), identifier(identifier), value(value), statement_syntax()
-    {
-        if (type->is_special() || value->is_special())
-        {
-            //todo: handle illigal type
-        }
+	std::vector<syntax_base*> get_children() const override;
 
-        if (type->type != value->expression_return_type)
-        {
-            if (type->type != fundamental_type::Int || value->expression_return_type != fundamental_type::Byte)
-            {
-                // todo: handle error
-            }
-        }
-
-        type->set_parent(this);
-        value->set_parent(this);
-    }
-
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>{value};
-    }
-
-    ~declaration_statement_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
+	~declaration_statement_syntax();
 };
 
 class block_statement_syntax final : public statement_syntax
 {
-    public:
+	public:
 
-    list_syntax<statement_syntax>* const statement_list;
+	list_syntax<statement_syntax>* const statement_list;
 
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>{statement_list};
-    }
+	block_statement_syntax(list_syntax<statement_syntax>* statement_list);
 
-    block_statement_syntax(list_syntax<statement_syntax>* statement_list) : statement_list(statement_list), statement_syntax()
-    {
-        statement_list->set_parent(this);
-    }
+	std::vector<syntax_base*> get_children() const override;
 
-    ~block_statement_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
+	~block_statement_syntax();
 };
 
 #endif

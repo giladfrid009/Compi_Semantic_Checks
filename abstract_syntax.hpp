@@ -1,7 +1,6 @@
 #ifndef _ABSTRACT_SYNTAX_HPP_
 #define _ABSTRACT_SYNTAX_HPP_
 
-#include <string>
 #include <vector>
 
 enum class logical_operator { And, Or };
@@ -16,67 +15,47 @@ enum class branch_type { Break, Continue };
 
 class syntax_base
 {
-    private:
+	private:
 
-    syntax_base* parent = nullptr;
+	syntax_base* parent = nullptr;
 
-    public:
+	public:
 
-    syntax_base()
-    {
-    }
+	syntax_base();
 
-    syntax_base* get_parent()
-    {
-        return parent;
-    }
+	syntax_base* get_parent() const;
 
-    void set_parent(syntax_base* new_parent)
-    {
-        parent = new_parent;
-    }
+	void set_parent(syntax_base* new_parent);
 
-    virtual ~syntax_base() = default;
+	virtual ~syntax_base() = default;
 
-    virtual std::vector<syntax_base*> get_children() = 0;
+	virtual std::vector<syntax_base*> get_children() const = 0;
 };
 
 class expression_syntax : public syntax_base
 {
-    public:
+	public:
 
-    const fundamental_type expression_return_type;
+	const fundamental_type expression_return_type;
 
-    expression_syntax(fundamental_type return_type) : expression_return_type(return_type)
-    {
-        if (is_special())
-        {
-            //todo: handle illigal type
-        }
-    }
+	expression_syntax(fundamental_type return_type);
 
-    bool is_numeric()
-    {
-        return expression_return_type == fundamental_type::Int || expression_return_type == fundamental_type::Byte;
-    }
+	bool is_numeric() const;
 
-    bool is_special()
-    {
-        return expression_return_type == fundamental_type::String || expression_return_type == fundamental_type::Void;
-    }
+	bool is_special() const;
 
-    virtual ~expression_syntax() = default;
+	virtual ~expression_syntax() = default;
 
-    virtual std::vector<syntax_base*> get_children() = 0;
+	virtual std::vector<syntax_base*> get_children() const = 0;
 };
 
 class statement_syntax : public syntax_base
 {
-    public:
+	public:
 
-    virtual ~statement_syntax() = default;
+	virtual ~statement_syntax() = default;
 
-    virtual std::vector<syntax_base*> get_children() = 0;
+	virtual std::vector<syntax_base*> get_children() const = 0;
 };
 
 #endif

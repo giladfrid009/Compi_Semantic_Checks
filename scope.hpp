@@ -8,23 +8,23 @@
 
 class scope
 {
-    std::unordered_map<std::string, symbol*> symbols;
+	std::unordered_map<std::string, symbol*> symbols;
 
-    int current_offset;
+	int current_offset;
 
-    public:
+	public:
 
-    scope(int initial_offset = 0);
+	scope(int initial_offset = 0);
 
-    ~scope();
+	~scope();
 
-    bool contains_symbol(std::string symbol_name) const;
+	bool contains_symbol(std::string symbol_name) const;
 
-    symbol* get_symbol(std::string symbol_name) const;
+	symbol* get_symbol(std::string symbol_name) const;
 
-    bool add_variable(std::string name, fundamental_type type);
+	bool add_variable(std::string name, fundamental_type type);
 
-    bool add_function(std::string name, fundamental_type return_type, std::vector<fundamental_type> parameter_types);
+	bool add_function(std::string name, fundamental_type return_type, std::vector<fundamental_type> parameter_types);
 };
 
 #endif

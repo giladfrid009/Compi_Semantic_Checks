@@ -84,7 +84,7 @@ void yyerror(const char* message);
 Program 	: Funcs 													{ $$ = new root_syntax($1); }
 			;
 Funcs   	: /*epsilon*/												{ $$ = new list_syntax<function_declaration_syntax>(); }
-      		| FuncDecl Funcs											{ $$ = $2->append($1); }
+      		| FuncDecl Funcs											{ $$ = $2->push_front($1); }
 			;
 FuncDecl 	: RetType ID LPAREN Formals RPAREN /*add function name, open scope, add formals*/ LBRACE Statements /*close scope*/ RBRACE { $$ = new function_declaration_syntax($1, $2, $4, $7); free($2); }
 			;
@@ -95,12 +95,12 @@ Formals 	: /*epsilon*/                                               { $$ = new 
         	| FormalsList                                               { $$ = $1; }
 			;
 FormalsList : FormalDecl                                                { $$ = new list_syntax<formal_syntax>($1); }
-			| FormalDecl COMMA FormalsList                              { $$ = $3->append($1); }
+			| FormalDecl COMMA FormalsList                              { $$ = $3->push_front($1); }
 			;
 FormalDecl 	: Type ID                                                   { $$ = new formal_syntax($1, $2); free($2); }
 			;
 Statements	: Statement	                                                { $$ = new list_syntax<statement_syntax>($1); }
- 			| Statements Statement                                      { $$ = $1->append($2); }
+ 			| Statements Statement                                      { $$ = $1->push_back($2); }
 			;
 Statement	: LBRACE Statements RBRACE                                  { $$ = new block_statement_syntax($2); }
 			| Type ID SC                                                { $$ = new declaration_statement_syntax($1, $2); free($2); }
@@ -119,7 +119,7 @@ Call 		: ID LPAREN ExpList RPAREN                                  { $$ = new in
  			| ID LPAREN RPAREN                                          { $$ = new invocation_expression_syntax($1); free($1); }
 			;
 ExpList 	: Exp                                                       { $$ = new list_syntax<expression_syntax>($1); }
- 			| Exp COMMA ExpList                                         { $$ = $3->append($1); }
+ 			| Exp COMMA ExpList                                         { $$ = $3->push_front($1); }
 			;
 Type 		: INT                                                       { $$ = new type_syntax(fundamental_type::Int); }
 			| BYTE                                                      { $$ = new type_syntax(fundamental_type::Byte); }

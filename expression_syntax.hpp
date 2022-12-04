@@ -5,422 +5,180 @@
 #include "generic_syntax.hpp"
 #include <vector>
 #include <string>
+#include <type_traits>
+#include <stdexcept>
+
+template<typename literal_type> class literal_expression_syntax final : public expression_syntax
+{
+	public:
+
+	const literal_type value;
+
+	literal_expression_syntax(literal_type value) : value(value), expression_syntax(get_return_type(value))
+	{
+	}
+
+	std::vector<syntax_base*> get_children() const override
+	{
+		return std::vector<syntax_base*>();
+	}
+
+	fundamental_type get_return_type(literal_type value) const
+	{
+		if (std::is_same<literal_type, char>::value) return fundamental_type::Byte;
+		if (std::is_same<literal_type, int>::value) return fundamental_type::Byte;
+		if (std::is_same<literal_type, bool>::value) return fundamental_type::Bool;
+		if (std::is_same<literal_type, std::string>::value) return fundamental_type::String;
+		if (std::is_same<literal_type, void>::value) return fundamental_type::Void;
+
+		throw std::runtime_error("invalid literal_type");
+	}
+
+	~literal_expression_syntax()
+	{
+		auto nodes = get_children();
+
+		for (syntax_base* child : nodes)
+		{
+			delete child;
+		}
+	}
+};
 
 class cast_expression_syntax final : public expression_syntax
 {
-    public:
+	public:
 
-    type_syntax* const destination_type;
-    expression_syntax* const expression;
+	type_syntax* const destination_type;
+	expression_syntax* const expression;
 
-    cast_expression_syntax(type_syntax* destination_type, expression_syntax* expression) :
-        destination_type(destination_type), expression(expression), expression_syntax(destination_type->type)
-    {
-        if (expression->is_numeric() == false)
-        {
-            // todo: handle illigal cast
-        }
+	cast_expression_syntax(type_syntax* destination_type, expression_syntax* expression);
 
-        if (destination_type->is_numeric() == false)
-        {
-            // todo: handle illigal cast
-        }
+	std::vector<syntax_base*> get_children() const override;
 
-        destination_type->set_parent(this);
-        expression->set_parent(this);
-    }
-
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>{destination_type, expression};
-    }
-
-    ~cast_expression_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
+	~cast_expression_syntax();
 };
 
 class not_expression_syntax final : public expression_syntax
 {
-    public:
+	public:
 
-    expression_syntax* const expression;
+	expression_syntax* const expression;
 
-    not_expression_syntax(expression_syntax* expression) :
-        expression(expression), expression_syntax(fundamental_type::Bool)
-    {
-        if (expression->expression_return_type != fundamental_type::Bool)
-        {
-            // todo: handle illigal return_type
-        }
+	not_expression_syntax(expression_syntax* expression);
 
-        expression->set_parent(this);
-    }
+	std::vector<syntax_base*> get_children() const override;
 
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>{expression};
-    }
-
-    ~not_expression_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
+	~not_expression_syntax();
 };
 
 class logical_expression_syntax final : public expression_syntax
 {
-    public:
+	public:
 
-    expression_syntax* const left;
-    expression_syntax* const right;
-    const logical_operator oper;
+	expression_syntax* const left;
+	expression_syntax* const right;
+	const logical_operator oper;
 
-    logical_expression_syntax(expression_syntax* left, expression_syntax* right, logical_operator oper) :
-        left(left), right(right), oper(oper), expression_syntax(fundamental_type::Bool)
-    {
-        if (left->expression_return_type != fundamental_type::Bool || right->expression_return_type != fundamental_type::Bool)
-        {
-            // todo: handle error
-        }
+	logical_expression_syntax(expression_syntax* left, expression_syntax* right, logical_operator oper);
 
-        left->set_parent(this);
-        right->set_parent(this);
-    }
+	logical_expression_syntax(expression_syntax* left, expression_syntax* right, std::string oper_token);
 
-    logical_expression_syntax(expression_syntax* left, expression_syntax* right, std::string oper_token) :
-        logical_expression_syntax(left, right, get_operator_from_token(oper_token))
-    {
-    }
+	logical_operator get_operator_from_token(std::string token) const;
 
-    logical_operator get_operator_from_token(std::string token)
-    {
-        if (token == "and") return logical_operator::And;
-        if (token == "or") return logical_operator::Or;
+	std::vector<syntax_base*> get_children() const override;
 
-        // todo: throw an exception
-    }
-
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>{left, right};
-    }
-
-    ~logical_expression_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
+	~logical_expression_syntax();
 };
 
 class arithmetic_expression_syntax final : public expression_syntax
 {
-    public:
+	public:
 
-    expression_syntax* const left;
-    expression_syntax* const right;
-    const arithmetic_operator oper;
+	expression_syntax* const left;
+	expression_syntax* const right;
+	const arithmetic_operator oper;
 
-    arithmetic_expression_syntax(expression_syntax* left, expression_syntax* right, arithmetic_operator oper) :
-        left(left), right(right), oper(oper), expression_syntax(get_return_type(left, right))
-    {
-        if (left->is_numeric() == false || right->is_numeric() == false)
-        {
-            // todo: handle error
-        }
+	arithmetic_expression_syntax(expression_syntax* left, expression_syntax* right, arithmetic_operator oper);
 
-        left->set_parent(this);
-        right->set_parent(this);
-    }
+	arithmetic_expression_syntax(expression_syntax* left, expression_syntax* right, std::string oper_token);
 
-    arithmetic_expression_syntax(expression_syntax* left, expression_syntax* right, std::string oper_token) :
-        arithmetic_expression_syntax(left, right, get_operator_from_token(oper_token))
-    {
-    }
+	fundamental_type get_return_type(expression_syntax* left, expression_syntax* right);
 
-    fundamental_type get_return_type(expression_syntax* left, expression_syntax* right)
-    {
-        if (left->is_numeric() && right->is_numeric())
-        {
-            if (left->expression_return_type == fundamental_type::Int || right->expression_return_type == fundamental_type::Int)
-            {
-                return fundamental_type::Int;
-            }
+	arithmetic_operator get_operator_from_token(std::string token) const;
 
-            return fundamental_type::Byte;
-        }
+	std::vector<syntax_base*> get_children() const override;
 
-        return fundamental_type::Void;
-    }
-
-    arithmetic_operator get_operator_from_token(std::string token)
-    {
-        if (token == "+") return arithmetic_operator::Add;
-        if (token == "-") return arithmetic_operator::Sub;
-        if (token == "*") return arithmetic_operator::Mul;
-        if (token == "/") return arithmetic_operator::Div;
-
-        // todo: throw an exception
-    }
-
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>{left, right};
-    }
-
-    ~arithmetic_expression_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
+	~arithmetic_expression_syntax();
 };
 
 class relational_expression_syntax final : public expression_syntax
 {
-    public:
+	public:
 
-    expression_syntax* const left;
-    expression_syntax* const right;
-    const relational_operator oper;
+	expression_syntax* const left;
+	expression_syntax* const right;
+	const relational_operator oper;
 
-    relational_expression_syntax(expression_syntax* left, expression_syntax* right, relational_operator oper) :
-        left(left), right(right), oper(oper), expression_syntax(fundamental_type::Bool)
-    {
-        if (left->is_numeric() == false || right->is_numeric() == false)
-        {
-            //todo: handle error        
-        }
+	relational_expression_syntax(expression_syntax* left, expression_syntax* right, relational_operator oper);
 
-        left->set_parent(this);
-        right->set_parent(this);
-    }
+	relational_expression_syntax(expression_syntax* left, expression_syntax* right, std::string oper_token);
 
-    relational_expression_syntax(expression_syntax* left, expression_syntax* right, std::string oper_token) :
-        relational_expression_syntax(left, right, get_operator_from_token(oper_token))
-    {
-    }
+	relational_operator get_operator_from_token(std::string token) const;
 
-    relational_operator get_operator_from_token(std::string token)
-    {
-        if (token == "<") return relational_operator::Less;
-        if (token == "<=") return relational_operator::LessEqual;
-        if (token == ">") return relational_operator::Greater;
-        if (token == ">=") return relational_operator::GreaterEqual;
-        if (token == "==") return relational_operator::Equal;
-        if (token == "!=") return relational_operator::NotEqual;
+	std::vector<syntax_base*> get_children() const override;
 
-        // todo: throw an exception
-    }
-
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>{left, right};
-    }
-
-    ~relational_expression_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
+	~relational_expression_syntax();
 };
 
 class conditional_expression_syntax final : public expression_syntax
 {
-    public:
+	public:
 
-    expression_syntax* const true_value;
-    expression_syntax* const condition;
-    expression_syntax* const false_value;
+	expression_syntax* const true_value;
+	expression_syntax* const condition;
+	expression_syntax* const false_value;
 
-    conditional_expression_syntax(expression_syntax* true_value, expression_syntax* condition, expression_syntax* false_value) :
-        true_value(true_value), condition(condition), false_value(false_value), expression_syntax(get_return_type(true_value, false_value))
-    {
-        if (true_value->expression_return_type != false_value->expression_return_type)
-        {
-            if (true_value->is_numeric() == false || false_value->is_numeric() == false)
-            {
-                // todo: handle error
-            }
-        }
+	conditional_expression_syntax(expression_syntax* true_value, expression_syntax* condition, expression_syntax* false_value);
 
-        true_value->set_parent(this);
-        condition->set_parent(this);
-        false_value->set_parent(this);
-    }
+	std::vector<syntax_base*> get_children() const override;
 
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>{true_value, condition, false_value};
-    }
+	fundamental_type get_return_type(expression_syntax* left, expression_syntax* right) const;
 
-    fundamental_type get_return_type(expression_syntax* left, expression_syntax* right)
-    {
-        if (left->is_numeric() && right->is_numeric())
-        {
-            if (left->expression_return_type == fundamental_type::Int || right->expression_return_type == fundamental_type::Int)
-            {
-                return fundamental_type::Int;
-            }
-
-            return fundamental_type::Byte;
-        }
-
-        if (left->expression_return_type == right->expression_return_type)
-        {
-            return left->expression_return_type;
-        }
-
-        return fundamental_type::Void;
-    }
-
-    ~conditional_expression_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
-};
-
-template<typename literal_type> class literal_expression_syntax final : public expression_syntax
-{
-    public:
-
-    const literal_type value;
-
-    literal_expression_syntax(literal_type value) : value(value), expression_syntax(get_return_type(value))
-    {
-    }
-
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>();
-    }
-
-    fundamental_type get_return_type(literal_type value)
-    {
-        if (std::is_same<literal_type, char>::value) return fundamental_type::Byte;
-        if (std::is_same<literal_type, int>::value) return fundamental_type::Byte;
-        if (std::is_same<literal_type, bool>::value) return fundamental_type::Bool;
-        if (std::is_same<literal_type, std::string>::value) return fundamental_type::String;
-        if (std::is_same<literal_type, void>::value) return fundamental_type::Void;
-
-        // todo: throw an exception
-
-        return fundamental_type::Void;
-    }
-
-    ~literal_expression_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
+	~conditional_expression_syntax();
 };
 
 class identifier_expression_syntax final : public expression_syntax
 {
-    public:
+	public:
 
-    const std::string identifier;
+	const std::string identifier;
 
-    identifier_expression_syntax(std::string identifier) : identifier(identifier), expression_syntax(get_return_type(identifier))
-    {
-        //todo: add checks if identifier exists in symbol table
-    }
+	identifier_expression_syntax(std::string identifier);
 
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>();
-    }
+	std::vector<syntax_base*> get_children() const override;
 
-    fundamental_type get_return_type(std::string identifier)
-    {
-        //todo: implement with symbol table
-        return fundamental_type::Void;
-    }
+	fundamental_type get_return_type(std::string identifier) const;
 
-    ~identifier_expression_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
+	~identifier_expression_syntax();
 };
 
 class invocation_expression_syntax final : public expression_syntax
 {
-    public:
+	public:
 
-    const std::string identifier;
-    list_syntax<expression_syntax>* const expression_list;
+	const std::string identifier;
+	list_syntax<expression_syntax>* const expression_list;
 
-    invocation_expression_syntax(std::string identifier) :
-        identifier(identifier), expression_list(nullptr), expression_syntax(get_return_type(identifier))
-    {
-        // todo: check that identifier exists    
-    }
+	invocation_expression_syntax(std::string identifier);
 
-    invocation_expression_syntax(std::string identifier, list_syntax<expression_syntax>* expression_list) :
-        identifier(identifier), expression_list(expression_list), expression_syntax(get_return_type(identifier))
-    {
-        // todo: check that identifier exists
-        // todo: check that expression_list matches signature
+	invocation_expression_syntax(std::string identifier, list_syntax<expression_syntax>* expression_list);
 
-        expression_list->set_parent(this);
-    }
+	std::vector<syntax_base*> get_children() const override;
 
-    std::vector<syntax_base*> get_children() override
-    {
-        return std::vector<syntax_base*>{expression_list};
-    }
+	fundamental_type get_return_type(std::string identifier) const;
 
-    fundamental_type get_return_type(std::string identifier)
-    {
-        //todo: implement with symbol table
-        return fundamental_type::Void;
-    }
-
-    ~invocation_expression_syntax()
-    {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
-        {
-            delete child;
-        }
-    }
+	~invocation_expression_syntax();
 };
 
 #endif
