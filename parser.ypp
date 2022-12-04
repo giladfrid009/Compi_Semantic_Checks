@@ -47,8 +47,8 @@ void yyerror(const char* message);
 %token COMMA
 %token LBRACE
 %token RBRACE
-%token <str> ID
 %token <num> NUM
+%token <str> ID
 %token <str> STRING
 
 %right ASSIGN
