@@ -10,9 +10,9 @@ void symbol_table::close_scope()
     scopes.pop_front();
 }
 
-bool symbol_table::contains_symbol(std::string symbol_name)
+bool symbol_table::contains_symbol(std::string symbol_name) const
 {
-    for (scope& sc : scopes)
+    for (const scope& sc : scopes)
     {
         if (sc.contains_symbol(symbol_name))
         {
@@ -23,9 +23,9 @@ bool symbol_table::contains_symbol(std::string symbol_name)
     return false;
 }
 
-symbol* symbol_table::get_symbol(std::string symbol_name)
+symbol* symbol_table::get_symbol(std::string symbol_name) const
 {
-    for (scope& sc : scopes)
+    for (const scope& sc : scopes)
     {
         if (sc.contains_symbol(symbol_name))
         {
@@ -54,4 +54,9 @@ bool symbol_table::add_function(std::string name, fundamental_type return_type, 
     }
 
     return scopes.front().add_function(name, return_type, parameter_types);
+}
+
+bool symbol_table::add_function(std::string name, fundamental_type return_type)
+{
+    return add_function(name, return_type, std::vector<fundamental_type>());
 }

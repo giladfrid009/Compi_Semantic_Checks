@@ -18,9 +18,9 @@ class scope
 
     ~scope();
 
-    bool contains_symbol(std::string symbol_name);
+    bool contains_symbol(std::string symbol_name) const;
 
-    symbol* get_symbol(std::string symbol_name);
+    symbol* get_symbol(std::string symbol_name) const;
 
     bool add_variable(std::string name, fundamental_type type);
 

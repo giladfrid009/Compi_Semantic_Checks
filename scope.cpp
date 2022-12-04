@@ -13,19 +13,19 @@ scope::~scope()
     }
 }
 
-bool scope::contains_symbol(std::string symbol_name)
+bool scope::contains_symbol(std::string symbol_name) const
 {
     return symbols.find(symbol_name) != symbols.end();
 }
 
-symbol* scope::get_symbol(std::string symbol_name)
+symbol* scope::get_symbol(std::string symbol_name) const
 {
     if (contains_symbol(symbol_name) == false)
     {
         return nullptr;
     }
 
-    return symbols[symbol_name];
+    return symbols.at(symbol_name);
 }
 
 bool scope::add_variable(std::string name, fundamental_type type)
