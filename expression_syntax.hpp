@@ -26,8 +26,8 @@ class cast_expression_syntax final : public expression_syntax
             // todo: handle illigal cast
         }
 
-        destination_type->register_parent(this);
-        expression->register_parent(this);
+        destination_type->set_parent(this);
+        expression->set_parent(this);
     }
 
     std::vector<syntax_base*> children() override
@@ -60,7 +60,7 @@ class not_expression_syntax final : public expression_syntax
             // todo: handle illigal return_type
         }
 
-        expression->register_parent(this);
+        expression->set_parent(this);
     }
 
     std::vector<syntax_base*> children() override
@@ -95,8 +95,8 @@ class logical_expression_syntax final : public expression_syntax
             // todo: handle error
         }
 
-        left->register_parent(this);
-        right->register_parent(this);
+        left->set_parent(this);
+        right->set_parent(this);
     }
 
     std::vector<syntax_base*> children() override
@@ -130,8 +130,8 @@ class arithmetic_expression_syntax final : public expression_syntax
             // todo: handle error
         }
 
-        left->register_parent(this);
-        right->register_parent(this);
+        left->set_parent(this);
+        right->set_parent(this);
     }
 
     fundamental_type get_return_type(expression_syntax* left, expression_syntax* right)
@@ -181,8 +181,8 @@ class relational_expression_syntax final : public expression_syntax
             //todo: handle error        
         }
 
-        left->register_parent(this);
-        right->register_parent(this);
+        left->set_parent(this);
+        right->set_parent(this);
     }
 
     std::vector<syntax_base*> children() override
@@ -220,9 +220,9 @@ class conditional_expression_syntax final : public expression_syntax
             }
         }
 
-        true_value->register_parent(this);
-        condition->register_parent(this);
-        false_value->register_parent(this);
+        true_value->set_parent(this);
+        condition->set_parent(this);
+        false_value->set_parent(this);
     }
 
     std::vector<syntax_base*> children() override
@@ -372,7 +372,7 @@ class invocation_expression_syntax final : public expression_syntax
         // todo: check that identifier exists
         // todo: check that expression_list matches signature
 
-        expression_list->register_parent(this);
+        expression_list->set_parent(this);
     }
 
     std::vector<syntax_base*> children() override

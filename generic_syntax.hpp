@@ -57,7 +57,7 @@ template<typename element_type> class list_syntax final : public syntax_base
     {
         static_assert(std::is_base_of<syntax_base, element_type>::value, "Must be of type syntax_base");
 
-        element->register_parent(this);
+        element->set_parent(this);
     }
 
     list_syntax(std::vector<element_type*> elements) : values(elements), syntax_base()
@@ -66,7 +66,7 @@ template<typename element_type> class list_syntax final : public syntax_base
 
         for (element_type* element : elements)
         {
-            element->register_parent(this);
+            element->set_parent(this);
         }
     }
 
@@ -108,7 +108,7 @@ class formal_syntax final : public syntax_base
 
         //todo: make sure identifier doesnt shadow anyone else.
 
-        type->register_parent(this);
+        type->set_parent(this);
     }
 
     std::vector<syntax_base*> children() override
@@ -142,9 +142,9 @@ class function_declaration_syntax final : public syntax_base
     {
         // todo: check that identifier is free
 
-        return_type->register_parent(this);
-        formal_list->register_parent(this);
-        body->register_parent(this);
+        return_type->set_parent(this);
+        formal_list->set_parent(this);
+        body->set_parent(this);
     }
 
     std::vector<syntax_base*> children() override
@@ -171,7 +171,7 @@ class root_syntax final : public syntax_base
 
     root_syntax(list_syntax<function_declaration_syntax>* function_list) : function_list(function_list)
     {
-        function_list->register_parent(this);
+        function_list->set_parent(this);
     }
 
     std::vector<syntax_base*> children() override

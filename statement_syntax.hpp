@@ -23,8 +23,8 @@ class if_statement_syntax final : public statement_syntax
             // todo: handle error
         }
 
-        condition->register_parent(this);
-        body->register_parent(this);
+        condition->set_parent(this);
+        body->set_parent(this);
     }
 
     if_statement_syntax(expression_syntax* condition, statement_syntax* body, statement_syntax* else_clause) :
@@ -35,9 +35,9 @@ class if_statement_syntax final : public statement_syntax
             // todo: handle error
         }
 
-        condition->register_parent(this);
-        body->register_parent(this);
-        else_clause->register_parent(this);
+        condition->set_parent(this);
+        body->set_parent(this);
+        else_clause->set_parent(this);
     }
 
     std::vector<syntax_base*> children() override
@@ -71,8 +71,8 @@ class while_statement_syntax final : public statement_syntax
             // todo: handle error
         }
 
-        condition->register_parent(this);
-        body->register_parent(this);
+        condition->set_parent(this);
+        body->set_parent(this);
     }
 
     std::vector<syntax_base*> children() override
@@ -131,7 +131,7 @@ class return_statement_syntax final : public statement_syntax
 
     return_statement_syntax(expression_syntax* expression) : expression(expression), statement_syntax()
     {
-        expression->register_parent(this);
+        expression->set_parent(this);
     }
 
     std::vector<syntax_base*> children() override
@@ -158,7 +158,7 @@ class expression_statement_syntax final : public statement_syntax
 
     expression_statement_syntax(expression_syntax* expression) : expression(expression), statement_syntax()
     {
-        expression->register_parent(this);
+        expression->set_parent(this);
     }
 
     std::vector<syntax_base*> children() override
@@ -189,7 +189,7 @@ class assignment_statement_syntax final : public statement_syntax
     {
         // todo: verify that value type matches identifier type
 
-        value->register_parent(this);
+        value->set_parent(this);
     }
 
     std::vector<syntax_base*> children() override
@@ -224,7 +224,7 @@ class declaration_statement_syntax final : public statement_syntax
             //todo: handle illigal type
         }
 
-        type->register_parent(this);
+        type->set_parent(this);
     }
 
     declaration_statement_syntax(type_syntax* type, std::string identifier, expression_syntax* value) :
@@ -243,8 +243,8 @@ class declaration_statement_syntax final : public statement_syntax
             }
         }
 
-        type->register_parent(this);
-        value->register_parent(this);
+        type->set_parent(this);
+        value->set_parent(this);
     }
 
     std::vector<syntax_base*> children() override
@@ -276,7 +276,7 @@ class block_statement_syntax final : public statement_syntax
 
     block_statement_syntax(list_syntax<statement_syntax>* statement_list) : statement_list(statement_list), statement_syntax()
     {
-        statement_list->register_parent(this);
+        statement_list->set_parent(this);
     }
 
     ~block_statement_syntax()

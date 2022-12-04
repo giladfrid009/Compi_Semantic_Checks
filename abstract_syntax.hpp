@@ -16,7 +16,7 @@ class syntax_base
 {
     private:
 
-    syntax_base* parent_syntax = nullptr;
+    syntax_base* parent = nullptr;
 
     public:
 
@@ -26,14 +26,14 @@ class syntax_base
 
     virtual std::vector<syntax_base*> children() = 0;
 
-    syntax_base* parent()
+    syntax_base* get_parent()
     {
-        return parent_syntax;
+        return parent;
     }
 
-    void register_parent(syntax_base* new_parent)
+    void set_parent(syntax_base* new_parent)
     {
-        parent_syntax = new_parent;
+        parent = new_parent;
     }
 
     virtual ~syntax_base() = default;
