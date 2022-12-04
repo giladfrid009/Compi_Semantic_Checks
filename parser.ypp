@@ -1,6 +1,7 @@
 %{
 
 #include "hw3_output.hpp"
+#include "symbol_table.hpp"
 
 extern int yylineno;
 extern int yylex();
@@ -85,7 +86,7 @@ Program 	: Funcs 													{ $$ = new root_syntax($1); }
 Funcs   	: /*epsilon*/												{ $$ = new list_syntax<function_declaration_syntax>(); }
       		| FuncDecl Funcs											{ $$ = $2->append($1); }
 			;
-FuncDecl 	: RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE { $$ = new function_declaration_syntax($1, $2, $4, $7); free($2); }
+FuncDecl 	: RetType ID LPAREN Formals RPAREN /*add function name, open scope, add formals*/ LBRACE Statements /*close scope*/ RBRACE { $$ = new function_declaration_syntax($1, $2, $4, $7); free($2); }
 			;
 RetType 	: Type                                                      { $$ = $1; }
         	| VOID                                                      { $$ = new type_syntax(fundamental_type::Void); }
