@@ -9,118 +9,150 @@
 
 class if_statement_syntax final : public statement_syntax
 {
-	public:
+    public:
 
-	expression_syntax* const condition;
-	statement_syntax* const body;
-	statement_syntax* const else_clause;
+    expression_syntax* const condition;
+    statement_syntax* const body;
+    statement_syntax* const else_clause;
 
-	if_statement_syntax(expression_syntax* condition, statement_syntax* body);
+    if_statement_syntax(expression_syntax* condition, statement_syntax* body);
 
-	if_statement_syntax(expression_syntax* condition, statement_syntax* body, statement_syntax* else_clause);
+    if_statement_syntax(expression_syntax* condition, statement_syntax* body, statement_syntax* else_clause);
 
-	std::vector<syntax_base*> get_children() const override;
+    if_statement_syntax(const if_statement_syntax& other) = delete;
 
-	~if_statement_syntax();
+    if_statement_syntax& operator=(const if_statement_syntax& other) = delete;
+
+    std::vector<syntax_base*> get_children() const override;
+
+    ~if_statement_syntax();
 };
 
 class while_statement_syntax final : public statement_syntax
 {
-	public:
+    public:
 
-	expression_syntax* const condition;
-	statement_syntax* const body;
+    expression_syntax* const condition;
+    statement_syntax* const body;
 
-	while_statement_syntax(expression_syntax* condition, statement_syntax* body);
+    while_statement_syntax(expression_syntax* condition, statement_syntax* body);
 
-	std::vector<syntax_base*> get_children() const override;
+    while_statement_syntax(const while_statement_syntax& other) = delete;
 
-	~while_statement_syntax();
+    while_statement_syntax& operator=(const while_statement_syntax& other) = delete;
+
+    std::vector<syntax_base*> get_children() const override;
+
+    ~while_statement_syntax();
 };
 
 class branch_statement_syntax final : public statement_syntax
 {
-	public:
+    public:
 
-	const branch_type type;
+    const branch_type type;
 
-	branch_statement_syntax(branch_type type);
+    branch_statement_syntax(branch_type type);
 
-	std::vector<syntax_base*> get_children() const override;
+    branch_statement_syntax(const branch_statement_syntax& other) = delete;
 
-	~branch_statement_syntax();
+    branch_statement_syntax& operator=(const branch_statement_syntax& other) = delete;
+
+    std::vector<syntax_base*> get_children() const override;
+
+    ~branch_statement_syntax();
 };
 
 class return_statement_syntax final : public statement_syntax
 {
-	public:
+    public:
 
-	expression_syntax* const expression;
+    expression_syntax* const expression;
 
-	return_statement_syntax();
+    return_statement_syntax();
 
-	return_statement_syntax(expression_syntax* expression);
+    return_statement_syntax(expression_syntax* expression);
 
-	std::vector<syntax_base*> get_children() const override;
+    return_statement_syntax(const return_statement_syntax& other) = delete;
 
-	~return_statement_syntax();
+    return_statement_syntax& operator=(const return_statement_syntax& other) = delete;
+
+    std::vector<syntax_base*> get_children() const override;
+
+    ~return_statement_syntax();
 };
 
 class expression_statement_syntax final : public statement_syntax
 {
-	public:
+    public:
 
-	expression_syntax* const expression;
+    expression_syntax* const expression;
 
-	expression_statement_syntax(expression_syntax* expression);
+    expression_statement_syntax(expression_syntax* expression);
 
-	std::vector<syntax_base*> get_children() const override;
+    expression_statement_syntax(const expression_statement_syntax& other) = delete;
 
-	~expression_statement_syntax();
+    expression_statement_syntax& operator=(const expression_statement_syntax& other) = delete;
+
+    std::vector<syntax_base*> get_children() const override;
+
+    ~expression_statement_syntax();
 };
 
 class assignment_statement_syntax final : public statement_syntax
 {
-	public:
+    public:
 
-	const std::string identifier;
-	expression_syntax* const value;
+    const std::string identifier;
+    expression_syntax* const value;
 
-	assignment_statement_syntax(std::string identifier, expression_syntax* value);
+    assignment_statement_syntax(std::string identifier, expression_syntax* value);
 
-	std::vector<syntax_base*> get_children() const override;
+    assignment_statement_syntax(const assignment_statement_syntax& other) = delete;
 
-	~assignment_statement_syntax();
+    assignment_statement_syntax& operator=(const assignment_statement_syntax& other) = delete;
+
+    std::vector<syntax_base*> get_children() const override;
+
+    ~assignment_statement_syntax();
 };
 
 class declaration_statement_syntax final : public statement_syntax
 {
-	public:
+    public:
 
-	type_syntax* const type;
-	const std::string identifier;
-	expression_syntax* const value;
+    type_syntax* const type;
+    const std::string identifier;
+    expression_syntax* const value;
 
-	declaration_statement_syntax(type_syntax* type, std::string identifier);
+    declaration_statement_syntax(type_syntax* type, std::string identifier);
 
-	declaration_statement_syntax(type_syntax* type, std::string identifier, expression_syntax* value);
+    declaration_statement_syntax(type_syntax* type, std::string identifier, expression_syntax* value);
 
-	std::vector<syntax_base*> get_children() const override;
+    declaration_statement_syntax(const declaration_statement_syntax& other) = delete;
 
-	~declaration_statement_syntax();
+    declaration_statement_syntax& operator=(const declaration_statement_syntax& other) = delete;
+
+    std::vector<syntax_base*> get_children() const override;
+
+    ~declaration_statement_syntax();
 };
 
 class block_statement_syntax final : public statement_syntax
 {
-	public:
+    public:
 
-	list_syntax<statement_syntax>* const statement_list;
+    list_syntax<statement_syntax>* const statement_list;
 
-	block_statement_syntax(list_syntax<statement_syntax>* statement_list);
+    block_statement_syntax(list_syntax<statement_syntax>* statement_list);
 
-	std::vector<syntax_base*> get_children() const override;
+    block_statement_syntax(const block_statement_syntax& other) = delete;
 
-	~block_statement_syntax();
+    block_statement_syntax& operator=(const block_statement_syntax& other) = delete;
+
+    std::vector<syntax_base*> get_children() const override;
+
+    ~block_statement_syntax();
 };
 
 #endif

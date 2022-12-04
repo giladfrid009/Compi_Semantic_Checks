@@ -7,25 +7,25 @@
 
 class symbol_table
 {
-	std::list<scope> scopes;
+    std::list<scope> scopes;
 
-	symbol_table();
+    symbol_table();
 
-	public:
+    public:
 
-	void open_scope(int initial_offset = 0);
+    void open_scope(int initial_offset = 0);
 
-	void close_scope();
+    void close_scope();
 
-	bool contains_symbol(std::string symbol_name) const;
+    bool contains_symbol(std::string symbol_name) const;
 
-	symbol* get_symbol(std::string symbol_name) const;
+    symbol* get_symbol(std::string symbol_name) const;
 
-	bool add_variable(std::string name, fundamental_type type);
+    bool add_variable(std::string name, fundamental_type type);
 
-	bool add_function(std::string name, fundamental_type return_type, std::vector<fundamental_type> parameter_types);
+    bool add_function(std::string name, fundamental_type return_type, std::vector<fundamental_type> parameter_types);
 
-	bool add_function(std::string name, fundamental_type return_type);
+    bool add_function(std::string name, fundamental_type return_type);
 };
 
 #endif

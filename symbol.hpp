@@ -9,33 +9,33 @@ enum class symbol_type { Var, Func };
 
 class symbol
 {
-	public:
+    public:
 
-	const symbol_type sym_type;
+    const symbol_type sym_type;
 
-	const std::string name;
+    const std::string name;
 
-	const fundamental_type type;
+    const fundamental_type type;
 
-	symbol(std::string name, fundamental_type type, symbol_type sym_type);
+    symbol(std::string name, fundamental_type type, symbol_type sym_type);
 };
 
 class variable_symbol : public symbol
 {
-	public:
+    public:
 
-	const int offset;
+    const int offset;
 
-	variable_symbol(std::string name, fundamental_type type, int offset);
+    variable_symbol(std::string name, fundamental_type type, int offset);
 };
 
 class function_symbol : public symbol
 {
-	public:
+    public:
 
-	const std::vector<fundamental_type> parameter_types;
+    const std::vector<fundamental_type> parameter_types;
 
-	function_symbol(std::string name, fundamental_type return_type, std::vector<fundamental_type> parameter_types);
+    function_symbol(std::string name, fundamental_type return_type, std::vector<fundamental_type> parameter_types);
 };
 
 #endif

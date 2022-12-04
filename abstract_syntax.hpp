@@ -15,47 +15,61 @@ enum class branch_type { Break, Continue };
 
 class syntax_base
 {
-	private:
+    private:
 
-	syntax_base* parent = nullptr;
+    syntax_base* parent = nullptr;
 
-	public:
+    public:
 
-	syntax_base();
+    syntax_base();
 
-	syntax_base* get_parent() const;
+    syntax_base(const syntax_base& other) = delete;
 
-	void set_parent(syntax_base* new_parent);
+    syntax_base& operator=(const syntax_base& other) = delete;
 
-	virtual ~syntax_base() = default;
+    syntax_base* get_parent() const;
 
-	virtual std::vector<syntax_base*> get_children() const = 0;
+    void set_parent(syntax_base* new_parent);
+
+    virtual ~syntax_base() = default;
+
+    virtual std::vector<syntax_base*> get_children() const = 0;
 };
 
 class expression_syntax : public syntax_base
 {
-	public:
+    public:
 
-	const fundamental_type expression_return_type;
+    const fundamental_type expression_return_type;
 
-	expression_syntax(fundamental_type return_type);
+    expression_syntax(fundamental_type return_type);
 
-	bool is_numeric() const;
+    expression_syntax(const expression_syntax& other) = delete;
 
-	bool is_special() const;
+    expression_syntax& operator=(const expression_syntax& other) = delete;
 
-	virtual ~expression_syntax() = default;
+    bool is_numeric() const;
 
-	virtual std::vector<syntax_base*> get_children() const = 0;
+    bool is_special() const;
+
+    virtual ~expression_syntax() = default;
+
+    virtual std::vector<syntax_base*> get_children() const = 0;
 };
 
 class statement_syntax : public syntax_base
 {
-	public:
+    public:
 
-	virtual ~statement_syntax() = default;
+    statement_syntax();
 
-	virtual std::vector<syntax_base*> get_children() const = 0;
+    virtual ~statement_syntax() = default;
+
+    statement_syntax(const statement_syntax& other) = delete;
+
+    statement_syntax& operator=(const statement_syntax& other) = delete;
+
+    virtual std::vector<syntax_base*> get_children() const = 0;
 };
 
 #endif
