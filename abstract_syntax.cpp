@@ -1,5 +1,6 @@
 #include "abstract_syntax.hpp"
 #include "hw3_output.hpp"
+#include <stdexcept>
 
 extern int yylineno;
 
@@ -14,7 +15,7 @@ std::string fundamental_type_to_string(fundamental_type type)
         case (fundamental_type::Void): return "void";
     }
 
-    return "";
+    throw std::invalid_argument("unknown type");
 }
 
 syntax_base::syntax_base()

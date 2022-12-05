@@ -27,9 +27,7 @@ vector<syntax_base*> cast_expression_syntax::get_children() const
 
 cast_expression_syntax::~cast_expression_syntax()
 {
-    auto nodes = get_children();
-
-    for (syntax_base* child : nodes)
+    for (syntax_base* child : get_children())
     {
         delete child;
     }
@@ -53,9 +51,7 @@ vector<syntax_base*> not_expression_syntax::get_children() const
 
 not_expression_syntax::~not_expression_syntax()
 {
-    auto nodes = get_children();
-
-    for (syntax_base* child : nodes)
+    for (syntax_base* child : get_children())
     {
         delete child;
     }
@@ -93,9 +89,7 @@ vector<syntax_base*> logical_expression_syntax::get_children() const
 
 logical_expression_syntax::~logical_expression_syntax()
 {
-    auto nodes = get_children();
-
-    for (syntax_base* child : nodes)
+    for (syntax_base* child : get_children())
     {
         delete child;
     }
@@ -130,6 +124,8 @@ fundamental_type arithmetic_expression_syntax::get_return_type(expression_syntax
         return fundamental_type::Byte;
     }
 
+    output::errorMismatch(yylineno);
+
     return fundamental_type::Void;
 }
 
@@ -150,9 +146,7 @@ vector<syntax_base*> arithmetic_expression_syntax::get_children() const
 
 arithmetic_expression_syntax::~arithmetic_expression_syntax()
 {
-    auto nodes = get_children();
-
-    for (syntax_base* child : nodes)
+    for (syntax_base* child : get_children())
     {
         delete child;
     }
@@ -163,7 +157,7 @@ relational_expression_syntax::relational_expression_syntax(expression_syntax* le
 {
     if (left->is_numeric() == false || right->is_numeric() == false)
     {
-        output::errorMismatch(yylineno);       
+        output::errorMismatch(yylineno);
     }
 
     left->set_parent(this);
@@ -194,9 +188,7 @@ vector<syntax_base*> relational_expression_syntax::get_children() const
 
 relational_expression_syntax::~relational_expression_syntax()
 {
-    auto nodes = get_children();
-
-    for (syntax_base* child : nodes)
+    for (syntax_base* child : get_children())
     {
         delete child;
     }
@@ -245,21 +237,21 @@ fundamental_type conditional_expression_syntax::get_return_type(expression_synta
         return left->expression_return_type;
     }
 
+    output::errorMismatch(yylineno);
+
     return fundamental_type::Void;
 }
 
 conditional_expression_syntax::~conditional_expression_syntax()
 {
-    auto nodes = get_children();
-
-    for (syntax_base* child : nodes)
+    for (syntax_base* child : get_children())
     {
         delete child;
     }
 }
 
-identifier_expression_syntax::identifier_expression_syntax(string identifier) : 
-    expression_syntax(get_return_type(identifier)), identifier(identifier) 
+identifier_expression_syntax::identifier_expression_syntax(string identifier) :
+    expression_syntax(get_return_type(identifier)), identifier(identifier)
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
@@ -293,9 +285,7 @@ fundamental_type identifier_expression_syntax::get_return_type(string identifier
 
 identifier_expression_syntax::~identifier_expression_syntax()
 {
-    auto nodes = get_children();
-
-    for (syntax_base* child : nodes)
+    for (syntax_base* child : get_children())
     {
         delete child;
     }
@@ -318,9 +308,11 @@ invocation_expression_syntax::invocation_expression_syntax(string identifier) :
 
     function_symbol* func_symbol = dynamic_cast<function_symbol*>(symbol);
 
+    std::vector<string> params_str;
+
     if (func_symbol->parameter_types.size() != 0)
     {
-        // todo: handle paramter mismatch
+        output::errorPrototypeMismatch(yylineno, identifier, params_str);
     }
 }
 
@@ -331,28 +323,35 @@ invocation_expression_syntax::invocation_expression_syntax(string identifier, li
 
     if (symbol == nullptr)
     {
-        // todo: handel symbol does not exist
+        output::errorUndefFunc(yylineno, identifier);
     }
 
     if (symbol->sym_type != symbol_type::Func)
     {
-        // todo: illigal symbol type
+        output::errorUndefFunc(yylineno, identifier);
     }
 
     function_symbol* func_symbol = dynamic_cast<function_symbol*>(symbol);
 
     auto elements = expression_list->get_elements();
 
+    std::vector<string> params_str;
+
+    for (expression_syntax* expr : elements)
+    {
+        params_str.push_back(fundamental_type_to_string(expr->expression_return_type));
+    }
+
     if (func_symbol->parameter_types.size() != elements.size())
     {
-        // todo: handle paramter mismatch
+        output::errorPrototypeMismatch(yylineno, identifier, params_str);
     }
 
     for (size_t i = 0; i < elements.size(); i++)
     {
         if (func_symbol->parameter_types[i] != elements[i]->expression_return_type)
         {
-            // todo: handle paramter mismatch
+            output::errorPrototypeMismatch(yylineno, identifier, params_str);
         }
     }
 
@@ -370,7 +369,7 @@ fundamental_type invocation_expression_syntax::get_return_type(string identifier
 
     if (symbol == nullptr)
     {
-        // todo: handel symbol does not exist
+        output::errorUndefFunc(yylineno, identifier);
     }
 
     return symbol->type;
@@ -378,9 +377,7 @@ fundamental_type invocation_expression_syntax::get_return_type(string identifier
 
 invocation_expression_syntax::~invocation_expression_syntax()
 {
-    auto nodes = get_children();
-
-    for (syntax_base* child : nodes)
+    for (syntax_base* child : get_children())
     {
         delete child;
     }

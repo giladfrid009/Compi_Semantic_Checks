@@ -2,6 +2,7 @@
 
 using std::string;
 using std::vector;
+using std::list;
 
 symbol_table::symbol_table()
 {
@@ -73,4 +74,9 @@ bool symbol_table::add_function(string name, fundamental_type return_type, vecto
 bool symbol_table::add_function(string name, fundamental_type return_type)
 {
     return add_function(name, return_type, vector<fundamental_type>());
+}
+
+const list<scope>& symbol_table::get_scopes() const
+{
+    return scopes;
 }

@@ -2,11 +2,17 @@
 
 #include "hw3_output.hpp"
 #include "symbol_table.hpp"
+#include "generic_syntax.hpp" 
 #include <list>
+#include <string>
 
 extern int yylineno;
+
 extern int yylex();
+
 void yyerror(const char* message);
+
+void add_function_symbol(std::string name, type_syntax* type, list_syntax<formal_syntax>* formals);
 
 %}
 
@@ -87,12 +93,8 @@ Program 	: OS Funcs CS 												        { $$ = new root_syntax($2); }
 Funcs   	: /*epsilon*/												        { $$ = new list_syntax<function_declaration_syntax>(); }
       		| FuncDecl Funcs											        { $$ = $2->push_front($1); }
 			;
-FuncDecl 	: RetType ID LPAREN Formals {   const std::vector<formal_syntax*>& formals = $4->get_elements();
-                                            std::vector<fundamental_type> param_types;
-                                            for (formal_syntax* fs : formals) param_types.push_back(fs->type->type);
-                                            symbol_table::instance().add_function($2, $1->type, param_types);
-                                            symbol_table::instance().open_scope();
-            } RPAREN LBRACE Statements CS RBRACE                                { $$ = new function_declaration_syntax($1, $2, $4, $8); free($2); }
+FuncDecl 	: RetType ID LPAREN Formals RPAREN                                  { add_function_symbol($2, $1, $4); } 
+              LBRACE Statements CS RBRACE                                       { $$ = new function_declaration_syntax($1, $2, $4, $8); free($2); }
 			;
 RetType 	: Type                                                              { $$ = $1; }
         	| VOID                                                              { $$ = new type_syntax(fundamental_type::Void); }
@@ -149,7 +151,10 @@ Exp 		: LPAREN Exp RPAREN	                                                { $$ =
             | Exp EQOP Exp                                                      { $$ = new relational_expression_syntax($1, $3, $2); free($2); } 
 			| LPAREN Type RPAREN Exp                                            { $$ = new cast_expression_syntax($2, $4); }
 			;
-OS          :                                                                   { symbol_table::instance().open_scope(); } 
+OS          :                                                                   {  
+                                                                                    symbol_table::instance().get_scopes().front().print_symbols(); 
+                                                                                    symbol_table::instance().open_scope(); 
+                                                                                } 
             ;       
 CS          :                                                                   { symbol_table::instance().close_scope(); }
             ;
@@ -163,4 +168,18 @@ int main()
 void yyerror(const char* message)
 {
     output::errorSyn(yylineno);
+}
+
+void add_function_symbol(std::string name, type_syntax* type, list_syntax<formal_syntax>* formal_list)
+{
+    std::vector<fundamental_type> param_types;
+
+    for (formal_syntax* fs : formal_list->get_elements())
+    {
+        param_types.push_back(fs->type->type);
+    } 
+
+    bool res = symbol_table::instance().add_function(name, type->type, param_types);
+
+    symbol_table::instance().open_scope(-1 * param_types.size());
 }

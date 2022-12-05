@@ -30,6 +30,8 @@ class symbol_table
     bool add_function(std::string name, fundamental_type return_type, std::vector<fundamental_type> parameter_types);
 
     bool add_function(std::string name, fundamental_type return_type);
+
+    const std::list<scope>& get_scopes() const;
 };
 
 #endif

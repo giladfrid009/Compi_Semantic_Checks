@@ -35,9 +35,7 @@ vector<syntax_base*> if_statement_syntax::get_children() const
 
 if_statement_syntax::~if_statement_syntax()
 {
-    auto nodes = get_children();
-
-    for (syntax_base* child : nodes)
+    for (syntax_base* child : get_children())
     {
         delete child;
     }
@@ -61,9 +59,7 @@ vector<syntax_base*> while_statement_syntax::get_children() const
 
 while_statement_syntax::~while_statement_syntax()
 {
-    auto nodes = get_children();
-
-    for (syntax_base* child : nodes)
+    for (syntax_base* child : get_children())
     {
         delete child;
     }
@@ -80,9 +76,7 @@ vector<syntax_base*> branch_statement_syntax::get_children() const
 
 branch_statement_syntax::~branch_statement_syntax()
 {
-    auto nodes = get_children();
-
-    for (syntax_base* child : nodes)
+    for (syntax_base* child : get_children())
     {
         delete child;
     }
@@ -104,9 +98,7 @@ vector<syntax_base*> return_statement_syntax::get_children() const
 
 return_statement_syntax::~return_statement_syntax()
 {
-    auto nodes = get_children();
-
-    for (syntax_base* child : nodes)
+    for (syntax_base* child : get_children())
     {
         delete child;
     }
@@ -124,9 +116,7 @@ vector<syntax_base*> expression_statement_syntax::get_children() const
 
 expression_statement_syntax::~expression_statement_syntax()
 {
-    auto nodes = get_children();
-
-    for (syntax_base* child : nodes)
+    for (syntax_base* child : get_children())
     {
         delete child;
     }
@@ -146,9 +136,7 @@ vector<syntax_base*> assignment_statement_syntax::get_children() const
 
 assignment_statement_syntax::~assignment_statement_syntax()
 {
-    auto nodes = get_children();
-
-    for (syntax_base* child : nodes)
+    for (syntax_base* child : get_children())
     {
         delete child;
     }
@@ -192,9 +180,7 @@ vector<syntax_base*> declaration_statement_syntax::get_children() const
 
 declaration_statement_syntax::~declaration_statement_syntax()
 {
-    auto nodes = get_children();
-
-    for (syntax_base* child : nodes)
+    for (syntax_base* child : get_children())
     {
         delete child;
     }
@@ -212,9 +198,7 @@ vector<syntax_base*> block_statement_syntax::get_children() const
 
 block_statement_syntax::~block_statement_syntax()
 {
-    auto nodes = get_children();
-
-    for (syntax_base* child : nodes)
+    for (syntax_base* child : get_children())
     {
         delete child;
     }

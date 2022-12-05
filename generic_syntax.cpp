@@ -1,4 +1,7 @@
 #include "generic_syntax.hpp"
+#include "hw3_output.hpp"
+
+extern int yylineno;
 
 using std::vector;
 using std::string;
@@ -24,9 +27,7 @@ vector<syntax_base*> type_syntax::get_children() const
 
 type_syntax::~type_syntax()
 {
-    auto nodes = get_children();
-
-    for (syntax_base* child : nodes)
+    for (syntax_base* child : get_children())
     {
         delete child;
     }
@@ -36,7 +37,7 @@ formal_syntax::formal_syntax(type_syntax* type, string identifier) : type(type),
 {
     if (type->type == fundamental_type::Void)
     {
-        //todo: handle error
+        output::errorMismatch(yylineno);
     }
 
     //todo: make sure identifier doesnt shadow anyone else.
@@ -51,9 +52,7 @@ vector<syntax_base*> formal_syntax::get_children() const
 
 formal_syntax::~formal_syntax()
 {
-    auto nodes = get_children();
-
-    for (syntax_base* child : nodes)
+    for (syntax_base* child : get_children())
     {
         delete child;
     }
@@ -76,9 +75,7 @@ vector<syntax_base*> function_declaration_syntax::get_children() const
 
 function_declaration_syntax::~function_declaration_syntax()
 {
-    auto nodes = get_children();
-
-    for (syntax_base* child : nodes)
+    for (syntax_base* child : get_children())
     {
         delete child;
     }
@@ -96,9 +93,7 @@ vector<syntax_base*> root_syntax::get_children() const
 
 root_syntax::~root_syntax()
 {
-    auto nodes = get_children();
-
-    for (syntax_base* child : nodes)
+    for (syntax_base* child : get_children())
     {
         delete child;
     }

@@ -1,6 +1,11 @@
 #include "scope.hpp"
+#include "hw3_output.hpp"
+#include <vector>
+#include <string>
+#include <stdexcept>
 
 using std::string;
+using std::vector;
 
 scope::scope(int initial_offset) : symbols(), current_offset(initial_offset)
 {
@@ -53,4 +58,38 @@ bool scope::add_function(string name, fundamental_type return_type, std::vector<
     symbols[name] = new function_symbol(name, return_type, parameter_types);
 
     return true;
+}
+
+void scope::print_symbols() const
+{
+    for (auto& key_val : symbols)
+    {
+        symbol* sym = key_val.second;
+
+        if (sym->sym_type == symbol_type::Var)
+        {
+            variable_symbol* var_sym = dynamic_cast<variable_symbol*>(sym);
+
+            output::printID(var_sym->name, var_sym->offset, fundamental_type_to_string(var_sym->type));
+        }
+        else if (sym->sym_type == symbol_type::Func)
+        {
+            function_symbol* func_sym = dynamic_cast<function_symbol*>(sym);
+
+            vector<string> param_types;
+
+            for (fundamental_type ft : func_sym->parameter_types)
+            {
+                param_types.push_back(fundamental_type_to_string(ft));
+            }
+
+            string func_type = output::makeFunctionType(fundamental_type_to_string(func_sym->type), param_types);
+
+            output::printID(func_sym->name, 0, func_type);
+        }
+        else
+        {
+            throw std::runtime_error("unknown symbol type");
+        }
+    }
 }
