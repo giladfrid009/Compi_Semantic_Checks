@@ -1,4 +1,5 @@
 #include "expression_syntax.hpp"
+#include "symbol_table.hpp"
 #include <stdexcept>
 
 using std::string;
@@ -257,7 +258,17 @@ conditional_expression_syntax::~conditional_expression_syntax()
 identifier_expression_syntax::identifier_expression_syntax(string identifier) : 
     expression_syntax(get_return_type(identifier)), identifier(identifier) 
 {
-    //todo: add checks if identifier exists in symbol table
+    symbol* symbol = symbol_table::instance().get_symbol(identifier);
+
+    if (symbol == nullptr)
+    {
+        // todo: handel symbol does not exist
+    }
+
+    if (symbol->sym_type != symbol_type::Var)
+    {
+        // todo: illigal symbol type
+    }
 }
 
 vector<syntax_base*> identifier_expression_syntax::get_children() const
@@ -267,8 +278,14 @@ vector<syntax_base*> identifier_expression_syntax::get_children() const
 
 fundamental_type identifier_expression_syntax::get_return_type(string identifier) const
 {
-    //todo: implement with symbol table
-    return fundamental_type::Void;
+    symbol* symbol = symbol_table::instance().get_symbol(identifier);
+
+    if (symbol == nullptr)
+    {
+        // todo: handel symbol does not exist
+    }
+
+    return symbol->type;
 }
 
 identifier_expression_syntax::~identifier_expression_syntax()
@@ -284,14 +301,57 @@ identifier_expression_syntax::~identifier_expression_syntax()
 invocation_expression_syntax::invocation_expression_syntax(string identifier) :
     expression_syntax(get_return_type(identifier)), identifier(identifier), expression_list(nullptr)
 {
-    // todo: check that identifier exists    
+    symbol* symbol = symbol_table::instance().get_symbol(identifier);
+
+    if (symbol == nullptr)
+    {
+        // todo: handel symbol does not exist
+    }
+
+    if (symbol->sym_type != symbol_type::Func)
+    {
+        // todo: illigal symbol type
+    }
+
+    function_symbol* func_symbol = dynamic_cast<function_symbol*>(symbol);
+
+    if (func_symbol->parameter_types.size() != 0)
+    {
+        // todo: handle paramter mismatch
+    }
 }
 
 invocation_expression_syntax::invocation_expression_syntax(string identifier, list_syntax<expression_syntax>* expression_list) :
     expression_syntax(get_return_type(identifier)), identifier(identifier), expression_list(expression_list)
 {
-    // todo: check that identifier exists
-    // todo: check that expression_list matches signature
+    symbol* symbol = symbol_table::instance().get_symbol(identifier);
+
+    if (symbol == nullptr)
+    {
+        // todo: handel symbol does not exist
+    }
+
+    if (symbol->sym_type != symbol_type::Func)
+    {
+        // todo: illigal symbol type
+    }
+
+    function_symbol* func_symbol = dynamic_cast<function_symbol*>(symbol);
+
+    auto elements = expression_list->get_elements();
+
+    if (func_symbol->parameter_types.size() != elements.size())
+    {
+        // todo: handle paramter mismatch
+    }
+
+    for (size_t i = 0; i < elements.size(); i++)
+    {
+        if (func_symbol->parameter_types[i] != elements[i]->expression_return_type)
+        {
+            // todo: handle paramter mismatch
+        }
+    }
 
     expression_list->set_parent(this);
 }
@@ -303,8 +363,14 @@ vector<syntax_base*> invocation_expression_syntax::get_children() const
 
 fundamental_type invocation_expression_syntax::get_return_type(string identifier) const
 {
-    //todo: implement with symbol table
-    return fundamental_type::Void;
+    symbol* symbol = symbol_table::instance().get_symbol(identifier);
+
+    if (symbol == nullptr)
+    {
+        // todo: handel symbol does not exist
+    }
+
+    return symbol->type;
 }
 
 invocation_expression_syntax::~invocation_expression_syntax()

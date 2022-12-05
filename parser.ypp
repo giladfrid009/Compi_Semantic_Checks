@@ -2,6 +2,7 @@
 
 #include "hw3_output.hpp"
 #include "symbol_table.hpp"
+#include <list>
 
 extern int yylineno;
 extern int yylex();
@@ -86,7 +87,12 @@ Program 	: OS Funcs CS 												        { $$ = new root_syntax($2); }
 Funcs   	: /*epsilon*/												        { $$ = new list_syntax<function_declaration_syntax>(); }
       		| FuncDecl Funcs											        { $$ = $2->push_front($1); }
 			;
-FuncDecl 	: RetType ID LPAREN Formals {  } RPAREN LBRACE Statements CS RBRACE { $$ = new function_declaration_syntax($1, $2, $4, $8); free($2); }
+FuncDecl 	: RetType ID LPAREN Formals {   const std::vector<formal_syntax*>& formals = $4->get_elements();
+                                            std::vector<fundamental_type> param_types;
+                                            for (formal_syntax* fs : formals) param_types.push_back(fs->type->type);
+                                            symbol_table::instance().add_function($2, $1->type, param_types);
+                                            symbol_table::instance().open_scope();
+            } RPAREN LBRACE Statements CS RBRACE                                { $$ = new function_declaration_syntax($1, $2, $4, $8); free($2); }
 			;
 RetType 	: Type                                                              { $$ = $1; }
         	| VOID                                                              { $$ = new type_syntax(fundamental_type::Void); }

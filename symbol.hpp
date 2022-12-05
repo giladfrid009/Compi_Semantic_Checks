@@ -18,6 +18,8 @@ class symbol
     const fundamental_type type;
 
     symbol(std::string name, fundamental_type type, symbol_type sym_type);
+
+    virtual ~symbol() = default;
 };
 
 class variable_symbol : public symbol

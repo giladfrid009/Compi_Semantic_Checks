@@ -43,9 +43,9 @@ template<typename element_type> class list_syntax final : public syntax_base
         return this;
     }
 
-    const std::list<element_type*>& get_elements() const
+    const std::vector<element_type*> get_elements() const
     {
-        return elements;
+        return std::vector<element_type*>(elements.begin(), elements.end());
     }
 
     std::vector<syntax_base*> get_children() const override
