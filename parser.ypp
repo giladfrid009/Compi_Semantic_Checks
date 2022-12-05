@@ -81,69 +81,72 @@ void yyerror(const char* message);
 
 %%
 
-Program 	: Funcs 													{ $$ = new root_syntax($1); }
+Program 	: OS Funcs CS 												        { $$ = new root_syntax($2); }
+			;       
+Funcs   	: /*epsilon*/												        { $$ = new list_syntax<function_declaration_syntax>(); }
+      		| FuncDecl Funcs											        { $$ = $2->push_front($1); }
 			;
-Funcs   	: /*epsilon*/												{ $$ = new list_syntax<function_declaration_syntax>(); }
-      		| FuncDecl Funcs											{ $$ = $2->push_front($1); }
+FuncDecl 	: RetType ID LPAREN Formals {  } RPAREN LBRACE Statements CS RBRACE { $$ = new function_declaration_syntax($1, $2, $4, $8); free($2); }
 			;
-FuncDecl 	: RetType ID LPAREN Formals RPAREN /*add function name, open scope, add formals*/ LBRACE Statements /*close scope*/ RBRACE { $$ = new function_declaration_syntax($1, $2, $4, $7); free($2); }
+RetType 	: Type                                                              { $$ = $1; }
+        	| VOID                                                              { $$ = new type_syntax(fundamental_type::Void); }
+			;       
+Formals 	: /*epsilon*/                                                       { $$ = new list_syntax<formal_syntax>(); }
+        	| FormalsList                                                       { $$ = $1; }
+			;       
+FormalsList : FormalDecl                                                        { $$ = new list_syntax<formal_syntax>($1); }
+			| FormalDecl COMMA FormalsList                                      { $$ = $3->push_front($1); }
+			;       
+FormalDecl 	: Type ID                                                           { $$ = new formal_syntax($1, $2); free($2); }
+			;       
+Statements	: Statement	                                                        { $$ = new list_syntax<statement_syntax>($1); }
+ 			| Statements Statement                                              { $$ = $1->push_back($2); }
 			;
-RetType 	: Type                                                      { $$ = $1; }
-        	| VOID                                                      { $$ = new type_syntax(fundamental_type::Void); }
+Statement	: LBRACE OS Statements CS RBRACE                                    { $$ = new block_statement_syntax($3); }
+			| Type ID SC                                                        { $$ = new declaration_statement_syntax($1, $2); free($2); }
+			| Type ID ASSIGN Exp SC                                             { $$ = new declaration_statement_syntax($1, $2, $4); free($2); }
+			| ID ASSIGN Exp SC                                                  { $$ = new assignment_statement_syntax($1, $3); free($1); }
+			| Call SC                                                           { $$ = new expression_statement_syntax($1); }
+			| RETURN SC	                                                        { $$ = new return_statement_syntax(); }
+			| RETURN Exp SC                                                     { $$ = new return_statement_syntax($2); }
+			| IF LPAREN OS Exp CS RPAREN OS Statement CS                        { $$ = new if_statement_syntax($4, $8); }
+			| IF LPAREN OS Exp CS RPAREN OS Statement CS ELSE OS Statement CS   { $$ = new if_statement_syntax($4, $8, $12); }
+			| WHILE LPAREN OS Exp CS RPAREN OS Statement CS                     { $$ = new while_statement_syntax($4, $8); }
+			| BREAK SC                                                          { $$ = new branch_statement_syntax(branch_type::Break); }
+			| CONTINUE SC                                                       { $$ = new branch_statement_syntax(branch_type::Continue); }
+            ;       
+Call 		: ID LPAREN ExpList RPAREN                                          { $$ = new invocation_expression_syntax($1, $3); free($1); }
+ 			| ID LPAREN RPAREN                                                  { $$ = new invocation_expression_syntax($1); free($1); }
+			;       
+ExpList 	: Exp                                                               { $$ = new list_syntax<expression_syntax>($1); }
+ 			| Exp COMMA ExpList                                                 { $$ = $3->push_front($1); }
+			;       
+Type 		: INT                                                               { $$ = new type_syntax(fundamental_type::Int); }
+			| BYTE                                                              { $$ = new type_syntax(fundamental_type::Byte); }
+			| BOOL                                                              { $$ = new type_syntax(fundamental_type::Bool); }
+			;       
+Exp 		: LPAREN Exp RPAREN	                                                { $$ = $2; }
+            | Exp IF LPAREN Exp RPAREN ELSE Exp                                 { $$ = new conditional_expression_syntax($1, $4, $7); }
+			| Exp ADDOP Exp                                                     { $$ = new arithmetic_expression_syntax($1, $3, $2); free($2); }
+            | Exp MULOP Exp                                                     { $$ = new arithmetic_expression_syntax($1, $3, $2); free($2); }
+			| ID                                                                { $$ = new identifier_expression_syntax($1); free($1); }
+			| Call                                                              { $$ = $1; }
+			| NUM                                                               { $$ = new literal_expression_syntax<int>($1); }
+			| NUM B                                                             { $$ = new literal_expression_syntax<char>($1); }
+			| STRING                                                            { $$ = new literal_expression_syntax<std::string>($1); free($1); }
+			| TRUE                                                              { $$ = new literal_expression_syntax<bool>(true); }
+			| FALSE                                                             { $$ = new literal_expression_syntax<bool>(false); }
+			| NOT Exp                                                           { $$ = new not_expression_syntax($2); }
+			| Exp AND Exp                                                       { $$ = new logical_expression_syntax($1, $3, logical_operator::And); }
+			| Exp OR Exp                                                        { $$ = new logical_expression_syntax($1, $3, logical_operator::Or); }
+			| Exp RELOP Exp                                                     { $$ = new relational_expression_syntax($1, $3, $2); free($2); }
+            | Exp EQOP Exp                                                      { $$ = new relational_expression_syntax($1, $3, $2); free($2); } 
+			| LPAREN Type RPAREN Exp                                            { $$ = new cast_expression_syntax($2, $4); }
 			;
-Formals 	: /*epsilon*/                                               { $$ = new list_syntax<formal_syntax>(); }
-        	| FormalsList                                               { $$ = $1; }
-			;
-FormalsList : FormalDecl                                                { $$ = new list_syntax<formal_syntax>($1); }
-			| FormalDecl COMMA FormalsList                              { $$ = $3->push_front($1); }
-			;
-FormalDecl 	: Type ID                                                   { $$ = new formal_syntax($1, $2); free($2); }
-			;
-Statements	: Statement	                                                { $$ = new list_syntax<statement_syntax>($1); }
- 			| Statements Statement                                      { $$ = $1->push_back($2); }
-			;
-Statement	: LBRACE Statements RBRACE                                  { $$ = new block_statement_syntax($2); }
-			| Type ID SC                                                { $$ = new declaration_statement_syntax($1, $2); free($2); }
-			| Type ID ASSIGN Exp SC                                     { $$ = new declaration_statement_syntax($1, $2, $4); free($2); }
-			| ID ASSIGN Exp SC                                          { $$ = new assignment_statement_syntax($1, $3); free($1); }
-			| Call SC                                                   { $$ = new expression_statement_syntax($1); }
-			| RETURN SC	                                                { $$ = new return_statement_syntax(); }
-			| RETURN Exp SC                                             { $$ = new return_statement_syntax($2); }
-			| IF LPAREN Exp RPAREN Statement                            { $$ = new if_statement_syntax($3, $5); }
-			| IF LPAREN Exp RPAREN Statement ELSE Statement             { $$ = new if_statement_syntax($3, $5, $7); }
-			| WHILE LPAREN Exp RPAREN Statement                         { $$ = new while_statement_syntax($3, $5); }
-			| BREAK SC                                                  { $$ = new branch_statement_syntax(branch_type::Break); }
-			| CONTINUE SC                                               { $$ = new branch_statement_syntax(branch_type::Continue); }
+OS          :                                                                   { symbol_table::instance().open_scope(); } 
+            ;       
+CS          :                                                                   { symbol_table::instance().close_scope(); }
             ;
-Call 		: ID LPAREN ExpList RPAREN                                  { $$ = new invocation_expression_syntax($1, $3); free($1); }
- 			| ID LPAREN RPAREN                                          { $$ = new invocation_expression_syntax($1); free($1); }
-			;
-ExpList 	: Exp                                                       { $$ = new list_syntax<expression_syntax>($1); }
- 			| Exp COMMA ExpList                                         { $$ = $3->push_front($1); }
-			;
-Type 		: INT                                                       { $$ = new type_syntax(fundamental_type::Int); }
-			| BYTE                                                      { $$ = new type_syntax(fundamental_type::Byte); }
-			| BOOL                                                      { $$ = new type_syntax(fundamental_type::Bool); }
-			;
-Exp 		: LPAREN Exp RPAREN	                                        { $$ = $2; }
-            | Exp IF LPAREN Exp RPAREN ELSE Exp                         { $$ = new conditional_expression_syntax($1, $4, $7); }
-			| Exp ADDOP Exp                                             { $$ = new arithmetic_expression_syntax($1, $3, $2); free($2); }
-            | Exp MULOP Exp                                             { $$ = new arithmetic_expression_syntax($1, $3, $2); free($2); }
-			| ID                                                        { $$ = new identifier_expression_syntax($1); free($1); }
-			| Call                                                      { $$ = $1; }
-			| NUM                                                       { $$ = new literal_expression_syntax<int>($1); }
-			| NUM B                                                     { $$ = new literal_expression_syntax<char>($1); }
-			| STRING                                                    { $$ = new literal_expression_syntax<std::string>($1); free($1); }
-			| TRUE                                                      { $$ = new literal_expression_syntax<bool>(true); }
-			| FALSE                                                     { $$ = new literal_expression_syntax<bool>(false); }
-			| NOT Exp                                                   { $$ = new not_expression_syntax($2); }
-			| Exp AND Exp                                               { $$ = new logical_expression_syntax($1, $3, logical_operator::And); }
-			| Exp OR Exp                                                { $$ = new logical_expression_syntax($1, $3, logical_operator::Or); }
-			| Exp RELOP Exp                                             { $$ = new relational_expression_syntax($1, $3, $2); free($2); }
-            | Exp EQOP Exp                                              { $$ = new relational_expression_syntax($1, $3, $2); free($2); } 
-			| LPAREN Type RPAREN Exp                                    { $$ = new cast_expression_syntax($2, $4); }
-			;
-
 %%
 
 int main()

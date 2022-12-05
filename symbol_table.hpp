@@ -9,9 +9,13 @@ class symbol_table
 {
     std::list<scope> scopes;
 
-    public:
+    private:
 
     symbol_table();
+
+    public:
+
+    static symbol_table& instance();
 
     void open_scope(int initial_offset = 0);
 

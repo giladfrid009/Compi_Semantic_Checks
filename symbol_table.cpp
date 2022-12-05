@@ -3,6 +3,17 @@
 using std::string;
 using std::vector;
 
+symbol_table::symbol_table()
+{
+    
+}
+
+symbol_table& symbol_table::instance()
+{
+    static symbol_table instance;
+    return instance;
+}
+
 void symbol_table::open_scope(int initial_offset)
 {
     scopes.push_front(scope(initial_offset));
