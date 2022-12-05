@@ -44,6 +44,6 @@ continue                           { return CONTINUE; }
 [a-zA-Z][a-zA-Z0-9]*               { yylval.str = strdup(yytext); return ID; }
 0|[1-9][0-9]*                      { yylval.num = std::stoi(yytext); return NUM; }
 \"([^\n\r\"\\]|\\[rnt"\\])+\"      { yylval.str = strdup(yytext); return STRING; }
-.                                  { output::errorLex(yylineno); exit(0); }
+.                                  { output::errorLex(yylineno); }
 
 %%

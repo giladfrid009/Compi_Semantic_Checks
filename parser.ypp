@@ -163,5 +163,4 @@ int main()
 void yyerror(const char* message)
 {
     output::errorSyn(yylineno);
-	exit(0); 
 }

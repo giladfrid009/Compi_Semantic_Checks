@@ -2,6 +2,7 @@
 #define _ABSTRACT_SYNTAX_HPP_
 
 #include <vector>
+#include <string>
 
 enum class logical_operator { And, Or };
 
@@ -12,6 +13,8 @@ enum class relational_operator { Less, LessEqual, Greater, GreaterEqual, Equal, 
 enum class fundamental_type { Void, Int, Bool, Byte, String };
 
 enum class branch_type { Break, Continue };
+
+std::string fundamental_type_to_string(fundamental_type type);
 
 class syntax_base
 {

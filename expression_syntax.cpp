@@ -1,6 +1,9 @@
 #include "expression_syntax.hpp"
 #include "symbol_table.hpp"
+#include "hw3_output.hpp"
 #include <stdexcept>
+
+extern int yylineno;
 
 using std::string;
 using std::vector;
@@ -8,14 +11,9 @@ using std::vector;
 cast_expression_syntax::cast_expression_syntax(type_syntax* destination_type, expression_syntax* expression) :
     expression_syntax(destination_type->type), destination_type(destination_type), expression(expression)
 {
-    if (expression->is_numeric() == false)
+    if (expression->is_numeric() == false || destination_type->is_numeric() == false)
     {
-        // todo: handle illigal cast
-    }
-
-    if (destination_type->is_numeric() == false)
-    {
-        // todo: handle illigal cast
+        output::errorMismatch(yylineno);
     }
 
     destination_type->set_parent(this);
@@ -42,7 +40,7 @@ not_expression_syntax::not_expression_syntax(expression_syntax* expression) :
 {
     if (expression->expression_return_type != fundamental_type::Bool)
     {
-        // todo: handle illigal return_type
+        output::errorMismatch(yylineno);
     }
 
     expression->set_parent(this);
@@ -68,7 +66,7 @@ logical_expression_syntax::logical_expression_syntax(expression_syntax* left, ex
 {
     if (left->expression_return_type != fundamental_type::Bool || right->expression_return_type != fundamental_type::Bool)
     {
-        // todo: handle error
+        output::errorMismatch(yylineno);
     }
 
     left->set_parent(this);
@@ -108,7 +106,7 @@ arithmetic_expression_syntax::arithmetic_expression_syntax(expression_syntax* le
 {
     if (left->is_numeric() == false || right->is_numeric() == false)
     {
-        // todo: handle error
+        output::errorMismatch(yylineno);
     }
 
     left->set_parent(this);
@@ -165,7 +163,7 @@ relational_expression_syntax::relational_expression_syntax(expression_syntax* le
 {
     if (left->is_numeric() == false || right->is_numeric() == false)
     {
-        //todo: handle error        
+        output::errorMismatch(yylineno);       
     }
 
     left->set_parent(this);
@@ -211,8 +209,13 @@ conditional_expression_syntax::conditional_expression_syntax(expression_syntax* 
     {
         if (true_value->is_numeric() == false || false_value->is_numeric() == false)
         {
-            // todo: handle error
+            output::errorMismatch(yylineno);
         }
+    }
+
+    if (condition->expression_return_type != fundamental_type::Bool)
+    {
+        output::errorMismatch(yylineno);
     }
 
     true_value->set_parent(this);
@@ -262,12 +265,12 @@ identifier_expression_syntax::identifier_expression_syntax(string identifier) :
 
     if (symbol == nullptr)
     {
-        // todo: handel symbol does not exist
+        output::errorUndef(yylineno, identifier);
     }
 
     if (symbol->sym_type != symbol_type::Var)
     {
-        // todo: illigal symbol type
+        output::errorUndef(yylineno, identifier);
     }
 }
 
@@ -282,7 +285,7 @@ fundamental_type identifier_expression_syntax::get_return_type(string identifier
 
     if (symbol == nullptr)
     {
-        // todo: handel symbol does not exist
+        output::errorUndef(yylineno, identifier);
     }
 
     return symbol->type;
@@ -305,12 +308,12 @@ invocation_expression_syntax::invocation_expression_syntax(string identifier) :
 
     if (symbol == nullptr)
     {
-        // todo: handel symbol does not exist
+        output::errorUndefFunc(yylineno, identifier);
     }
 
     if (symbol->sym_type != symbol_type::Func)
     {
-        // todo: illigal symbol type
+        output::errorUndefFunc(yylineno, identifier);
     }
 
     function_symbol* func_symbol = dynamic_cast<function_symbol*>(symbol);

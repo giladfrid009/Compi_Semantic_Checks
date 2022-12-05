@@ -1,4 +1,21 @@
 #include "abstract_syntax.hpp"
+#include "hw3_output.hpp"
+
+extern int yylineno;
+
+std::string fundamental_type_to_string(fundamental_type type)
+{
+    switch(type)
+    {
+        case (fundamental_type::Bool): return "bool";
+        case (fundamental_type::Int): return "int";
+        case (fundamental_type::Byte): return "byte";
+        case (fundamental_type::String): return "string";
+        case (fundamental_type::Void): return "void";
+    }
+
+    return "";
+}
 
 syntax_base::syntax_base()
 {
@@ -18,7 +35,7 @@ expression_syntax::expression_syntax(fundamental_type return_type) : expression_
 {
     if (is_special())
     {
-        //todo: handle illigal type
+        output::errorMismatch(yylineno);
     }
 }
 
