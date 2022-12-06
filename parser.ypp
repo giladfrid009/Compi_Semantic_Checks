@@ -14,6 +14,10 @@ void yyerror(const char* message);
 
 void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_token, list_syntax<formal_syntax>* formal_list);
 
+expression_syntax* create_byte_literal_expression(syntax_token* value_token, syntax_token* b_token);
+
+void print_and_close_scope();
+
 %}
 
 %code requires 
@@ -88,7 +92,7 @@ void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_tok
 
 %%
 
-Program 	: OS Funcs CS 												        { $$ = new root_syntax($2); }
+Program 	: Funcs 												            { $$ = new root_syntax($1); }
 			;       
 Funcs   	: /*epsilon*/												        { $$ = new list_syntax<function_declaration_syntax>(); }
       		| FuncDecl Funcs											        { $$ = $2->push_front($1); }
@@ -140,7 +144,7 @@ Exp 		: LPAREN Exp RPAREN	                                                { $$ =
 			| ID                                                                { $$ = new identifier_expression_syntax($1); }
 			| Call                                                              { $$ = $1; }
 			| NUM                                                               { $$ = new literal_expression_syntax<int>(std::stoi($1->text), $1); }
-			| NUM B                                                             { $$ = new literal_expression_syntax<char>(std::stoi($1->text), $1); delete $2; }
+			| NUM B                                                             { $$ = create_byte_literal_expression($1, $2); }
 			| STRING                                                            { $$ = new literal_expression_syntax<std::string>($1->text, $1); }
 			| TRUE                                                              { $$ = new literal_expression_syntax<bool>(true, $1); }
 			| FALSE                                                             { $$ = new literal_expression_syntax<bool>(false, $1); }
@@ -153,15 +157,22 @@ Exp 		: LPAREN Exp RPAREN	                                                { $$ =
 			;
 OS          : /*epsilon*/                                                       { symbol_table::instance().open_scope(); } 
             ;       
-CS          : /*epsilon*/                                                       { symbol_table::instance().get_scopes().front().print_symbols();
-                                                                                  output::endScope();
-                                                                                  symbol_table::instance().close_scope(); }
+CS          : /*epsilon*/                                                       { print_and_close_scope(); }
             ;
 %%
 
 int main()
 {
-	return yyparse();
+    symbol_table& symtab = symbol_table::instance();
+    symtab.open_scope();
+    symtab.add_function("print", fundamental_type::Void, std::vector<fundamental_type>{fundamental_type::String});
+    symtab.add_function("printi", fundamental_type::Void, std::vector<fundamental_type>{fundamental_type::Int});
+
+	int res = yyparse();
+
+    print_and_close_scope();
+
+    return res;
 }
 
 void yyerror(const char* message)
@@ -200,4 +211,25 @@ void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_tok
 
         symtab.add_variable(fs->identifier, fs->type->type);
     }
+}
+
+expression_syntax* create_byte_literal_expression(syntax_token* value_token, syntax_token* b_token)
+{
+    delete b_token;
+
+    int value = std::stoi(value_token->text);
+
+    if (value >= 256 || value < 0) 
+    {
+        output::errorByteTooLarge(value_token->definition_line, value_token->text);
+    }
+
+    return new literal_expression_syntax<char>(value, value_token); 
+}
+
+void print_and_close_scope()
+{
+    symbol_table::instance().get_scopes().front().print_symbols();
+    output::endScope();
+    symbol_table::instance().close_scope(); 
 }

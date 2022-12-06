@@ -9,11 +9,11 @@ std::string fundamental_type_to_string(fundamental_type type)
 {
     switch(type)
     {
-        case (fundamental_type::Bool): return "bool";
-        case (fundamental_type::Int): return "int";
-        case (fundamental_type::Byte): return "byte";
-        case (fundamental_type::String): return "string";
-        case (fundamental_type::Void): return "void";
+        case (fundamental_type::Bool): return "BOOL";
+        case (fundamental_type::Int): return "INT";
+        case (fundamental_type::Byte): return "BYTE";
+        case (fundamental_type::String): return "STRING";
+        case (fundamental_type::Void): return "VOID";
         default: throw std::invalid_argument("unknown type");
     }
 }
