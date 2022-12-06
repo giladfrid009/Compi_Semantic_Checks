@@ -157,6 +157,7 @@ Exp 		: LPAREN Exp RPAREN	                                    { $$ = $2; }
 			| LPAREN Type RPAREN Exp                                { $$ = new cast_expression_syntax($2, $4); }
 			;
 OSI         : /*epsilon*/                                           { symbol_table::instance().open_scope(0, true); } 
+            ;
 OS          : /*epsilon*/                                           { 
                                                                         if (symbol_table::instance().current_scope().is_implicit == false)
                                                                         {
@@ -164,7 +165,7 @@ OS          : /*epsilon*/                                           {
                                                                         }       
                                                                     } 
             ;       
-CSI          : /*epsilon*/                                          { print_and_close_scope(); }
+CSI         : /*epsilon*/                                           { print_and_close_scope(); }
             ;
 CS          : /*epsilon*/                                           { 
                                                                         if (symbol_table::instance().current_scope().is_implicit == false)
