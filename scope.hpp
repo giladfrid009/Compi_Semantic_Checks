@@ -12,6 +12,8 @@ class scope
 
     int current_offset;
 
+    int current_serial;
+
     public:
 
     scope(int initial_offset = 0);

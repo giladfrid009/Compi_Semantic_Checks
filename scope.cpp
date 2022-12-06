@@ -3,11 +3,12 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
+#include <algorithm>
 
 using std::string;
 using std::vector;
 
-scope::scope(int initial_offset) : symbols(), current_offset(initial_offset)
+scope::scope(int initial_offset) : symbols(), current_offset(initial_offset), current_serial(0)
 {
 }
 
@@ -41,9 +42,10 @@ bool scope::add_variable(string name, fundamental_type type)
         return false;
     }
 
-    symbols[name] = new variable_symbol(name, type, current_offset);
+    symbols[name] = new variable_symbol(name, type, current_offset, current_serial);
 
     current_offset += 1;
+    current_serial += 1;
 
     return true;
 }
@@ -55,17 +57,26 @@ bool scope::add_function(string name, fundamental_type return_type, std::vector<
         return false;
     }
 
-    symbols[name] = new function_symbol(name, return_type, parameter_types);
+    symbols[name] = new function_symbol(name, return_type, parameter_types, current_serial);
+
+    current_serial += 1;
 
     return true;
 }
 
 void scope::print_symbols() const
 {
-    for (auto& key_val : symbols)
-    {
-        symbol* sym = key_val.second;
+    vector<symbol*> symbols_sorted;
 
+    for (auto& kv : symbols)
+    {
+        symbols_sorted.push_back(kv.second);
+    }
+
+    std::sort(symbols_sorted.begin(), symbols_sorted.end(), [] (symbol* a, symbol* b) { return a->serial_number < b->serial_number ;});
+
+    for (symbol* sym : symbols_sorted)
+    {
         if (sym->sym_type == symbol_type::Var)
         {
             variable_symbol* var_sym = dynamic_cast<variable_symbol*>(sym);
