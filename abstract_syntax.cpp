@@ -12,9 +12,8 @@ std::string fundamental_type_to_string(fundamental_type type)
         case (fundamental_type::Byte): return "byte";
         case (fundamental_type::String): return "string";
         case (fundamental_type::Void): return "void";
+        default: throw std::invalid_argument("unknown type");
     }
-
-    throw std::invalid_argument("unknown type");
 }
 
 fundamental_type string_to_fundamental_type(string type)

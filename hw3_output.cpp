@@ -1,9 +1,13 @@
 #include <iostream>
 #include "hw3_output.hpp"
 #include <sstream>
+#include <string>
 #include <stdlib.h>
 
 using namespace std;
+
+string valueListsToString(const std::vector<string>& values);
+string typeListToString(const std::vector<string>& argTypes);
 
 void output::endScope()
 {
