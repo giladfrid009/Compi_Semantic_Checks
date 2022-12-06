@@ -121,10 +121,10 @@ Statement	: LBRACE OS Statements CS RBRACE                        { $$ = new blo
 			| Call SC                                               { $$ = new expression_statement_syntax($1); }
 			| RETURN SC	                                            { $$ = new return_statement_syntax($1); }
 			| RETURN Exp SC                                         { $$ = new return_statement_syntax($1, $2); }
-			| IF LPAREN OS Exp CS RPAREN OSI Statement CSI          { $$ = new if_statement_syntax($1, $4, $8);  }
-			| IF LPAREN OS Exp CS RPAREN OSI Statement CSI 
-                ELSE OSI Statement CSI                              { $$ = new if_statement_syntax($1, $4, $8, $10, $12); }
-			| WHILE LPAREN OS Exp CS RPAREN OSI Statement CSI       { $$ = new while_statement_syntax($1, $4, $8); }
+			| IF LPAREN Exp RPAREN OSI Statement CSI                { $$ = new if_statement_syntax($1, $3, $6);  }
+			| IF LPAREN Exp RPAREN OSI Statement CSI 
+              ELSE OSI Statement CSI                                { $$ = new if_statement_syntax($1, $3, $6, $8, $10); }
+			| WHILE LPAREN Exp RPAREN OSI Statement CSI             { $$ = new while_statement_syntax($1, $3, $6); }
 			| BREAK SC                                              { $$ = new branch_statement_syntax($1); }
 			| CONTINUE SC                                           { $$ = new branch_statement_syntax($1); }
             ;       
@@ -185,8 +185,7 @@ int main()
 
 	int res = yyparse();
 
-    symtab.current_scope().print_symbols();
-    symtab.close_scope();
+    print_and_close_scope();
 
     return res;
 }
