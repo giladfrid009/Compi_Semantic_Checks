@@ -48,11 +48,14 @@ template<typename literal_type> class literal_expression_syntax final : public e
 
     ~literal_expression_syntax()
     {
-        auto nodes = get_children();
-
-        for (syntax_base* child : nodes)
+        for (syntax_base* child : get_children())
         {
             delete child;
+        }
+
+        for (syntax_token* token : get_tokens())
+        {
+            delete token;
         }
     }
 };
