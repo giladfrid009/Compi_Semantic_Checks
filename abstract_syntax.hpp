@@ -1,6 +1,7 @@
 #ifndef _ABSTRACT_SYNTAX_HPP_
 #define _ABSTRACT_SYNTAX_HPP_
 
+#include "syntax_token.hpp"
 #include <vector>
 #include <string>
 
@@ -15,6 +16,16 @@ enum class fundamental_type { Void, Int, Bool, Byte, String };
 enum class branch_type { Break, Continue };
 
 std::string fundamental_type_to_string(fundamental_type type);
+
+fundamental_type string_to_fundamental_type(std::string type);
+
+logical_operator string_to_logical_operator(std::string oper);
+
+arithmetic_operator string_to_arithmetic_operator(std::string oper);
+
+relational_operator string_to_relational_operator(std::string oper);
+
+branch_type string_to_branch_type(std::string oper);
 
 class syntax_base
 {
@@ -37,6 +48,8 @@ class syntax_base
     virtual ~syntax_base() = default;
 
     virtual std::vector<syntax_base*> get_children() const = 0;
+
+    virtual std::vector<syntax_token*> get_tokens() const = 0;
 };
 
 class expression_syntax : public syntax_base
@@ -58,6 +71,8 @@ class expression_syntax : public syntax_base
     virtual ~expression_syntax() = default;
 
     virtual std::vector<syntax_base*> get_children() const = 0;
+
+    virtual std::vector<syntax_token*> get_tokens() const = 0;
 };
 
 class statement_syntax : public syntax_base
@@ -73,6 +88,8 @@ class statement_syntax : public syntax_base
     statement_syntax& operator=(const statement_syntax& other) = delete;
 
     virtual std::vector<syntax_base*> get_children() const = 0;
+
+    virtual std::vector<syntax_token*> get_tokens() const = 0;
 };
 
 #endif

@@ -3,8 +3,6 @@
 #include "hw3_output.hpp"
 #include <stdexcept>
 
-extern int yylineno;
-
 using std::string;
 using std::vector;
 
@@ -13,7 +11,7 @@ cast_expression_syntax::cast_expression_syntax(type_syntax* destination_type, ex
 {
     if (expression->is_numeric() == false || destination_type->is_numeric() == false)
     {
-        output::errorMismatch(yylineno);
+        output::errorMismatch(0);
     }
 
     destination_type->set_parent(this);
@@ -25,20 +23,30 @@ vector<syntax_base*> cast_expression_syntax::get_children() const
     return vector<syntax_base*>{destination_type, expression};
 }
 
+std::vector<syntax_token*> cast_expression_syntax::get_tokens() const
+{
+    return vector<syntax_token*>();
+}
+
 cast_expression_syntax::~cast_expression_syntax()
 {
     for (syntax_base* child : get_children())
     {
         delete child;
     }
+
+    for (syntax_token* token : get_tokens())
+    {
+        delete token;
+    }
 }
 
-not_expression_syntax::not_expression_syntax(expression_syntax* expression) :
-    expression_syntax(fundamental_type::Bool), expression(expression)
+not_expression_syntax::not_expression_syntax(syntax_token* not_token, expression_syntax* expression) :
+    expression_syntax(fundamental_type::Bool), not_token(not_token), expression(expression)
 {
     if (expression->expression_return_type != fundamental_type::Bool)
     {
-        output::errorMismatch(yylineno);
+        output::errorMismatch(0);
     }
 
     expression->set_parent(this);
@@ -49,42 +57,44 @@ vector<syntax_base*> not_expression_syntax::get_children() const
     return vector<syntax_base*>{expression};
 }
 
+std::vector<syntax_token*> not_expression_syntax::get_tokens() const
+{
+    return vector<syntax_token*>{not_token};
+}
+
 not_expression_syntax::~not_expression_syntax()
 {
     for (syntax_base* child : get_children())
     {
         delete child;
     }
+
+    for (syntax_token* token : get_tokens())
+    {
+        delete token;
+    }
 }
 
-logical_expression_syntax::logical_expression_syntax(expression_syntax* left, expression_syntax* right, logical_operator oper) :
-    expression_syntax(fundamental_type::Bool), left(left), right(right), oper(oper)
+logical_expression_syntax::logical_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right) :
+    expression_syntax(fundamental_type::Bool), left(left), oper_token(oper_token), right(right), oper(string_to_logical_operator(oper_token->text))
 {
     if (left->expression_return_type != fundamental_type::Bool || right->expression_return_type != fundamental_type::Bool)
     {
-        output::errorMismatch(yylineno);
+        output::errorMismatch(0);
     }
 
     left->set_parent(this);
     right->set_parent(this);
 }
 
-logical_expression_syntax::logical_expression_syntax(expression_syntax* left, expression_syntax* right, string oper_token) :
-    logical_expression_syntax(left, right, get_operator_from_token(oper_token))
-{
-}
-
-logical_operator logical_expression_syntax::get_operator_from_token(string token) const
-{
-    if (token == "and") return logical_operator::And;
-    if (token == "or") return logical_operator::Or;
-
-    throw std::invalid_argument("invalid token");
-}
-
 vector<syntax_base*> logical_expression_syntax::get_children() const
 {
     return vector<syntax_base*>{left, right};
+}
+
+vector<syntax_token*> logical_expression_syntax::get_tokens() const
+{
+    return vector<syntax_token*>{oper_token};
 }
 
 logical_expression_syntax::~logical_expression_syntax()
@@ -93,23 +103,23 @@ logical_expression_syntax::~logical_expression_syntax()
     {
         delete child;
     }
+
+    for (syntax_token* token : get_tokens())
+    {
+        delete token;
+    }
 }
 
-arithmetic_expression_syntax::arithmetic_expression_syntax(expression_syntax* left, expression_syntax* right, arithmetic_operator oper) :
-    expression_syntax(get_return_type(left, right)), left(left), right(right), oper(oper)
+arithmetic_expression_syntax::arithmetic_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right) :
+    expression_syntax(get_return_type(left, right)), left(left), oper_token(oper_token), right(right), oper(string_to_arithmetic_operator(oper_token->text))
 {
     if (left->is_numeric() == false || right->is_numeric() == false)
     {
-        output::errorMismatch(yylineno);
+        output::errorMismatch(0);
     }
 
     left->set_parent(this);
     right->set_parent(this);
-}
-
-arithmetic_expression_syntax::arithmetic_expression_syntax(expression_syntax* left, expression_syntax* right, string oper_token) :
-    arithmetic_expression_syntax(left, right, get_operator_from_token(oper_token))
-{
 }
 
 fundamental_type arithmetic_expression_syntax::get_return_type(expression_syntax* left, expression_syntax* right)
@@ -124,24 +134,19 @@ fundamental_type arithmetic_expression_syntax::get_return_type(expression_syntax
         return fundamental_type::Byte;
     }
 
-    output::errorMismatch(yylineno);
+    output::errorMismatch(0);
 
     return fundamental_type::Void;
-}
-
-arithmetic_operator arithmetic_expression_syntax::get_operator_from_token(string token) const
-{
-    if (token == "+") return arithmetic_operator::Add;
-    if (token == "-") return arithmetic_operator::Sub;
-    if (token == "*") return arithmetic_operator::Mul;
-    if (token == "/") return arithmetic_operator::Div;
-
-    throw std::invalid_argument("invalid token");
 }
 
 vector<syntax_base*> arithmetic_expression_syntax::get_children() const
 {
     return vector<syntax_base*>{left, right};
+}
+
+vector<syntax_token*> arithmetic_expression_syntax::get_tokens() const
+{
+    return vector<syntax_token*>{oper_token};
 }
 
 arithmetic_expression_syntax::~arithmetic_expression_syntax()
@@ -150,40 +155,33 @@ arithmetic_expression_syntax::~arithmetic_expression_syntax()
     {
         delete child;
     }
+
+    for (syntax_token* token : get_tokens())
+    {
+        delete token;
+    }
 }
 
-relational_expression_syntax::relational_expression_syntax(expression_syntax* left, expression_syntax* right, relational_operator oper) :
-    expression_syntax(fundamental_type::Bool), left(left), right(right), oper(oper)
+relational_expression_syntax::relational_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right) :
+    expression_syntax(fundamental_type::Bool), left(left), oper_token(oper_token), right(right), oper(string_to_relational_operator(oper_token->text))
 {
     if (left->is_numeric() == false || right->is_numeric() == false)
     {
-        output::errorMismatch(yylineno);
+        output::errorMismatch(0);
     }
 
     left->set_parent(this);
     right->set_parent(this);
 }
 
-relational_expression_syntax::relational_expression_syntax(expression_syntax* left, expression_syntax* right, string oper_token) :
-    relational_expression_syntax(left, right, get_operator_from_token(oper_token))
-{
-}
-
-relational_operator relational_expression_syntax::get_operator_from_token(string token) const
-{
-    if (token == "<") return relational_operator::Less;
-    if (token == "<=") return relational_operator::LessEqual;
-    if (token == ">") return relational_operator::Greater;
-    if (token == ">=") return relational_operator::GreaterEqual;
-    if (token == "==") return relational_operator::Equal;
-    if (token == "!=") return relational_operator::NotEqual;
-
-    throw std::invalid_argument("invalid token");
-}
-
 vector<syntax_base*> relational_expression_syntax::get_children() const
 {
     return vector<syntax_base*>{left, right};
+}
+
+vector<syntax_token*> relational_expression_syntax::get_tokens() const
+{
+    return vector<syntax_token*>{oper_token};
 }
 
 relational_expression_syntax::~relational_expression_syntax()
@@ -192,22 +190,27 @@ relational_expression_syntax::~relational_expression_syntax()
     {
         delete child;
     }
+
+    for (syntax_token* token : get_tokens())
+    {
+        delete token;
+    }
 }
 
-conditional_expression_syntax::conditional_expression_syntax(expression_syntax* true_value, expression_syntax* condition, expression_syntax* false_value) :
-    expression_syntax(get_return_type(true_value, false_value)), true_value(true_value), condition(condition), false_value(false_value)
+conditional_expression_syntax::conditional_expression_syntax(expression_syntax* true_value, syntax_token* if_token, expression_syntax* condition, syntax_token* const else_token, expression_syntax* false_value) :
+    expression_syntax(get_return_type(true_value, false_value)), true_value(true_value), if_token(if_token), condition(condition), else_token(else_token), false_value(false_value)
 {
     if (true_value->expression_return_type != false_value->expression_return_type)
     {
         if (true_value->is_numeric() == false || false_value->is_numeric() == false)
         {
-            output::errorMismatch(yylineno);
+            output::errorMismatch(0);
         }
     }
 
     if (condition->expression_return_type != fundamental_type::Bool)
     {
-        output::errorMismatch(yylineno);
+        output::errorMismatch(0);
     }
 
     true_value->set_parent(this);
@@ -218,6 +221,11 @@ conditional_expression_syntax::conditional_expression_syntax(expression_syntax* 
 vector<syntax_base*> conditional_expression_syntax::get_children() const
 {
     return vector<syntax_base*>{true_value, condition, false_value};
+}
+
+vector<syntax_token*> conditional_expression_syntax::get_tokens() const
+{
+    return vector<syntax_token*>{if_token, else_token};
 }
 
 fundamental_type conditional_expression_syntax::get_return_type(expression_syntax* left, expression_syntax* right) const
@@ -237,7 +245,7 @@ fundamental_type conditional_expression_syntax::get_return_type(expression_synta
         return left->expression_return_type;
     }
 
-    output::errorMismatch(yylineno);
+    output::errorMismatch(0);
 
     return fundamental_type::Void;
 }
@@ -248,21 +256,26 @@ conditional_expression_syntax::~conditional_expression_syntax()
     {
         delete child;
     }
+
+    for (syntax_token* token : get_tokens())
+    {
+        delete token;
+    }
 }
 
-identifier_expression_syntax::identifier_expression_syntax(string identifier) :
-    expression_syntax(get_return_type(identifier)), identifier(identifier)
+identifier_expression_syntax::identifier_expression_syntax(syntax_token* identifier_token) :
+    expression_syntax(get_return_type(identifier)), identifier_token(identifier_token), identifier(identifier_token->text)
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
     if (symbol == nullptr)
     {
-        output::errorUndef(yylineno, identifier);
+        output::errorUndef(0, identifier);
     }
 
     if (symbol->sym_type != symbol_type::Var)
     {
-        output::errorUndef(yylineno, identifier);
+        output::errorUndef(0, identifier);
     }
 }
 
@@ -271,13 +284,18 @@ vector<syntax_base*> identifier_expression_syntax::get_children() const
     return vector<syntax_base*>();
 }
 
+vector<syntax_token*> identifier_expression_syntax::get_tokens() const
+{
+    return vector<syntax_token*>{identifier_token};
+}
+
 fundamental_type identifier_expression_syntax::get_return_type(string identifier) const
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
     if (symbol == nullptr)
     {
-        output::errorUndef(yylineno, identifier);
+        output::errorUndef(0, identifier);
     }
 
     return symbol->type;
@@ -289,21 +307,26 @@ identifier_expression_syntax::~identifier_expression_syntax()
     {
         delete child;
     }
+
+    for (syntax_token* token : get_tokens())
+    {
+        delete token;
+    }
 }
 
-invocation_expression_syntax::invocation_expression_syntax(string identifier) :
-    expression_syntax(get_return_type(identifier)), identifier(identifier), expression_list(nullptr)
+invocation_expression_syntax::invocation_expression_syntax(syntax_token* identifier_token) :
+    expression_syntax(get_return_type(identifier_token->text)), identifier_token(identifier_token), identifier(identifier_token->text), expression_list(nullptr)
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
     if (symbol == nullptr)
     {
-        output::errorUndefFunc(yylineno, identifier);
+        output::errorUndefFunc(0, identifier);
     }
 
     if (symbol->sym_type != symbol_type::Func)
     {
-        output::errorUndefFunc(yylineno, identifier);
+        output::errorUndefFunc(0, identifier);
     }
 
     function_symbol* func_symbol = dynamic_cast<function_symbol*>(symbol);
@@ -312,23 +335,23 @@ invocation_expression_syntax::invocation_expression_syntax(string identifier) :
 
     if (func_symbol->parameter_types.size() != 0)
     {
-        output::errorPrototypeMismatch(yylineno, identifier, params_str);
+        output::errorPrototypeMismatch(0, identifier, params_str);
     }
 }
 
-invocation_expression_syntax::invocation_expression_syntax(string identifier, list_syntax<expression_syntax>* expression_list) :
-    expression_syntax(get_return_type(identifier)), identifier(identifier), expression_list(expression_list)
+invocation_expression_syntax::invocation_expression_syntax(syntax_token* identifier_token, list_syntax<expression_syntax>* expression_list) :
+    expression_syntax(get_return_type(identifier_token->text)), identifier_token(identifier_token), identifier(identifier_token->text), expression_list(expression_list)
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
     if (symbol == nullptr)
     {
-        output::errorUndefFunc(yylineno, identifier);
+        output::errorUndefFunc(0, identifier);
     }
 
     if (symbol->sym_type != symbol_type::Func)
     {
-        output::errorUndefFunc(yylineno, identifier);
+        output::errorUndefFunc(0, identifier);
     }
 
     function_symbol* func_symbol = dynamic_cast<function_symbol*>(symbol);
@@ -344,14 +367,14 @@ invocation_expression_syntax::invocation_expression_syntax(string identifier, li
 
     if (func_symbol->parameter_types.size() != elements.size())
     {
-        output::errorPrototypeMismatch(yylineno, identifier, params_str);
+        output::errorPrototypeMismatch(0, identifier, params_str);
     }
 
     for (size_t i = 0; i < elements.size(); i++)
     {
         if (func_symbol->parameter_types[i] != elements[i]->expression_return_type)
         {
-            output::errorPrototypeMismatch(yylineno, identifier, params_str);
+            output::errorPrototypeMismatch(0, identifier, params_str);
         }
     }
 
@@ -363,13 +386,18 @@ vector<syntax_base*> invocation_expression_syntax::get_children() const
     return vector<syntax_base*>{expression_list};
 }
 
+vector<syntax_token*> invocation_expression_syntax::get_tokens() const
+{
+    return vector<syntax_token*>{identifier_token};
+}
+
 fundamental_type invocation_expression_syntax::get_return_type(string identifier) const
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
     if (symbol == nullptr)
     {
-        output::errorUndefFunc(yylineno, identifier);
+        output::errorUndefFunc(0, identifier);
     }
 
     return symbol->type;
@@ -380,5 +408,10 @@ invocation_expression_syntax::~invocation_expression_syntax()
     for (syntax_base* child : get_children())
     {
         delete child;
+    }
+
+    for (syntax_token* token : get_tokens())
+    {
+        delete token;
     }
 }

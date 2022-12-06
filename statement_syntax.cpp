@@ -3,8 +3,8 @@
 using std::string;
 using std::vector;
 
-if_statement_syntax::if_statement_syntax(expression_syntax* condition, statement_syntax* body) :
-    condition(condition), body(body), else_clause(nullptr)
+if_statement_syntax::if_statement_syntax(syntax_token* if_token, expression_syntax* condition, statement_syntax* body) :
+    if_token(if_token), condition(condition), body(body), else_token(nullptr), else_clause(nullptr)
 {
     if (condition->expression_return_type != fundamental_type::Bool)
     {
@@ -15,8 +15,8 @@ if_statement_syntax::if_statement_syntax(expression_syntax* condition, statement
     body->set_parent(this);
 }
 
-if_statement_syntax::if_statement_syntax(expression_syntax* condition, statement_syntax* body, statement_syntax* else_clause) :
-    condition(condition), body(body), else_clause(else_clause)
+if_statement_syntax::if_statement_syntax(syntax_token* if_token, expression_syntax* condition, statement_syntax* body, syntax_token* else_token, statement_syntax* else_clause) :
+    if_token(if_token), condition(condition), body(body), else_token(else_token), else_clause(else_clause)
 {
     if (condition->expression_return_type != fundamental_type::Bool)
     {
@@ -33,15 +33,26 @@ vector<syntax_base*> if_statement_syntax::get_children() const
     return vector<syntax_base*>{condition, body, else_clause};
 }
 
+vector<syntax_token*> if_statement_syntax::get_tokens() const
+{
+    return vector<syntax_token*>{if_token, else_token};
+}
+
 if_statement_syntax::~if_statement_syntax()
 {
     for (syntax_base* child : get_children())
     {
         delete child;
     }
+
+    for (syntax_token* token : get_tokens())
+    {
+        delete token;
+    }
 }
 
-while_statement_syntax::while_statement_syntax(expression_syntax* condition, statement_syntax* body) : condition(condition), body(body)
+while_statement_syntax::while_statement_syntax(syntax_token* while_token, expression_syntax* condition, statement_syntax* body) : 
+    while_token(while_token), condition(condition), body(body)
 {
     if (condition->expression_return_type != fundamental_type::Bool)
     {
@@ -57,15 +68,26 @@ vector<syntax_base*> while_statement_syntax::get_children() const
     return vector<syntax_base*>{condition, body};
 }
 
+vector<syntax_token*> while_statement_syntax::get_tokens() const
+{
+    return vector<syntax_token*>{while_token};
+}
+
 while_statement_syntax::~while_statement_syntax()
 {
     for (syntax_base* child : get_children())
     {
         delete child;
     }
+
+    for (syntax_token* token : get_tokens())
+    {
+        delete token;
+    }
 }
 
-branch_statement_syntax::branch_statement_syntax(branch_type type) : type(type)
+branch_statement_syntax::branch_statement_syntax(syntax_token* branch_token) : 
+    branch_token(branch_token), type(string_to_branch_type(branch_token->text))
 {
 }
 
@@ -74,19 +96,31 @@ vector<syntax_base*> branch_statement_syntax::get_children() const
     return vector<syntax_base*>();
 }
 
+vector<syntax_token*> branch_statement_syntax::get_tokens() const
+{
+    return vector<syntax_token*>{branch_token};
+}
+
 branch_statement_syntax::~branch_statement_syntax()
 {
     for (syntax_base* child : get_children())
     {
         delete child;
     }
+
+    for (syntax_token* token : get_tokens())
+    {
+        delete token;
+    }
 }
 
-return_statement_syntax::return_statement_syntax() : expression(nullptr)
+return_statement_syntax::return_statement_syntax(syntax_token* return_token) : 
+    return_token(return_token), expression(nullptr)
 {
 }
 
-return_statement_syntax::return_statement_syntax(expression_syntax* expression) : expression(expression)
+return_statement_syntax::return_statement_syntax(syntax_token* return_token, expression_syntax* expression) : 
+    return_token(return_token), expression(expression)
 {
     expression->set_parent(this);
 }
@@ -96,11 +130,21 @@ vector<syntax_base*> return_statement_syntax::get_children() const
     return vector<syntax_base*>{expression};
 }
 
+vector<syntax_token*> return_statement_syntax::get_tokens() const
+{
+    return vector<syntax_token*>{return_token};
+}
+
 return_statement_syntax::~return_statement_syntax()
 {
     for (syntax_base* child : get_children())
     {
         delete child;
+    }
+
+    for (syntax_token* token : get_tokens())
+    {
+        delete token;
     }
 }
 
@@ -114,15 +158,26 @@ vector<syntax_base*> expression_statement_syntax::get_children() const
     return vector<syntax_base*>{expression};
 }
 
+vector<syntax_token*> expression_statement_syntax::get_tokens() const
+{
+    return vector<syntax_token*>();
+}
+
 expression_statement_syntax::~expression_statement_syntax()
 {
     for (syntax_base* child : get_children())
     {
         delete child;
     }
+
+    for (syntax_token* token : get_tokens())
+    {
+        delete token;
+    }
 }
 
-assignment_statement_syntax::assignment_statement_syntax(string identifier, expression_syntax* value) : identifier(identifier), value(value)
+assignment_statement_syntax::assignment_statement_syntax(syntax_token* identifier_token, syntax_token* assign_token, expression_syntax* value) : 
+    identifier_token(identifier_token), identifier(identifier_token->text), assign_token(assign_token), value(value)
 {
     // todo: verify that value type matches identifier type
 
@@ -134,16 +189,26 @@ vector<syntax_base*> assignment_statement_syntax::get_children() const
     return vector<syntax_base*>{value};
 }
 
+vector<syntax_token*> assignment_statement_syntax::get_tokens() const
+{
+    return vector<syntax_token*>{identifier_token, assign_token};
+}
+
 assignment_statement_syntax::~assignment_statement_syntax()
 {
     for (syntax_base* child : get_children())
     {
         delete child;
     }
+
+    for (syntax_token* token : get_tokens())
+    {
+        delete token;
+    }
 }
 
-declaration_statement_syntax::declaration_statement_syntax(type_syntax* type, string identifier) :
-    type(type), identifier(identifier), value(nullptr)
+declaration_statement_syntax::declaration_statement_syntax(type_syntax* type, syntax_token* identifier_token) :
+    type(type), identifier_token(identifier_token), identifier(identifier_token->text), assign_token(nullptr), value(nullptr)
 {
     if (type->is_special())
     {
@@ -153,8 +218,8 @@ declaration_statement_syntax::declaration_statement_syntax(type_syntax* type, st
     type->set_parent(this);
 }
 
-declaration_statement_syntax::declaration_statement_syntax(type_syntax* type, string identifier, expression_syntax* value) :
-    type(type), identifier(identifier), value(value)
+declaration_statement_syntax::declaration_statement_syntax(type_syntax* type, syntax_token* identifier_token, syntax_token* assign_token, expression_syntax* value) :
+    type(type), identifier_token(identifier_token), identifier(identifier_token->text), assign_token(assign_token), value(value)
 {
     if (type->is_special() || value->is_special())
     {
@@ -178,11 +243,21 @@ vector<syntax_base*> declaration_statement_syntax::get_children() const
     return vector<syntax_base*>{value};
 }
 
+vector<syntax_token*> declaration_statement_syntax::get_tokens() const
+{
+    return vector<syntax_token*>{identifier_token, assign_token};
+}
+
 declaration_statement_syntax::~declaration_statement_syntax()
 {
     for (syntax_base* child : get_children())
     {
         delete child;
+    }
+
+    for (syntax_token* token : get_tokens())
+    {
+        delete token;
     }
 }
 
@@ -196,10 +271,20 @@ vector<syntax_base*> block_statement_syntax::get_children() const
     return vector<syntax_base*>{statement_list};
 }
 
+vector<syntax_token*> block_statement_syntax::get_tokens() const
+{
+    return vector<syntax_token*>();
+}
+
 block_statement_syntax::~block_statement_syntax()
 {
     for (syntax_base* child : get_children())
     {
         delete child;
+    }
+
+    for (syntax_token* token : get_tokens())
+    {
+        delete token;
     }
 }

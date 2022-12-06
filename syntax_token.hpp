@@ -2,7 +2,6 @@
 #ifndef _SYNTAX_TOKEN_HPP_
 #define _SYNTAX_TOKEN_HPP_
 
-#include "parser.tab.hpp"
 #include <string>
 
 class syntax_token
@@ -24,7 +23,7 @@ class syntax_token
     virtual ~syntax_token() = default;
 };
 
-class numeric_syntax_token : public syntax_token
+class numeric_syntax_token final : public syntax_token
 {
     public:
 
@@ -35,6 +34,8 @@ class numeric_syntax_token : public syntax_token
     {
         
     }
+
+    ~numeric_syntax_token() = default;
 };
 
 #endif

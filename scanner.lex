@@ -31,12 +31,12 @@ else                               { yylval.token = new syntax_token(ELSE, yylin
 while                              { yylval.token = new syntax_token(WHILE, yylineno, yytext); return WHILE; }
 break                              { yylval.token = new syntax_token(BREAK, yylineno, yytext); return BREAK; }
 continue                           { yylval.token = new syntax_token(CONTINUE, yylineno, yytext); return CONTINUE; }
-;                                  { yylval.token = new syntax_token(SC, yylineno, yytext); return SC; }
-,                                  { yylval.token = new syntax_token(COMMA, yylineno, yytext); return COMMA; }
-\(                                 { yylval.token = new syntax_token(LPAREN, yylineno, yytext); return LPAREN; }
-\)                                 { yylval.token = new syntax_token(RPAREN, yylineno, yytext); return RPAREN; }
-\{                                 { yylval.token = new syntax_token(LBRACE, yylineno, yytext); return LBRACE; }
-\}                                 { yylval.token = new syntax_token(RBRACE, yylineno, yytext); return RBRACE; }
+;                                  { return SC; }
+,                                  { return COMMA; }
+\(                                 { return LPAREN; }
+\)                                 { return RPAREN; }
+\{                                 { return LBRACE; }
+\}                                 { return RBRACE; }
 =                                  { yylval.token = new syntax_token(ASSIGN, yylineno, yytext); return ASSIGN; }
 ==|!=                              { yylval.token = new syntax_token(EQOP, yylineno, yytext); return EQOP; }
 \<|>|<=|>=                         { yylval.token = new syntax_token(RELOP, yylineno, yytext); return RELOP; }
