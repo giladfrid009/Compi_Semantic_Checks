@@ -17,7 +17,7 @@ class symbol_table
 
     static symbol_table& instance();
 
-    void open_scope(int initial_offset = 0);
+    void open_scope(int initial_offset = 0, bool is_implicit = false);
 
     void close_scope();
 

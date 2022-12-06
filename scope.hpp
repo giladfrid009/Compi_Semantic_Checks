@@ -10,13 +10,15 @@ class scope
 {
     std::unordered_map<std::string, symbol*> symbols;
 
+    public:
+
     int current_offset;
 
     int current_serial;
 
-    public:
+    const bool is_implicit;
 
-    scope(int initial_offset = 0);
+    scope(int initial_offset = 0, bool is_implicit = false);
 
     ~scope();
 

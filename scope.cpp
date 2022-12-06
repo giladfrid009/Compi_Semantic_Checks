@@ -8,7 +8,8 @@
 using std::string;
 using std::vector;
 
-scope::scope(int initial_offset) : symbols(), current_offset(initial_offset), current_serial(0)
+scope::scope(int initial_offset, bool is_implicit) : 
+    symbols(), current_offset(initial_offset), current_serial(0), is_implicit(is_implicit)
 {
 }
 

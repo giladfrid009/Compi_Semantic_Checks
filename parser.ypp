@@ -98,7 +98,7 @@ Funcs   	: /*epsilon*/												        { $$ = new list_syntax<function_declar
       		| FuncDecl Funcs											        { $$ = $2->push_front($1); }
 			;
 FuncDecl 	: RetType ID LPAREN Formals RPAREN                                  { add_function_symbol($1, $2, $4); } 
-              LBRACE Statements CS RBRACE                                       { $$ = new function_declaration_syntax($1, $2, $4, $8); }
+              LBRACE Statements CS RBRACE                                      { $$ = new function_declaration_syntax($1, $2, $4, $8); }
 			;
 RetType 	: Type                                                              { $$ = $1; }
         	| VOID                                                              { $$ = new type_syntax($1); }
@@ -121,9 +121,9 @@ Statement	: LBRACE OS Statements CS RBRACE                                    { 
 			| Call SC                                                           { $$ = new expression_statement_syntax($1); }
 			| RETURN SC	                                                        { $$ = new return_statement_syntax($1); }
 			| RETURN Exp SC                                                     { $$ = new return_statement_syntax($1, $2); }
-			| IF LPAREN OS Exp CS RPAREN OS Statement CS                        { $$ = new if_statement_syntax($1, $4, $8);  }
-			| IF LPAREN OS Exp CS RPAREN OS Statement CS ELSE OS Statement CS   { $$ = new if_statement_syntax($1, $4, $8, $10, $12); }
-			| WHILE LPAREN OS Exp CS RPAREN OS Statement CS                     { $$ = new while_statement_syntax($1, $4, $8); }
+			| IF LPAREN OS Exp CS RPAREN OSI Statement CSI                       { $$ = new if_statement_syntax($1, $4, $8);  }
+			| IF LPAREN OS Exp CS RPAREN OSI Statement CSI ELSE OSI Statement CSI { $$ = new if_statement_syntax($1, $4, $8, $10, $12); }
+			| WHILE LPAREN OS Exp CS RPAREN OSI Statement CSI                    { $$ = new while_statement_syntax($1, $4, $8); }
 			| BREAK SC                                                          { $$ = new branch_statement_syntax($1); }
 			| CONTINUE SC                                                       { $$ = new branch_statement_syntax($1); }
             ;       
@@ -155,9 +155,22 @@ Exp 		: LPAREN Exp RPAREN	                                                { $$ =
             | Exp EQOP Exp                                                      { $$ = new relational_expression_syntax($1, $2, $3); } 
 			| LPAREN Type RPAREN Exp                                            { $$ = new cast_expression_syntax($2, $4); }
 			;
-OS          : /*epsilon*/                                                       { symbol_table::instance().open_scope(); } 
+OSI         : /*epsilon*/                                                       { symbol_table::instance().open_scope(0, true); } 
+OS          : /*epsilon*/                                                       { 
+                                                                                    if (symbol_table::instance().get_scopes().front().is_implicit == false)
+                                                                                    {
+                                                                                        symbol_table::instance().open_scope();
+                                                                                    }       
+                                                                                } 
             ;       
-CS          : /*epsilon*/                                                       { print_and_close_scope(); }
+CSI          : /*epsilon*/                                                       { print_and_close_scope(); }
+            ;
+CS          : /*epsilon*/                                                       { 
+                                                                                    if (symbol_table::instance().get_scopes().front().is_implicit == false)
+                                                                                    {
+                                                                                        print_and_close_scope(); 
+                                                                                    }                         
+                                                                                }
             ;
 %%
 
@@ -230,7 +243,7 @@ expression_syntax* create_byte_literal_expression(syntax_token* value_token, syn
 
 void print_and_close_scope()
 {
-    symbol_table::instance().get_scopes().front().print_symbols();
     output::endScope();
+    symbol_table::instance().get_scopes().front().print_symbols();
     symbol_table::instance().close_scope(); 
 }

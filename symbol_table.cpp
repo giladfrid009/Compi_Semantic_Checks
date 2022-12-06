@@ -15,9 +15,16 @@ symbol_table& symbol_table::instance()
     return instance;
 }
 
-void symbol_table::open_scope(int initial_offset)
+void symbol_table::open_scope(int initial_offset, bool is_implicit)
 {
-    scopes.push_front(scope(initial_offset));
+    if (scopes.size() == 0)
+    {
+        scopes.push_front(scope(initial_offset, is_implicit));
+    }
+    else
+    {
+        scopes.push_front(scope(initial_offset + scopes.front().current_offset, is_implicit));
+    }
 }
 
 void symbol_table::close_scope()
