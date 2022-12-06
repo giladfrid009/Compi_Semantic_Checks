@@ -264,7 +264,7 @@ conditional_expression_syntax::~conditional_expression_syntax()
 }
 
 identifier_expression_syntax::identifier_expression_syntax(syntax_token* identifier_token) :
-    expression_syntax(get_return_type(identifier)), identifier_token(identifier_token), identifier(identifier_token->text)
+    expression_syntax(get_return_type(identifier_token->text)), identifier_token(identifier_token), identifier(identifier_token->text)
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
 

@@ -154,7 +154,8 @@ Exp 		: LPAREN Exp RPAREN	                                                { $$ =
 			;
 OS          : /*epsilon*/                                                       { symbol_table::instance().open_scope(); } 
             ;       
-CS          : /*epsilon*/                                                       { symbol_table::instance().get_scopes().front().print_symbols(); 
+CS          : /*epsilon*/                                                       { symbol_table::instance().get_scopes().front().print_symbols();
+                                                                                  output::endScope();
                                                                                   symbol_table::instance().close_scope(); }
             ;
 %%
