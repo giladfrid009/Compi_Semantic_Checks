@@ -23,19 +23,4 @@ class syntax_token
     virtual ~syntax_token() = default;
 };
 
-class numeric_syntax_token final : public syntax_token
-{
-    public:
-
-    const int value;
-
-    numeric_syntax_token(int type, int definition_line, std::string text, int value) : 
-        syntax_token(type, definition_line, text), value(value)
-    {
-        
-    }
-
-    ~numeric_syntax_token() = default;
-};
-
 #endif

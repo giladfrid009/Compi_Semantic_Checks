@@ -43,8 +43,8 @@ continue                           { yylval.token = new syntax_token(CONTINUE, y
 \+|\-                              { yylval.token = new syntax_token(ADDOP, yylineno, yytext); return ADDOP; }
 \*|\/                              { yylval.token = new syntax_token(MULOP, yylineno, yytext); return MULOP; }
 [a-zA-Z][a-zA-Z0-9]*               { yylval.token = new syntax_token(ID, yylineno, yytext); return ID; }
+0|[1-9][0-9]*                      { yylval.token = new syntax_token(NUM, yylineno, yytext); return NUM; }
 \"([^\n\r\"\\]|\\[rnt"\\])+\"      { yylval.token = new syntax_token(STRING, yylineno, yytext); return STRING; }
-0|[1-9][0-9]*                      { yylval.num_token = new numeric_syntax_token(NUM, yylineno, yytext, std::stoi(yytext)); return NUM; }
 .                                  { output::errorLex(yylineno); }
 
 %%

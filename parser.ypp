@@ -28,7 +28,6 @@ void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_tok
 %union 
 { 
     syntax_token*                             token;
-    numeric_syntax_token*                     num_token;
     root_syntax*                              root;
     type_syntax*                              type;                  
     formal_syntax*                            formal;     
@@ -56,7 +55,7 @@ void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_tok
 %token COMMA
 %token LBRACE
 %token RBRACE
-%token <num_token> NUM
+%token <token> NUM
 %token <token> ID
 %token <token> STRING
 
@@ -140,8 +139,8 @@ Exp 		: LPAREN Exp RPAREN	                                                { $$ =
             | Exp MULOP Exp                                                     { $$ = new arithmetic_expression_syntax($1, $2, $3); }
 			| ID                                                                { $$ = new identifier_expression_syntax($1); }
 			| Call                                                              { $$ = $1; }
-			| NUM                                                               { $$ = new literal_expression_syntax<int>($1->value, $1); }
-			| NUM B                                                             { $$ = new literal_expression_syntax<char>($1->value, $1); delete $2; }
+			| NUM                                                               { $$ = new literal_expression_syntax<int>(std::stoi($1->text), $1); }
+			| NUM B                                                             { $$ = new literal_expression_syntax<char>(std::stoi($1->text), $1); delete $2; }
 			| STRING                                                            { $$ = new literal_expression_syntax<std::string>($1->text, $1); }
 			| TRUE                                                              { $$ = new literal_expression_syntax<bool>(true, $1); }
 			| FALSE                                                             { $$ = new literal_expression_syntax<bool>(false, $1); }
