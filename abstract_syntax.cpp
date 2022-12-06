@@ -3,6 +3,8 @@
 #include <stdexcept>
 #include <string>
 
+extern int yylineno;
+
 std::string fundamental_type_to_string(fundamental_type type)
 {
     switch(type)
@@ -83,7 +85,7 @@ expression_syntax::expression_syntax(fundamental_type return_type) : expression_
 {
     if (is_special())
     {
-        output::errorMismatch(0);
+        output::errorMismatch(yylineno);
     }
 }
 

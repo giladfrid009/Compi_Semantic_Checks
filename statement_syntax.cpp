@@ -1,4 +1,7 @@
 #include "statement_syntax.hpp"
+#include "hw3_output.hpp"
+#include "symbol_table.hpp"
+#include "abstract_syntax.hpp"
 
 using std::string;
 using std::vector;
@@ -8,7 +11,7 @@ if_statement_syntax::if_statement_syntax(syntax_token* if_token, expression_synt
 {
     if (condition->expression_return_type != fundamental_type::Bool)
     {
-        // todo: handle error
+        output::errorMismatch(if_token->definition_line);
     }
 
     condition->set_parent(this);
@@ -20,7 +23,7 @@ if_statement_syntax::if_statement_syntax(syntax_token* if_token, expression_synt
 {
     if (condition->expression_return_type != fundamental_type::Bool)
     {
-        // todo: handle error
+        output::errorMismatch(if_token->definition_line);
     }
 
     condition->set_parent(this);
@@ -56,7 +59,7 @@ while_statement_syntax::while_statement_syntax(syntax_token* while_token, expres
 {
     if (condition->expression_return_type != fundamental_type::Bool)
     {
-        // todo: handle error
+        output::errorMismatch(while_token->definition_line);
     }
 
     condition->set_parent(this);
@@ -179,7 +182,25 @@ expression_statement_syntax::~expression_statement_syntax()
 assignment_statement_syntax::assignment_statement_syntax(syntax_token* identifier_token, syntax_token* assign_token, expression_syntax* value) : 
     identifier_token(identifier_token), identifier(identifier_token->text), assign_token(assign_token), value(value)
 {
-    // todo: verify that value type matches identifier type
+    symbol* identifier_symbol = symbol_table::instance().get_symbol(identifier);
+
+    if (identifier_symbol == nullptr)
+    {
+        output::errorUndef(identifier_token->definition_line, identifier);
+    }
+
+    if (identifier_symbol->sym_type != symbol_type::Var)
+    {
+        output::errorUndef(identifier_token->definition_line, identifier);
+    }
+
+    if (identifier_symbol->type != value->expression_return_type)
+    {
+        if (identifier_symbol->type != fundamental_type::Int || value->expression_return_type != fundamental_type::Byte)
+        {
+            output::errorMismatch(assign_token->definition_line);
+        }
+    }
 
     value->set_parent(this);
 }
@@ -212,8 +233,15 @@ declaration_statement_syntax::declaration_statement_syntax(type_syntax* type, sy
 {
     if (type->is_special())
     {
-        //todo: handle illigal type
+        output::errorMismatch(identifier_token->definition_line);
     }
+
+    if (symbol_table::instance().contains_symbol(identifier))
+    {
+        output::errorDef(identifier_token->definition_line, identifier);
+    }
+
+    symbol_table::instance().add_variable(identifier, type->type);
 
     type->set_parent(this);
 }
@@ -223,16 +251,23 @@ declaration_statement_syntax::declaration_statement_syntax(type_syntax* type, sy
 {
     if (type->is_special() || value->is_special())
     {
-        //todo: handle illigal type
+        output::errorMismatch(identifier_token->definition_line);
     }
 
     if (type->type != value->expression_return_type)
     {
         if (type->type != fundamental_type::Int || value->expression_return_type != fundamental_type::Byte)
         {
-            // todo: handle error
+            output::errorMismatch(identifier_token->definition_line);
         }
     }
+
+    if (symbol_table::instance().contains_symbol(identifier))
+    {
+        output::errorDef(identifier_token->definition_line, identifier);
+    }
+
+    symbol_table::instance().add_variable(identifier, type->type);
 
     type->set_parent(this);
     value->set_parent(this);

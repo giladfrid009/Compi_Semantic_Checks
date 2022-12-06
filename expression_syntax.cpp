@@ -6,12 +6,14 @@
 using std::string;
 using std::vector;
 
+extern int yylineno;
+
 cast_expression_syntax::cast_expression_syntax(type_syntax* destination_type, expression_syntax* expression) :
     expression_syntax(destination_type->type), destination_type(destination_type), expression(expression)
 {
     if (expression->is_numeric() == false || destination_type->is_numeric() == false)
     {
-        output::errorMismatch(0);
+        output::errorMismatch(yylineno);
     }
 
     destination_type->set_parent(this);
@@ -46,7 +48,7 @@ not_expression_syntax::not_expression_syntax(syntax_token* not_token, expression
 {
     if (expression->expression_return_type != fundamental_type::Bool)
     {
-        output::errorMismatch(0);
+        output::errorMismatch(not_token->definition_line);
     }
 
     expression->set_parent(this);
@@ -80,7 +82,7 @@ logical_expression_syntax::logical_expression_syntax(expression_syntax* left, sy
 {
     if (left->expression_return_type != fundamental_type::Bool || right->expression_return_type != fundamental_type::Bool)
     {
-        output::errorMismatch(0);
+        output::errorMismatch(oper_token->definition_line);
     }
 
     left->set_parent(this);
@@ -115,7 +117,7 @@ arithmetic_expression_syntax::arithmetic_expression_syntax(expression_syntax* le
 {
     if (left->is_numeric() == false || right->is_numeric() == false)
     {
-        output::errorMismatch(0);
+        output::errorMismatch(oper_token->definition_line);
     }
 
     left->set_parent(this);
@@ -167,7 +169,7 @@ relational_expression_syntax::relational_expression_syntax(expression_syntax* le
 {
     if (left->is_numeric() == false || right->is_numeric() == false)
     {
-        output::errorMismatch(0);
+        output::errorMismatch(oper_token->definition_line);
     }
 
     left->set_parent(this);
@@ -204,7 +206,7 @@ conditional_expression_syntax::conditional_expression_syntax(expression_syntax* 
     {
         if (true_value->is_numeric() == false || false_value->is_numeric() == false)
         {
-            output::errorMismatch(0);
+            output::errorMismatch(if_token->definition_line);
         }
     }
 
@@ -270,12 +272,12 @@ identifier_expression_syntax::identifier_expression_syntax(syntax_token* identif
 
     if (symbol == nullptr)
     {
-        output::errorUndef(0, identifier);
+        output::errorUndef(identifier_token->definition_line, identifier);
     }
 
     if (symbol->sym_type != symbol_type::Var)
     {
-        output::errorUndef(0, identifier);
+        output::errorUndef(identifier_token->definition_line, identifier);
     }
 }
 
@@ -295,7 +297,7 @@ fundamental_type identifier_expression_syntax::get_return_type(string identifier
 
     if (symbol == nullptr)
     {
-        output::errorUndef(0, identifier);
+        output::errorUndef(yylineno, identifier);
     }
 
     return symbol->type;
@@ -321,12 +323,12 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
 
     if (symbol == nullptr)
     {
-        output::errorUndefFunc(0, identifier);
+        output::errorUndefFunc(identifier_token->definition_line, identifier);
     }
 
     if (symbol->sym_type != symbol_type::Func)
     {
-        output::errorUndefFunc(0, identifier);
+        output::errorUndefFunc(identifier_token->definition_line, identifier);
     }
 
     function_symbol* func_symbol = dynamic_cast<function_symbol*>(symbol);
@@ -335,7 +337,7 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
 
     if (func_symbol->parameter_types.size() != 0)
     {
-        output::errorPrototypeMismatch(0, identifier, params_str);
+        output::errorPrototypeMismatch(identifier_token->definition_line, identifier, params_str);
     }
 }
 
@@ -346,12 +348,12 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
 
     if (symbol == nullptr)
     {
-        output::errorUndefFunc(0, identifier);
+        output::errorUndefFunc(identifier_token->definition_line, identifier);
     }
 
     if (symbol->sym_type != symbol_type::Func)
     {
-        output::errorUndefFunc(0, identifier);
+        output::errorUndefFunc(identifier_token->definition_line, identifier);
     }
 
     function_symbol* func_symbol = dynamic_cast<function_symbol*>(symbol);
@@ -367,14 +369,14 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
 
     if (func_symbol->parameter_types.size() != elements.size())
     {
-        output::errorPrototypeMismatch(0, identifier, params_str);
+        output::errorPrototypeMismatch(identifier_token->definition_line, identifier, params_str);
     }
 
     for (size_t i = 0; i < elements.size(); i++)
     {
         if (func_symbol->parameter_types[i] != elements[i]->expression_return_type)
         {
-            output::errorPrototypeMismatch(0, identifier, params_str);
+            output::errorPrototypeMismatch(identifier_token->definition_line, identifier, params_str);
         }
     }
 
@@ -397,7 +399,7 @@ fundamental_type invocation_expression_syntax::get_return_type(string identifier
 
     if (symbol == nullptr)
     {
-        output::errorUndefFunc(0, identifier);
+        output::errorUndefFunc(yylineno, identifier);
     }
 
     return symbol->type;
