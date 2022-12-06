@@ -21,6 +21,8 @@ class symbol_table
 
     void close_scope();
 
+    const scope& current_scope() const;
+
     bool contains_symbol(std::string symbol_name) const;
 
     symbol* get_symbol(std::string symbol_name) const;

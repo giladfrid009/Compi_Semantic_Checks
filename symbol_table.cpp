@@ -32,6 +32,12 @@ void symbol_table::close_scope()
     scopes.pop_front();
 }
 
+const scope& symbol_table::current_scope() const
+{
+    return scopes.front();
+}
+
+
 bool symbol_table::contains_symbol(string symbol_name) const
 {
     for (const scope& sc : scopes)
