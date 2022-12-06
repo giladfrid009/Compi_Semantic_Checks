@@ -170,7 +170,8 @@ int main()
 
 	int res = yyparse();
 
-    print_and_close_scope();
+    symtab.get_scopes().front().print_symbols();
+    symtab.close_scope();
 
     return res;
 }
