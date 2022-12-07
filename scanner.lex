@@ -6,6 +6,8 @@
 #include "hw3_output.hpp"
 #include "syntax_token.hpp"
 
+void set_token(yytoken_kind_t kind);
+
 %}
 
 %option yylineno
@@ -15,36 +17,41 @@
 
 [ \t\r\n]*                         { ; }
 \/\/[^\r\n]*[\r|\n|\r\n]?          { ; }
-void                               { yylval.token = new syntax_token(VOID, yylineno, yytext); return VOID; }
-int                                { yylval.token = new syntax_token(INT, yylineno, yytext); return INT; }
-byte                               { yylval.token = new syntax_token(BYTE, yylineno, yytext); return BYTE; }
-b                                  { yylval.token = new syntax_token(B, yylineno, yytext); return B; }
-bool                               { yylval.token = new syntax_token(BOOL, yylineno, yytext); return BOOL; }
-and                                { yylval.token = new syntax_token(AND, yylineno, yytext); return AND; }
-or                                 { yylval.token = new syntax_token(OR, yylineno, yytext); return OR; }
-not                                { yylval.token = new syntax_token(NOT, yylineno, yytext); return NOT; }
-true                               { yylval.token = new syntax_token(TRUE, yylineno, yytext); return TRUE; }
-false                              { yylval.token = new syntax_token(FALSE, yylineno, yytext); return FALSE; }
-return                             { yylval.token = new syntax_token(RETURN, yylineno, yytext); return RETURN; }
-if                                 { yylval.token = new syntax_token(IF, yylineno, yytext); return IF; }
-else                               { yylval.token = new syntax_token(ELSE, yylineno, yytext); return ELSE; }
-while                              { yylval.token = new syntax_token(WHILE, yylineno, yytext); return WHILE; }
-break                              { yylval.token = new syntax_token(BREAK, yylineno, yytext); return BREAK; }
-continue                           { yylval.token = new syntax_token(CONTINUE, yylineno, yytext); return CONTINUE; }
+void                               { set_token(VOID); return VOID; }
+int                                { set_token(INT); return INT; }
+byte                               { set_token(BYTE); return BYTE; }
+b                                  { set_token(B); return B; }
+bool                               { set_token(BOOL); return BOOL; }
+and                                { set_token(AND); return AND; }
+or                                 { set_token(OR); return OR; }
+not                                { set_token(NOT); return NOT; }
+true                               { set_token(TRUE); return TRUE; }
+false                              { set_token(FALSE); return FALSE; }
+return                             { set_token(RETURN); return RETURN; }
+if                                 { set_token(IF); return IF; }
+else                               { set_token(ELSE); return ELSE; }
+while                              { set_token(WHILE); return WHILE; }
+break                              { set_token(BREAK); return BREAK; }
+continue                           { set_token(CONTINUE); return CONTINUE; }
 ;                                  { return SC; }
 ,                                  { return COMMA; }
 \(                                 { return LPAREN; }
 \)                                 { return RPAREN; }
 \{                                 { return LBRACE; }
 \}                                 { return RBRACE; }
-=                                  { yylval.token = new syntax_token(ASSIGN, yylineno, yytext); return ASSIGN; }
-==|!=                              { yylval.token = new syntax_token(EQOP, yylineno, yytext); return EQOP; }
-\<|>|<=|>=                         { yylval.token = new syntax_token(RELOP, yylineno, yytext); return RELOP; }
-\+|\-                              { yylval.token = new syntax_token(ADDOP, yylineno, yytext); return ADDOP; }
-\*|\/                              { yylval.token = new syntax_token(MULOP, yylineno, yytext); return MULOP; }
-[a-zA-Z][a-zA-Z0-9]*               { yylval.token = new syntax_token(ID, yylineno, yytext); return ID; }
-0|[1-9][0-9]*                      { yylval.token = new syntax_token(NUM, yylineno, yytext); return NUM; }
-\"([^\n\r\"\\]|\\[rnt"\\])+\"      { yylval.token = new syntax_token(STRING, yylineno, yytext); return STRING; }
+=                                  { set_token(ASSIGN); return ASSIGN; }
+==|!=                              { set_token(EQOP); return EQOP; }
+\<|>|<=|>=                         { set_token(RELOP); return RELOP; }
+\+|\-                              { set_token(ADDOP); return ADDOP; }
+\*|\/                              { set_token(MULOP); return MULOP; }
+[a-zA-Z][a-zA-Z0-9]*               { set_token(ID); return ID; }
+0|[1-9][0-9]*                      { set_token(NUM); return NUM; }
+\"([^\n\r\"\\]|\\[rnt"\\])+\"      { set_token(STRING); return STRING; }
 .                                  { output::errorLex(yylineno); }
 
 %%
+
+void set_token(yytoken_kind_t kind)
+{
+    yylval.token = new syntax_token(kind, yylineno, yytext);
+}
