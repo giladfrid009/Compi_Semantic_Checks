@@ -2,6 +2,7 @@
 #define _SCOPE_HPP_
 
 #include <unordered_map>
+#include <list>
 #include <string>
 #include "symbol.hpp"
 #include "abstract_syntax.hpp"
@@ -12,11 +13,10 @@ class scope
 {
     friend class symbol_table;
 
-    std::unordered_map<std::string, symbol*> symbols;
+    std::list<symbol*> symbol_list;
+    std::unordered_map<std::string, symbol*> symbol_map;
 
     int current_offset;
-
-    int current_serial;
 
     public:
 
@@ -29,6 +29,8 @@ class scope
     bool contains_symbol(std::string symbol_name) const;
 
     symbol* get_symbol(std::string symbol_name) const;
+
+    const std::list<symbol*>& get_symbols() const;
 
     bool add_variable(std::string name, fundamental_type type);
 

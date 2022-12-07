@@ -9,21 +9,21 @@ using std::string;
 using std::vector;
 
 scope::scope(int offset, scope_owner owner) : 
-    symbols(), current_offset(offset), current_serial(0), owner(owner)
+    symbol_list(), symbol_map(), current_offset(offset), owner(owner)
 {
 }
 
 scope::~scope()
 {
-    for (auto& key_val : symbols)
+    for (symbol* sym : symbol_list)
     {
-        delete key_val.second;
+        delete sym;
     }
 }
 
 bool scope::contains_symbol(string symbol_name) const
 {
-    return symbols.find(symbol_name) != symbols.end();
+    return symbol_map.find(symbol_name) != symbol_map.end();
 }
 
 symbol* scope::get_symbol(string symbol_name) const
@@ -33,7 +33,12 @@ symbol* scope::get_symbol(string symbol_name) const
         return nullptr;
     }
 
-    return symbols.at(symbol_name);
+    return symbol_map.at(symbol_name);
+}
+
+const std::list<symbol*>& scope::get_symbols() const
+{
+    return symbol_list;
 }
 
 bool scope::add_variable(string name, fundamental_type type)
@@ -43,10 +48,11 @@ bool scope::add_variable(string name, fundamental_type type)
         return false;
     }
 
-    symbols[name] = new variable_symbol(name, type, current_offset, current_serial);
+    symbol* new_symbol = new variable_symbol(name, type, current_offset);
+    symbol_list.push_back(new_symbol);
+    symbol_map[name] = new_symbol;
 
     current_offset += 1;
-    current_serial += 1;
 
     return true;
 }
@@ -58,25 +64,16 @@ bool scope::add_function(string name, fundamental_type return_type, std::vector<
         return false;
     }
 
-    symbols[name] = new function_symbol(name, return_type, parameter_types, current_serial);
-
-    current_serial += 1;
+    symbol* new_symbol = new function_symbol(name, return_type, parameter_types);
+    symbol_list.push_back(new_symbol);
+    symbol_map[name] = new_symbol;
 
     return true;
 }
 
 void scope::print_symbols() const
 {
-    vector<symbol*> symbols_sorted;
-
-    for (auto& kv : symbols)
-    {
-        symbols_sorted.push_back(kv.second);
-    }
-
-    std::sort(symbols_sorted.begin(), symbols_sorted.end(), [] (symbol* a, symbol* b) { return a->serial_number < b->serial_number ;});
-
-    for (symbol* sym : symbols_sorted)
+    for (symbol* sym : symbol_list)
     {
         if (sym->sym_type == symbol_type::Var)
         {
