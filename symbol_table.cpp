@@ -5,7 +5,7 @@ using std::string;
 using std::vector;
 using std::list;
 
-symbol_table::symbol_table() : scopes()
+symbol_table::symbol_table() : scope_list()
 {
     
 }
@@ -16,32 +16,32 @@ symbol_table& symbol_table::instance()
     return instance;
 }
 
-void symbol_table::open_scope(int offset, scope_owner owner)
+void symbol_table::open_scope(int offset, bool is_loop_scope)
 {
-    if (scopes.size() == 0)
+    if (scope_list.size() == 0)
     {
-        scopes.push_front(scope(offset, owner));
+        scope_list.push_front(scope(offset, is_loop_scope));
     }
     else
     {
-        scopes.push_front(scope(offset + scopes.front().current_offset, owner));
+        scope_list.push_front(scope(offset + scope_list.front().current_offset, is_loop_scope));
     }
 }
 
 void symbol_table::close_scope()
 {
-    scopes.pop_front();
+    scope_list.pop_front();
 }
 
 const scope& symbol_table::current_scope() const
 {
-    return scopes.front();
+    return scope_list.front();
 }
 
 
 bool symbol_table::contains_symbol(string symbol_name) const
 {
-    for (const scope& sc : scopes)
+    for (const scope& sc : scope_list)
     {
         if (sc.contains_symbol(symbol_name))
         {
@@ -54,7 +54,7 @@ bool symbol_table::contains_symbol(string symbol_name) const
 
 symbol* symbol_table::get_symbol(string symbol_name) const
 {
-    for (const scope& sc : scopes)
+    for (const scope& sc : scope_list)
     {
         if (sc.contains_symbol(symbol_name))
         {
@@ -67,22 +67,22 @@ symbol* symbol_table::get_symbol(string symbol_name) const
 
 bool symbol_table::add_variable(string name, fundamental_type type)
 {
-    if (scopes.size() == 0)
+    if (scope_list.size() == 0)
     {
         return false;
     }
 
-    return scopes.front().add_variable(name, type);
+    return scope_list.front().add_variable(name, type);
 }
 
 bool symbol_table::add_function(string name, fundamental_type return_type, vector<fundamental_type> parameter_types)
 {
-    if (scopes.size() == 0)
+    if (scope_list.size() == 0)
     {
         return false;
     }
 
-    return scopes.front().add_function(name, return_type, parameter_types);
+    return scope_list.front().add_function(name, return_type, parameter_types);
 }
 
 bool symbol_table::add_function(string name, fundamental_type return_type)
@@ -92,5 +92,5 @@ bool symbol_table::add_function(string name, fundamental_type return_type)
 
 const list<scope>& symbol_table::get_scopes() const
 {
-    return scopes;
+    return scope_list;
 }

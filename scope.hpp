@@ -7,8 +7,6 @@
 #include "symbol.hpp"
 #include "abstract_syntax.hpp"
 
-enum class scope_owner { If, While, Func, None };
-
 class scope
 {
     friend class symbol_table;
@@ -20,9 +18,9 @@ class scope
 
     public:
 
-    const scope_owner owner;
+    const bool is_loop_scope;
 
-    scope(int offset, scope_owner owner);
+    scope(int offset, bool is_loop_scope);
 
     ~scope();
 

@@ -98,7 +98,7 @@ branch_statement_syntax::branch_statement_syntax(syntax_token* branch_token):
 {
     const list<scope>& scopes = symbol_table::instance().get_scopes();
 
-    if (std::all_of(scopes.begin(), scopes.end(), [](const scope& sc) { return sc.owner != scope_owner::While; }))
+    if (std::all_of(scopes.begin(), scopes.end(), [](const scope& sc) { return sc.is_loop_scope == false; }))
     {
         if (type == branch_type::Break)
         {
@@ -155,7 +155,7 @@ return_statement_syntax::return_statement_syntax(syntax_token* return_token, exp
 {
     const list<symbol*>& global_symbols = symbol_table::instance().get_scopes().back().get_symbols();
 
-    symbol* func_sym = global_symbols.front();
+    symbol* func_sym = global_symbols.back();
 
     if (func_sym->type != expression->expression_return_type)
     {

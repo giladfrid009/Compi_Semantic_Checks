@@ -8,8 +8,8 @@
 using std::string;
 using std::vector;
 
-scope::scope(int offset, scope_owner owner) : 
-    symbol_list(), symbol_map(), current_offset(offset), owner(owner)
+scope::scope(int offset, bool is_loop_scope) : 
+    symbol_list(), symbol_map(), current_offset(offset), is_loop_scope(is_loop_scope)
 {
 }
 

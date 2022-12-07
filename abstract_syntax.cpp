@@ -12,6 +12,7 @@ std::string fundamental_type_to_string(fundamental_type type)
         case (fundamental_type::Byte): return "BYTE";
         case (fundamental_type::String): return "STRING";
         case (fundamental_type::Void): return "VOID";
+        
         default: throw std::invalid_argument("unknown type");
     }
 }

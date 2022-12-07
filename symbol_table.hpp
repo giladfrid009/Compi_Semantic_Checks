@@ -7,7 +7,7 @@
 
 class symbol_table
 {
-    std::list<scope> scopes;
+    std::list<scope> scope_list;
 
     private:
 
@@ -17,7 +17,7 @@ class symbol_table
 
     static symbol_table& instance();
 
-    void open_scope(int offset = 0, scope_owner owner = scope_owner::None);
+    void open_scope(int offset = 0, bool is_loop_scope = false);
 
     void close_scope();
 

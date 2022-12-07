@@ -125,10 +125,10 @@ Statement	: LBRACE OS Statements CS RBRACE                        { $$ = new blo
 			| Call SC                                               { $$ = new expression_statement_syntax($1); }
 			| RETURN SC	                                            { $$ = new return_statement_syntax($1); }
 			| RETURN Exp SC                                         { $$ = new return_statement_syntax($1, $2); }
-			| IF LPAREN OS Exp CS RPAREN OSIF Statement CSIF        { $$ = new if_statement_syntax($1, $4, $8);  }
-			| IF LPAREN OS Exp CS RPAREN OSIF Statement CSIF 
-              ELSE OSIF Statement CSIF                              { $$ = new if_statement_syntax($1, $4, $8, $10, $12); }
-			| WHILE LPAREN OS Exp CS RPAREN OSWH Statement CSWH     { $$ = new while_statement_syntax($1, $4, $8); }
+			| IF LPAREN Exp RPAREN OS Statement CS                  { $$ = new if_statement_syntax($1, $3, $6);  }
+			| IF LPAREN Exp RPAREN OS Statement CS 
+              ELSE OS Statement CS                                  { $$ = new if_statement_syntax($1, $3, $6, $8, $10); }
+			| WHILE LPAREN Exp RPAREN OSL Statement CS              { $$ = new while_statement_syntax($1, $3, $6); }
 			| BREAK SC                                              { $$ = new branch_statement_syntax($1); }
 			| CONTINUE SC                                           { $$ = new branch_statement_syntax($1); }
             ;       
@@ -160,30 +160,10 @@ Exp 		: LPAREN Exp RPAREN	                                    { $$ = $2; }
             | Exp EQOP Exp                                          { $$ = new relational_expression_syntax($1, $2, $3); } 
 			| LPAREN Type RPAREN Exp                                { $$ = new cast_expression_syntax($2, $4); }
 			;
-OSIF        : /*epsilon*/                                           { symtab.open_scope(0, scope_owner::If); } 
+OS          : /*epsilon*/                                           { symtab.open_scope(); } 
             ;
-CSIF        : /*epsilon*/                                           { print_current_scope(); symtab.close_scope(); }
-            ;
-OSWH        : /*epsilon*/                                           { symtab.open_scope(0, scope_owner::While); } 
-            ;
-CSWH        : /*epsilon*/                                           { print_current_scope(); symtab.close_scope(); }
-            ;
-OS          : /*epsilon*/                                           { 
-                                                                        scope_owner owner = symtab.current_scope().owner;
-                                                                        if (owner != scope_owner::If && owner != scope_owner::While)
-                                                                        {
-                                                                            symtab.open_scope();
-                                                                        }       
-                                                                    } 
-            ;       
-CS          : /*epsilon*/                                           { 
-                                                                        scope_owner owner = symtab.current_scope().owner;
-                                                                        if (owner != scope_owner::If && owner != scope_owner::While)
-                                                                        {
-                                                                            print_current_scope();
-                                                                            symtab.close_scope(); 
-                                                                        }                           
-                                                                    }
+OSL         :                                                       { symtab.open_scope(0, true); }
+CS          : /*epsilon*/                                           { print_current_scope(); symtab.close_scope(); }
             ;
 %%
 
@@ -224,7 +204,7 @@ void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_tok
 
     symtab.add_function(name, return_type->type, param_types);
 
-    symtab.open_scope(-1 * (int)param_types.size(), scope_owner::Func);
+    symtab.open_scope(-1 * (int)param_types.size());
 
     for (formal_syntax* fs : formal_list->get_elements())
     {
@@ -289,24 +269,14 @@ void validate_main()
 {
     symbol* main_sym = symtab.get_symbol("main");
 
-    if (main_sym == nullptr)
-    {
-        output::errorMainMissing();
-    }
-
-    if (main_sym->sym_type != symbol_type::Func)
+    if (main_sym == nullptr || main_sym->sym_type != symbol_type::Func)
     {
         output::errorMainMissing();
     }
 
     function_symbol* func_sym = dynamic_cast<function_symbol*>(main_sym);
 
-    if (func_sym->type != fundamental_type::Void)
-    {
-        output::errorMainMissing();
-    }
-
-    if (func_sym->parameter_types.size() != 0)
+    if (func_sym->type != fundamental_type::Void || func_sym->parameter_types.size() != 0)
     {
         output::errorMainMissing();
     }
