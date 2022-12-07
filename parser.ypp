@@ -121,10 +121,10 @@ Statement	: LBRACE OS Statements CS RBRACE                        { $$ = new blo
 			| Call SC                                               { $$ = new expression_statement_syntax($1); }
 			| RETURN SC	                                            { $$ = new return_statement_syntax($1); }
 			| RETURN Exp SC                                         { $$ = new return_statement_syntax($1, $2); }
-			| IF LPAREN OS Exp CS RPAREN OSI Statement CSI          { $$ = new if_statement_syntax($1, $4, $8);  }
-			| IF LPAREN OS Exp CS RPAREN OSI Statement CSI 
-              ELSE OSI Statement CSI                                { $$ = new if_statement_syntax($1, $4, $8, $10, $12); }
-			| WHILE LPAREN OS Exp CS RPAREN OSI Statement CSI       { $$ = new while_statement_syntax($1, $4, $8); }
+			| IF LPAREN OS Exp CS RPAREN OSIF Statement CSIF        { $$ = new if_statement_syntax($1, $4, $8);  }
+			| IF LPAREN OS Exp CS RPAREN OSIF Statement CSIF 
+              ELSE OSIF Statement CSIF                              { $$ = new if_statement_syntax($1, $4, $8, $10, $12); }
+			| WHILE LPAREN OS Exp CS RPAREN OSWH Statement CSWH     { $$ = new while_statement_syntax($1, $4, $8); }
 			| BREAK SC                                              { $$ = new branch_statement_syntax($1); }
 			| CONTINUE SC                                           { $$ = new branch_statement_syntax($1); }
             ;       
@@ -156,19 +156,23 @@ Exp 		: LPAREN Exp RPAREN	                                    { $$ = $2; }
             | Exp EQOP Exp                                          { $$ = new relational_expression_syntax($1, $2, $3); } 
 			| LPAREN Type RPAREN Exp                                { $$ = new cast_expression_syntax($2, $4); }
 			;
-OSI         : /*epsilon*/                                           { symbol_table::instance().open_scope(0, true); } 
+OSIF        : /*epsilon*/                                           { symbol_table::instance().open_scope(0, scope_owner::If); } 
+            ;
+CSIF        : /*epsilon*/                                           { print_and_close_scope(); }
+            ;
+OSWH        : /*epsilon*/                                           { symbol_table::instance().open_scope(0, scope_owner::While); } 
+            ;
+CSWH        : /*epsilon*/                                           { print_and_close_scope(); }
             ;
 OS          : /*epsilon*/                                           { 
-                                                                        if (symbol_table::instance().current_scope().is_implicit == false)
+                                                                        if (symbol_table::instance().current_scope().owner != scope_owner::None)
                                                                         {
                                                                             symbol_table::instance().open_scope();
                                                                         }       
                                                                     } 
             ;       
-CSI         : /*epsilon*/                                           { print_and_close_scope(); }
-            ;
 CS          : /*epsilon*/                                           { 
-                                                                        if (symbol_table::instance().current_scope().is_implicit == false)
+                                                                        if (symbol_table::instance().current_scope().owner != scope_owner::None)
                                                                         {
                                                                             print_and_close_scope(); 
                                                                         }                         

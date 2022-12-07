@@ -6,19 +6,23 @@
 #include "symbol.hpp"
 #include "abstract_syntax.hpp"
 
+enum class scope_owner { If, While, None };
+
 class scope
 {
-    std::unordered_map<std::string, symbol*> symbols;
+    friend class symbol_table;
 
-    public:
+    std::unordered_map<std::string, symbol*> symbols;
 
     int current_offset;
 
     int current_serial;
 
-    const bool is_implicit;
+    public:
 
-    scope(int initial_offset = 0, bool is_implicit = false);
+    const scope_owner owner;
+
+    scope(int offset, scope_owner owner);
 
     ~scope();
 

@@ -1,4 +1,5 @@
 #include "symbol_table.hpp"
+#include "scope.hpp"
 
 using std::string;
 using std::vector;
@@ -15,15 +16,15 @@ symbol_table& symbol_table::instance()
     return instance;
 }
 
-void symbol_table::open_scope(int initial_offset, bool is_implicit)
+void symbol_table::open_scope(int offset, scope_owner owner)
 {
     if (scopes.size() == 0)
     {
-        scopes.push_front(scope(initial_offset, is_implicit));
+        scopes.push_front(scope(offset, owner));
     }
     else
     {
-        scopes.push_front(scope(initial_offset + scopes.front().current_offset, is_implicit));
+        scopes.push_front(scope(offset + scopes.front().current_offset, owner));
     }
 }
 
