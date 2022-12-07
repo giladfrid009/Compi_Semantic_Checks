@@ -96,7 +96,7 @@ void validate_main();
 
 %%
 
-Program 	: Funcs 										        { $$ = new root_syntax($1); validate_main(); }
+Program 	: Funcs 										        { $$ = new root_syntax($1); validate_main(); delete $$; }
 			;       
 Funcs   	: /*epsilon*/								            { $$ = new list_syntax<function_declaration_syntax>(); }
       		| FuncDecl Funcs							            { $$ = $2->push_front($1); }

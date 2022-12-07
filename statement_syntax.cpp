@@ -312,7 +312,7 @@ declaration_statement_syntax::declaration_statement_syntax(type_syntax* type, sy
 
 vector<syntax_base*> declaration_statement_syntax::get_children() const
 {
-    return vector<syntax_base*>{value};
+    return vector<syntax_base*>{type, value};
 }
 
 vector<syntax_token*> declaration_statement_syntax::get_tokens() const
