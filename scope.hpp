@@ -6,7 +6,7 @@
 #include "symbol.hpp"
 #include "abstract_syntax.hpp"
 
-enum class scope_owner { If, While, None };
+enum class scope_owner { If, While, Func, None };
 
 class scope
 {

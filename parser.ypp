@@ -16,7 +16,7 @@ void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_tok
 
 expression_syntax* create_byte_literal_expression(syntax_token* value_token, syntax_token* b_token);
 
-void print_and_close_scope();
+void close_scope_and_print();
 
 %}
 
@@ -158,24 +158,26 @@ Exp 		: LPAREN Exp RPAREN	                                    { $$ = $2; }
 			;
 OSIF        : /*epsilon*/                                           { symbol_table::instance().open_scope(0, scope_owner::If); } 
             ;
-CSIF        : /*epsilon*/                                           { print_and_close_scope(); }
+CSIF        : /*epsilon*/                                           { close_scope_and_print(); }
             ;
 OSWH        : /*epsilon*/                                           { symbol_table::instance().open_scope(0, scope_owner::While); } 
             ;
-CSWH        : /*epsilon*/                                           { print_and_close_scope(); }
+CSWH        : /*epsilon*/                                           { close_scope_and_print(); }
             ;
 OS          : /*epsilon*/                                           { 
-                                                                        if (symbol_table::instance().current_scope().owner != scope_owner::None)
+                                                                        scope_owner owner = symbol_table::instance().current_scope().owner;
+                                                                        if (owner != scope_owner::If && owner != scope_owner::While)
                                                                         {
                                                                             symbol_table::instance().open_scope();
                                                                         }       
                                                                     } 
             ;       
 CS          : /*epsilon*/                                           { 
-                                                                        if (symbol_table::instance().current_scope().owner != scope_owner::None)
+                                                                        scope_owner owner = symbol_table::instance().current_scope().owner;
+                                                                        if (owner != scope_owner::If && owner != scope_owner::While)
                                                                         {
-                                                                            print_and_close_scope(); 
-                                                                        }                         
+                                                                            close_scope_and_print();
+                                                                        }                           
                                                                     }
             ;
 %%
@@ -189,7 +191,7 @@ int main()
 
 	int res = yyparse();
 
-    print_and_close_scope();
+    close_scope_and_print();
 
     return res;
 }
@@ -219,7 +221,7 @@ void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_tok
 
     symtab.add_function(name, return_type->type, param_types);
 
-    symtab.open_scope(-1 * (int)param_types.size());
+    symtab.open_scope(-1 * (int)param_types.size(), scope_owner::Func);
 
     for (formal_syntax* fs : formal_list->get_elements())
     {
@@ -246,7 +248,7 @@ expression_syntax* create_byte_literal_expression(syntax_token* value_token, syn
     return new literal_expression_syntax<char>(value, value_token); 
 }
 
-void print_and_close_scope()
+void close_scope_and_print()
 {
     output::endScope();
     symbol_table::instance().current_scope().print_symbols();
