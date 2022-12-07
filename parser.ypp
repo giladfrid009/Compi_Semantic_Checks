@@ -162,7 +162,7 @@ Exp 		: LPAREN Exp RPAREN	                                    { $$ = $2; }
 			;
 OS          : /*epsilon*/                                           { symtab.open_scope(); } 
             ;
-OSL         :                                                       { symtab.open_scope(0, true); }
+OSL         :                                                       { symtab.open_scope(true); }
 CS          : /*epsilon*/                                           { print_current_scope(); symtab.close_scope(); }
             ;
 %%
@@ -192,7 +192,7 @@ void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_tok
 
     if (symtab.contains_symbol(name))
     {
-        output::errorDef(yylineno, name);
+        output::errorDef(indentifier_token->definition_line, name);
     }
 
     std::vector<fundamental_type> param_types;
@@ -204,16 +204,16 @@ void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_tok
 
     symtab.add_function(name, return_type->type, param_types);
 
-    symtab.open_scope(-1 * (int)param_types.size());
+    symtab.open_scope();
 
     for (formal_syntax* fs : formal_list->get_elements())
     {
         if (symtab.contains_symbol(fs->identifier))
         {
-            output::errorDef(yylineno, name);
+            output::errorDef(fs->identifier_token->definition_line, name);
         }
 
-        symtab.add_variable(fs->identifier, fs->type->type);
+        symtab.add_formal(fs->identifier, fs->type->type);
     }
 }
 

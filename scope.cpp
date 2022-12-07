@@ -9,7 +9,7 @@ using std::string;
 using std::vector;
 
 scope::scope(int offset, bool is_loop_scope) : 
-    symbol_list(), symbol_map(), current_offset(offset), is_loop_scope(is_loop_scope)
+    symbol_list(), symbol_map(), current_offset(offset), formal_offset(offset-1),is_loop_scope(is_loop_scope)
 {
 }
 
@@ -53,6 +53,22 @@ bool scope::add_variable(string name, fundamental_type type)
     symbol_map[name] = new_symbol;
 
     current_offset += 1;
+
+    return true;
+}
+
+bool scope::add_formal(string name, fundamental_type type)
+{
+    if (contains_symbol(name))
+    {
+        return false;
+    }
+
+    symbol* new_symbol = new variable_symbol(name, type, formal_offset);
+    symbol_list.push_back(new_symbol);
+    symbol_map[name] = new_symbol;
+
+    formal_offset -= 1;
 
     return true;
 }

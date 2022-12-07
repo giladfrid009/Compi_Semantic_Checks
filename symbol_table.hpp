@@ -17,7 +17,7 @@ class symbol_table
 
     static symbol_table& instance();
 
-    void open_scope(int offset = 0, bool is_loop_scope = false);
+    void open_scope(bool is_loop_scope = false);
 
     void close_scope();
 
@@ -28,6 +28,8 @@ class symbol_table
     symbol* get_symbol(std::string symbol_name) const;
 
     bool add_variable(std::string name, fundamental_type type);
+
+    bool add_formal(std::string name, fundamental_type type);
 
     bool add_function(std::string name, fundamental_type return_type, std::vector<fundamental_type> parameter_types);
 
