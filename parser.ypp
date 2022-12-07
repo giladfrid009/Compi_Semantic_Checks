@@ -10,13 +10,15 @@ extern int yylineno;
 
 extern int yylex();
 
+static symbol_table& symtab = symbol_table::instance();
+
 void yyerror(const char* message);
 
 void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_token, list_syntax<formal_syntax>* formal_list);
 
 expression_syntax* create_byte_literal_expression(syntax_token* value_token, syntax_token* b_token);
 
-void close_scope_and_print();
+void print_current_scope();
 
 %}
 
@@ -156,27 +158,28 @@ Exp 		: LPAREN Exp RPAREN	                                    { $$ = $2; }
             | Exp EQOP Exp                                          { $$ = new relational_expression_syntax($1, $2, $3); } 
 			| LPAREN Type RPAREN Exp                                { $$ = new cast_expression_syntax($2, $4); }
 			;
-OSIF        : /*epsilon*/                                           { symbol_table::instance().open_scope(0, scope_owner::If); } 
+OSIF        : /*epsilon*/                                           { symtab.open_scope(0, scope_owner::If); } 
             ;
-CSIF        : /*epsilon*/                                           { close_scope_and_print(); }
+CSIF        : /*epsilon*/                                           { print_current_scope(); symtab.close_scope(); }
             ;
-OSWH        : /*epsilon*/                                           { symbol_table::instance().open_scope(0, scope_owner::While); } 
+OSWH        : /*epsilon*/                                           { symtab.open_scope(0, scope_owner::While); } 
             ;
-CSWH        : /*epsilon*/                                           { close_scope_and_print(); }
+CSWH        : /*epsilon*/                                           { print_current_scope(); symtab.close_scope(); }
             ;
 OS          : /*epsilon*/                                           { 
-                                                                        scope_owner owner = symbol_table::instance().current_scope().owner;
+                                                                        scope_owner owner = symtab.current_scope().owner;
                                                                         if (owner != scope_owner::If && owner != scope_owner::While)
                                                                         {
-                                                                            symbol_table::instance().open_scope();
+                                                                            symtab.open_scope();
                                                                         }       
                                                                     } 
             ;       
 CS          : /*epsilon*/                                           { 
-                                                                        scope_owner owner = symbol_table::instance().current_scope().owner;
+                                                                        scope_owner owner = symtab.current_scope().owner;
                                                                         if (owner != scope_owner::If && owner != scope_owner::While)
                                                                         {
-                                                                            close_scope_and_print();
+                                                                            print_current_scope();
+                                                                            symtab.close_scope(); 
                                                                         }                           
                                                                     }
             ;
@@ -184,14 +187,14 @@ CS          : /*epsilon*/                                           {
 
 int main()
 {
-    symbol_table& symtab = symbol_table::instance();
     symtab.open_scope();
     symtab.add_function("print", fundamental_type::Void, std::vector<fundamental_type>{fundamental_type::String});
     symtab.add_function("printi", fundamental_type::Void, std::vector<fundamental_type>{fundamental_type::Int});
 
 	int res = yyparse();
 
-    close_scope_and_print();
+    print_current_scope();
+    symtab.close_scope();
 
     return res;
 }
@@ -204,8 +207,6 @@ void yyerror(const char* message)
 void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_token, list_syntax<formal_syntax>* formal_list)
 {
     string name = indentifier_token->text;
-
-    symbol_table& symtab = symbol_table::instance();
 
     if (symtab.contains_symbol(name))
     {
@@ -248,9 +249,37 @@ expression_syntax* create_byte_literal_expression(syntax_token* value_token, syn
     return new literal_expression_syntax<char>(value, value_token); 
 }
 
-void close_scope_and_print()
+void print_current_scope()
 {
     output::endScope();
-    symbol_table::instance().current_scope().print_symbols();
-    symbol_table::instance().close_scope(); 
+
+    for (symbol* sym : symbol_table::instance().current_scope().get_symbols())
+    {
+        if (sym->sym_type == symbol_type::Var)
+        {
+            variable_symbol* var_sym = dynamic_cast<variable_symbol*>(sym);
+
+            output::printID(var_sym->name, var_sym->offset, fundamental_type_to_string(var_sym->type));
+        }
+        else if (sym->sym_type == symbol_type::Func)
+        {
+            function_symbol* func_sym = dynamic_cast<function_symbol*>(sym);
+
+            vector<string> param_types;
+
+            for (fundamental_type ft : func_sym->parameter_types)
+            {
+                param_types.push_back(fundamental_type_to_string(ft));
+            }
+
+            string func_type = output::makeFunctionType(fundamental_type_to_string(func_sym->type), param_types);
+
+            output::printID(func_sym->name, 0, func_type);
+        }
+        else
+        {
+            throw std::runtime_error("unknown symbol type");
+        }
+    }
+
 }

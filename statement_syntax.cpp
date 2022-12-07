@@ -4,6 +4,7 @@
 #include "abstract_syntax.hpp"
 #include <list>
 #include <algorithm>
+#include <stdexcept>
 
 using std::string;
 using std::vector;
@@ -108,6 +109,8 @@ branch_statement_syntax::branch_statement_syntax(syntax_token* branch_token):
         {
             output::errorUnexpectedContinue(branch_token->definition_line);
         }
+
+        throw std::runtime_error("unknown branch_type");
     }
 }
 
@@ -137,11 +140,28 @@ branch_statement_syntax::~branch_statement_syntax()
 return_statement_syntax::return_statement_syntax(syntax_token* return_token):
     return_token(return_token), expression(nullptr)
 {
+    const list<symbol*>& global_symbols = symbol_table::instance().get_scopes().back().get_symbols();
+
+    symbol* func_sym = global_symbols.front();
+
+    if (func_sym->type != fundamental_type::Void)
+    {
+        output::errorMismatch(return_token->definition_line);
+    }
 }
 
 return_statement_syntax::return_statement_syntax(syntax_token* return_token, expression_syntax* expression):
     return_token(return_token), expression(expression)
 {
+    const list<symbol*>& global_symbols = symbol_table::instance().get_scopes().back().get_symbols();
+
+    symbol* func_sym = global_symbols.front();
+
+    if (func_sym->type != expression->expression_return_type)
+    {
+        output::errorMismatch(return_token->definition_line);
+    }
+
     expression->set_parent(this);
 }
 

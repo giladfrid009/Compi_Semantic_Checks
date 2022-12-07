@@ -35,8 +35,6 @@ class scope
     bool add_variable(std::string name, fundamental_type type);
 
     bool add_function(std::string name, fundamental_type return_type, std::vector<fundamental_type> parameter_types);
-
-    void print_symbols() const;
 };
 
 #endif
