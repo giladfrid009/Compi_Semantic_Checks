@@ -60,7 +60,7 @@ vector<syntax_base*> formal_syntax::get_children() const
     return vector<syntax_base*>{type};
 }
 
-std::vector<syntax_token*> formal_syntax::get_tokens() const
+vector<syntax_token*> formal_syntax::get_tokens() const
 {
     return vector<syntax_token*>{identifier_token};
 }
@@ -93,7 +93,7 @@ vector<syntax_base*> function_declaration_syntax::get_children() const
     return vector<syntax_base*>{return_type, formal_list, body};
 }
 
-std::vector<syntax_token*> function_declaration_syntax::get_tokens() const
+vector<syntax_token*> function_declaration_syntax::get_tokens() const
 {
     return vector<syntax_token*>{identifier_token};
 }
