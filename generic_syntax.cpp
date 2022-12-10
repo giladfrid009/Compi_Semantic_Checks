@@ -90,7 +90,7 @@ function_declaration_syntax::function_declaration_syntax(type_syntax* return_typ
 
     if (symbol == nullptr || symbol->sym_type != symbol_type::Func)
     {
-        throw std::runtime_error("function should be defined.");
+        throw std::logic_error("function should be defined.");
     }
 
     function_symbol* func_symbol = dynamic_cast<function_symbol*>(symbol);
@@ -99,14 +99,14 @@ function_declaration_syntax::function_declaration_syntax(type_syntax* return_typ
 
     if (func_symbol->parameter_types.size() != elements.size())
     {
-        throw std::runtime_error("function parameter length mismatch.");
+        throw std::logic_error("function parameter length mismatch.");
     }
 
     for (size_t i = 0; i < elements.size(); i++)
     {
         if (func_symbol->parameter_types[i] != elements[i]->type->type)
         {
-            throw std::runtime_error("function parameter type mismatch.");
+            throw std::logic_error("function parameter type mismatch.");
         }
     }
 
