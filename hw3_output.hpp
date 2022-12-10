@@ -16,27 +16,27 @@ namespace output
     */
     string makeFunctionType(const string& retType, vector<string>& argTypes);
 
-    void errorLex(int lineno);
+    [[noreturn]] void errorLex(int lineno);
 
-    void errorSyn(int lineno);
+    [[noreturn]] void errorSyn(int lineno);
 
-    void errorUndef(int lineno, const string& id);
+    [[noreturn]] void errorUndef(int lineno, const string& id);
 
-    void errorDef(int lineno, const string& id);
+    [[noreturn]] void errorDef(int lineno, const string& id);
 
-    void errorUndefFunc(int lineno, const string& id);
+    [[noreturn]] void errorUndefFunc(int lineno, const string& id);
 
-    void errorMismatch(int lineno);
+    [[noreturn]] void errorMismatch(int lineno);
 
-    void errorPrototypeMismatch(int lineno, const string& id, vector<string>& argTypes);
+    [[noreturn]] void errorPrototypeMismatch(int lineno, const string& id, vector<string>& argTypes);
 
-    void errorUnexpectedBreak(int lineno);
+    [[noreturn]] void errorUnexpectedBreak(int lineno);
 
-    void errorUnexpectedContinue(int lineno);
+    [[noreturn]] void errorUnexpectedContinue(int lineno);
 
-    void errorMainMissing();
+    [[noreturn]] void errorMainMissing();
 
-    void errorByteTooLarge(int lineno, const string& value);
+    [[noreturn]] void errorByteTooLarge(int lineno, const string& value);
 }
 
 #endif

@@ -19,8 +19,6 @@ class syntax_token
     {
 
     }
-
-    virtual ~syntax_token() = default;
 };
 
 #endif

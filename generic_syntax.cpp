@@ -1,11 +1,13 @@
 #include "generic_syntax.hpp"
 #include "hw3_output.hpp"
+#include "symbol.hpp"
+#include "symbol_table.hpp"
 
 using std::vector;
 using std::string;
 
-type_syntax::type_syntax(syntax_token* type_token) : 
-    type_token(type_token) ,type(string_to_fundamental_type(type_token->text))
+type_syntax::type_syntax(syntax_token* type_token):
+    type_token(type_token), type(string_to_fundamental_type(type_token->text))
 {
 }
 
@@ -42,7 +44,7 @@ type_syntax::~type_syntax()
     }
 }
 
-formal_syntax::formal_syntax(type_syntax* type, syntax_token* identifier_token) : 
+formal_syntax::formal_syntax(type_syntax* type, syntax_token* identifier_token):
     type(type), identifier_token(identifier_token), identifier(identifier_token->text)
 {
     if (type->type == fundamental_type::Void)
@@ -50,7 +52,10 @@ formal_syntax::formal_syntax(type_syntax* type, syntax_token* identifier_token) 
         output::errorMismatch(0);
     }
 
-    //todo: make sure identifier doesnt shadow anyone else.
+    if (symbol_table::instance().contains_symbol(identifier))
+    {
+        output::errorDef(identifier_token->definition_line, identifier);
+    }
 
     type->set_parent(this);
 }
@@ -78,10 +83,32 @@ formal_syntax::~formal_syntax()
     }
 }
 
-function_declaration_syntax::function_declaration_syntax(type_syntax* return_type, syntax_token* identifier_token, list_syntax<formal_syntax>* formal_list, list_syntax<statement_syntax>* body) :
+function_declaration_syntax::function_declaration_syntax(type_syntax* return_type, syntax_token* identifier_token, list_syntax<formal_syntax>* formal_list, list_syntax<statement_syntax>* body):
     return_type(return_type), identifier_token(identifier_token), identifier(identifier_token->text), formal_list(formal_list), body(body)
 {
-    // todo: check that identifier is free
+    symbol* symbol = symbol_table::instance().get_symbol(identifier);
+
+    if (symbol == nullptr || symbol->sym_type != symbol_type::Func)
+    {
+        throw std::runtime_error("function should be defined.");
+    }
+
+    function_symbol* func_symbol = dynamic_cast<function_symbol*>(symbol);
+
+    auto elements = formal_list->get_elements();
+
+    if (func_symbol->parameter_types.size() != elements.size())
+    {
+        throw std::runtime_error("function parameter length mismatch.");
+    }
+
+    for (size_t i = 0; i < elements.size(); i++)
+    {
+        if (func_symbol->parameter_types[i] != elements[i]->type->type)
+        {
+            throw std::runtime_error("function parameter type mismatch.");
+        }
+    }
 
     return_type->set_parent(this);
     formal_list->set_parent(this);
@@ -111,8 +138,22 @@ function_declaration_syntax::~function_declaration_syntax()
     }
 }
 
-root_syntax::root_syntax(list_syntax<function_declaration_syntax>* function_list) : function_list(function_list)
+root_syntax::root_syntax(list_syntax<function_declaration_syntax>* function_list): function_list(function_list)
 {
+    symbol* main_sym = symbol_table::instance().get_symbol("main");
+
+    if (main_sym == nullptr || main_sym->sym_type != symbol_type::Func)
+    {
+        output::errorMainMissing();
+    }
+
+    function_symbol* func_sym = dynamic_cast<function_symbol*>(main_sym);
+
+    if (func_sym->type != fundamental_type::Void || func_sym->parameter_types.size() != 0)
+    {
+        output::errorMainMissing();
+    }
+
     function_list->set_parent(this);
 }
 

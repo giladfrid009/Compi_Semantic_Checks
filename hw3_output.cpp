@@ -70,61 +70,52 @@ void output::errorUndef(int lineno, const string& id)
 {
     cout << "line " << lineno << ":" << " variable " << id << " is not defined" << endl;
     exit(0);
-
 }
 
 void output::errorDef(int lineno, const string& id)
 {
     cout << "line " << lineno << ":" << " identifier " << id << " is already defined" << endl;
     exit(0);
-
 }
 
 void output::errorUndefFunc(int lineno, const string& id)
 {
     cout << "line " << lineno << ":" << " function " << id << " is not defined" << endl;
     exit(0);
-
 }
 
 void output::errorMismatch(int lineno)
 {
     cout << "line " << lineno << ":" << " type mismatch" << endl;
     exit(0);
-
 }
 
 void output::errorPrototypeMismatch(int lineno, const string& id, std::vector<string>& argTypes)
 {
     cout << "line " << lineno << ": prototype mismatch, function " << id << " expects arguments " << typeListToString(argTypes) << endl;
     exit(0);
-
 }
 
 void output::errorUnexpectedBreak(int lineno)
 {
     cout << "line " << lineno << ":" << " unexpected break statement" << endl;
     exit(0);
-
 }
 
 void output::errorUnexpectedContinue(int lineno)
 {
     cout << "line " << lineno << ":" << " unexpected continue statement" << endl;
     exit(0);
-
 }
 
 void output::errorMainMissing()
 {
     cout << "Program has no 'void main()' function" << endl;
     exit(0);
-
 }
 
 void output::errorByteTooLarge(int lineno, const string& value)
 {
     cout << "line " << lineno << ": byte value " << value << " out of range" << endl;
     exit(0);
-
 }
