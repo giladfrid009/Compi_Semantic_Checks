@@ -94,7 +94,7 @@ while_statement_syntax::~while_statement_syntax()
 }
 
 branch_statement_syntax::branch_statement_syntax(syntax_token* branch_token):
-    branch_token(branch_token), type(string_to_branch_type(branch_token->text))
+    branch_token(branch_token), type(parse_type(branch_token->text))
 {
     const list<scope>& scopes = symbol_table::instance().get_scopes();
 
@@ -135,6 +135,14 @@ branch_statement_syntax::~branch_statement_syntax()
     {
         delete token;
     }
+}
+
+branch_statement_syntax::branch_type branch_statement_syntax::parse_type(std::string str)
+{
+    if (str == "break") return branch_type::Break;
+    if (str == "continue") return branch_type::Continue;
+
+    throw std::invalid_argument("unknown type");
 }
 
 return_statement_syntax::return_statement_syntax(syntax_token* return_token):

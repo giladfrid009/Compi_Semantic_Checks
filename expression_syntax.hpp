@@ -104,6 +104,8 @@ class logical_expression_syntax final : public expression_syntax
 {
     public:
 
+    enum class logical_operator { And, Or };
+
     expression_syntax* const left;
     syntax_token* const oper_token;
     expression_syntax* const right;
@@ -120,11 +122,15 @@ class logical_expression_syntax final : public expression_syntax
     std::vector<syntax_token*> get_tokens() const override;
 
     ~logical_expression_syntax();
+
+    static logical_operator parse_operator(std::string str);
 };
 
 class arithmetic_expression_syntax final : public expression_syntax
 {
     public:
+
+    enum class arithmetic_operator { Add, Sub, Mul, Div };
 
     expression_syntax* const left;
     syntax_token* const oper_token;
@@ -137,18 +143,24 @@ class arithmetic_expression_syntax final : public expression_syntax
 
     arithmetic_expression_syntax& operator=(const arithmetic_expression_syntax& other) = delete;
 
-    fundamental_type get_return_type(expression_syntax* left, expression_syntax* right);
-
     std::vector<syntax_base*> get_children() const override;
 
     std::vector<syntax_token*> get_tokens() const override;
 
     ~arithmetic_expression_syntax();
+
+    static arithmetic_operator parse_operator(std::string str);
+
+    private:
+
+    static fundamental_type get_return_type(expression_syntax* left, expression_syntax* right);
 };
 
 class relational_expression_syntax final : public expression_syntax
 {
     public:
+
+    enum class relational_operator { Less, LessEqual, Greater, GreaterEqual, Equal, NotEqual };
 
     expression_syntax* const left;
     syntax_token* const oper_token;
@@ -166,6 +178,8 @@ class relational_expression_syntax final : public expression_syntax
     std::vector<syntax_token*> get_tokens() const override;
 
     ~relational_expression_syntax();
+
+    static relational_operator parse_operator(std::string str);
 };
 
 class conditional_expression_syntax final : public expression_syntax
@@ -184,13 +198,15 @@ class conditional_expression_syntax final : public expression_syntax
 
     conditional_expression_syntax& operator=(const conditional_expression_syntax& other) = delete;
 
-    fundamental_type get_return_type(expression_syntax* left, expression_syntax* right) const;
-
     std::vector<syntax_base*> get_children() const override;
 
     std::vector<syntax_token*> get_tokens() const override;
 
     ~conditional_expression_syntax();
+
+    private:
+
+    static fundamental_type get_return_type(expression_syntax* left, expression_syntax* right);
 };
 
 class identifier_expression_syntax final : public expression_syntax
@@ -205,14 +221,16 @@ class identifier_expression_syntax final : public expression_syntax
     identifier_expression_syntax(const identifier_expression_syntax& other) = delete;
 
     identifier_expression_syntax& operator=(const identifier_expression_syntax& other) = delete;
-
-    fundamental_type get_return_type(std::string identifier) const;
     
     std::vector<syntax_base*> get_children() const override;
 
     std::vector<syntax_token*> get_tokens() const override;
 
     ~identifier_expression_syntax();
+
+    private:
+
+    static fundamental_type get_return_type(std::string identifier);
 };
 
 class invocation_expression_syntax final : public expression_syntax
@@ -231,13 +249,15 @@ class invocation_expression_syntax final : public expression_syntax
 
     invocation_expression_syntax& operator=(const invocation_expression_syntax& other) = delete;
 
-    fundamental_type get_return_type(std::string identifier) const;
-
     std::vector<syntax_base*> get_children() const override;
     
     std::vector<syntax_token*> get_tokens() const override;
 
     ~invocation_expression_syntax();
+
+    private:
+
+    static fundamental_type get_return_type(std::string identifier);
 };
 
 #endif

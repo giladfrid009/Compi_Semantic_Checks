@@ -13,57 +13,19 @@ std::string fundamental_type_to_string(fundamental_type type)
         case (fundamental_type::String): return "STRING";
         case (fundamental_type::Void): return "VOID";
         
-        default: throw std::invalid_argument("unknown type");
+        default: throw std::invalid_argument("unknown fundamental_type");
     }
 }
 
-fundamental_type string_to_fundamental_type(string type)
+fundamental_type string_to_fundamental_type(string str)
 {
-    if (type == "bool") return fundamental_type::Bool;
-    if (type == "int") return fundamental_type::Int;
-    if (type == "byte") return fundamental_type::Byte;
-    if (type == "string") return fundamental_type::String;
-    if (type == "void") return fundamental_type::Void;
+    if (str == "bool") return fundamental_type::Bool;
+    if (str == "int") return fundamental_type::Int;
+    if (str == "byte") return fundamental_type::Byte;
+    if (str == "string") return fundamental_type::String;
+    if (str == "void") return fundamental_type::Void;
 
     throw std::invalid_argument("unknown type");
-}
-
-logical_operator string_to_logical_operator(string oper)
-{
-    if (oper == "and") return logical_operator::And;
-    if (oper == "or") return logical_operator::Or;
-
-    throw std::invalid_argument("unknown oper");
-}
-
-arithmetic_operator string_to_arithmetic_operator(string oper)
-{
-    if (oper == "+") return arithmetic_operator::Add;
-    if (oper == "-") return arithmetic_operator::Sub;
-    if (oper == "*") return arithmetic_operator::Mul;
-    if (oper == "/") return arithmetic_operator::Div;
-
-    throw std::invalid_argument("unknown oper");
-}
-
-relational_operator string_to_relational_operator(string oper)
-{
-    if (oper == "<") return relational_operator::Less;
-    if (oper == "<=") return relational_operator::LessEqual;
-    if (oper == ">") return relational_operator::Greater;
-    if (oper == ">=") return relational_operator::GreaterEqual;
-    if (oper == "==") return relational_operator::Equal;
-    if (oper == "!=") return relational_operator::NotEqual;
-
-    throw std::invalid_argument("unknown oper");
-}
-
-branch_type string_to_branch_type(string oper)
-{
-    if (oper == "break") return branch_type::Break;
-    if (oper == "continue") return branch_type::Continue;
-
-    throw std::invalid_argument("unknown oper");
 }
 
 syntax_base::syntax_base()

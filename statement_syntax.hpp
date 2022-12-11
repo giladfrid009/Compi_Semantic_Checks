@@ -58,6 +58,8 @@ class branch_statement_syntax final : public statement_syntax
 {
     public:
 
+    enum class branch_type { Break, Continue };
+
     syntax_token* const branch_token;
     const branch_type type;
 
@@ -72,6 +74,8 @@ class branch_statement_syntax final : public statement_syntax
     std::vector<syntax_token*> get_tokens() const override;
 
     ~branch_statement_syntax();
+
+    static branch_type parse_type(std::string str);
 };
 
 class return_statement_syntax final : public statement_syntax

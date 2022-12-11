@@ -78,7 +78,7 @@ not_expression_syntax::~not_expression_syntax()
 }
 
 logical_expression_syntax::logical_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right) :
-    expression_syntax(fundamental_type::Bool), left(left), oper_token(oper_token), right(right), oper(string_to_logical_operator(oper_token->text))
+    expression_syntax(fundamental_type::Bool), left(left), oper_token(oper_token), right(right), oper(parse_operator(oper_token->text))
 {
     if (left->expression_return_type != fundamental_type::Bool || right->expression_return_type != fundamental_type::Bool)
     {
@@ -112,8 +112,16 @@ logical_expression_syntax::~logical_expression_syntax()
     }
 }
 
+logical_expression_syntax::logical_operator logical_expression_syntax::parse_operator(std::string str)
+{
+    if (str == "and") return logical_operator::And;
+    if (str == "or") return logical_operator::Or;
+
+    throw std::invalid_argument("unknown oper");
+}
+
 arithmetic_expression_syntax::arithmetic_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right) :
-    expression_syntax(get_return_type(left, right)), left(left), oper_token(oper_token), right(right), oper(string_to_arithmetic_operator(oper_token->text))
+    expression_syntax(get_return_type(left, right)), left(left), oper_token(oper_token), right(right), oper(parse_operator(oper_token->text))
 {
     if (left->is_numeric() == false || right->is_numeric() == false)
     {
@@ -162,8 +170,18 @@ arithmetic_expression_syntax::~arithmetic_expression_syntax()
     }
 }
 
+arithmetic_expression_syntax::arithmetic_operator arithmetic_expression_syntax::parse_operator(std::string str)
+{
+    if (str == "+") return arithmetic_operator::Add;
+    if (str == "-") return arithmetic_operator::Sub;
+    if (str == "*") return arithmetic_operator::Mul;
+    if (str == "/") return arithmetic_operator::Div;
+
+    throw std::invalid_argument("unknown oper");
+}
+
 relational_expression_syntax::relational_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right) :
-    expression_syntax(fundamental_type::Bool), left(left), oper_token(oper_token), right(right), oper(string_to_relational_operator(oper_token->text))
+    expression_syntax(fundamental_type::Bool), left(left), oper_token(oper_token), right(right), oper(parse_operator(oper_token->text))
 {
     if (left->is_numeric() == false || right->is_numeric() == false)
     {
@@ -197,6 +215,18 @@ relational_expression_syntax::~relational_expression_syntax()
     }
 }
 
+relational_expression_syntax::relational_operator relational_expression_syntax::parse_operator(std::string str)
+{
+    if (str == "<") return relational_operator::Less;
+    if (str == "<=") return relational_operator::LessEqual;
+    if (str == ">") return relational_operator::Greater;
+    if (str == ">=") return relational_operator::GreaterEqual;
+    if (str == "==") return relational_operator::Equal;
+    if (str == "!=") return relational_operator::NotEqual;
+
+    throw std::invalid_argument("unknown oper");
+}
+
 conditional_expression_syntax::conditional_expression_syntax(expression_syntax* true_value, syntax_token* if_token, expression_syntax* condition, syntax_token* const else_token, expression_syntax* false_value) :
     expression_syntax(get_return_type(true_value, false_value)), true_value(true_value), if_token(if_token), condition(condition), else_token(else_token), false_value(false_value)
 {
@@ -228,7 +258,7 @@ vector<syntax_token*> conditional_expression_syntax::get_tokens() const
     return vector<syntax_token*>{if_token, else_token};
 }
 
-fundamental_type conditional_expression_syntax::get_return_type(expression_syntax* left, expression_syntax* right) const
+fundamental_type conditional_expression_syntax::get_return_type(expression_syntax* left, expression_syntax* right)
 {
     if (left->is_numeric() && right->is_numeric())
     {
@@ -287,7 +317,7 @@ vector<syntax_token*> identifier_expression_syntax::get_tokens() const
     return vector<syntax_token*>{identifier_token};
 }
 
-fundamental_type identifier_expression_syntax::get_return_type(string identifier) const
+fundamental_type identifier_expression_syntax::get_return_type(string identifier)
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
@@ -392,7 +422,7 @@ vector<syntax_token*> invocation_expression_syntax::get_tokens() const
     return vector<syntax_token*>{identifier_token};
 }
 
-fundamental_type invocation_expression_syntax::get_return_type(string identifier) const
+fundamental_type invocation_expression_syntax::get_return_type(string identifier)
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
 

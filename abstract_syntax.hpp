@@ -5,27 +5,11 @@
 #include <vector>
 #include <string>
 
-enum class logical_operator { And, Or };
-
-enum class arithmetic_operator { Add, Sub, Mul, Div };
-
-enum class relational_operator { Less, LessEqual, Greater, GreaterEqual, Equal, NotEqual };
-
 enum class fundamental_type { Void, Int, Bool, Byte, String };
-
-enum class branch_type { Break, Continue };
 
 std::string fundamental_type_to_string(fundamental_type type);
 
 fundamental_type string_to_fundamental_type(std::string type);
-
-logical_operator string_to_logical_operator(std::string oper);
-
-arithmetic_operator string_to_arithmetic_operator(std::string oper);
-
-relational_operator string_to_relational_operator(std::string oper);
-
-branch_type string_to_branch_type(std::string oper);
 
 class syntax_base
 {
