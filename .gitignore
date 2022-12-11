@@ -9,5 +9,4 @@ parser.tab.*pp
 hw3
 Makefile
 .vscode
-tests
-run_tests
+*test*

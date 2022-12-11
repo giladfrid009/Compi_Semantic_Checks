@@ -2,7 +2,6 @@
 #define _TYPES_H_
 
 #include <string>
-#include <stdexcept>
 
 enum class fundamental_type { Void, Int, Bool, Byte, String };
 

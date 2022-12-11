@@ -1,4 +1,5 @@
 #include "types.hpp"
+#include <stdexcept>
 
 using std::string;
 
