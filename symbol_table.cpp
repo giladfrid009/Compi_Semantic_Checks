@@ -20,22 +20,22 @@ void symbol_table::open_scope(bool is_loop_scope)
 {
     if (scope_list.size() == 0)
     {
-        scope_list.push_front(scope(0, is_loop_scope));
+        scope_list.push_back(scope(0, is_loop_scope));
     }
     else
     {
-        scope_list.push_front(scope(scope_list.front().current_offset, is_loop_scope));
+        scope_list.push_back(scope(scope_list.back().current_offset, is_loop_scope));
     }
 }
 
 void symbol_table::close_scope()
 {
-    scope_list.pop_front();
+    scope_list.pop_back();
 }
 
 const scope& symbol_table::current_scope() const
 {
-    return scope_list.front();
+    return scope_list.back();
 }
 
 
@@ -72,7 +72,7 @@ bool symbol_table::add_variable(string name, fundamental_type type)
         return false;
     }
 
-    return scope_list.front().add_variable(name, type);
+    return scope_list.back().add_variable(name, type);
 }
 
 bool symbol_table::add_formal(string name, fundamental_type type)
@@ -82,7 +82,7 @@ bool symbol_table::add_formal(string name, fundamental_type type)
         return false;
     }
 
-    return scope_list.front().add_formal(name, type);
+    return scope_list.back().add_formal(name, type);
 }
 
 bool symbol_table::add_function(string name, fundamental_type return_type, vector<fundamental_type> parameter_types)
@@ -92,7 +92,7 @@ bool symbol_table::add_function(string name, fundamental_type return_type, vecto
         return false;
     }
 
-    return scope_list.front().add_function(name, return_type, parameter_types);
+    return scope_list.back().add_function(name, return_type, parameter_types);
 }
 
 bool symbol_table::add_function(string name, fundamental_type return_type)

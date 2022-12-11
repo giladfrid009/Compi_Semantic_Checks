@@ -98,7 +98,7 @@ branch_statement_syntax::branch_statement_syntax(syntax_token* branch_token):
 {
     const list<scope>& scopes = symbol_table::instance().get_scopes();
 
-    if (std::all_of(scopes.begin(), scopes.end(), [](const scope& sc) { return sc.is_loop_scope == false; }))
+    if (std::all_of(scopes.rbegin(), scopes.rend(), [](const scope& sc) { return sc.is_loop_scope == false; }))
     {
         if (type == branch_type::Break)
         {
@@ -140,9 +140,9 @@ branch_statement_syntax::~branch_statement_syntax()
 return_statement_syntax::return_statement_syntax(syntax_token* return_token):
     return_token(return_token), expression(nullptr)
 {
-    const list<symbol*>& global_symbols = symbol_table::instance().get_scopes().back().get_symbols();
+    const list<symbol*>& global_symbols = symbol_table::instance().get_scopes().front().get_symbols();
 
-    symbol* func_sym = global_symbols.front();
+    symbol* func_sym = global_symbols.back();
 
     if (func_sym->type != fundamental_type::Void)
     {
@@ -153,7 +153,7 @@ return_statement_syntax::return_statement_syntax(syntax_token* return_token):
 return_statement_syntax::return_statement_syntax(syntax_token* return_token, expression_syntax* expression):
     return_token(return_token), expression(expression)
 {
-    const list<symbol*>& global_symbols = symbol_table::instance().get_scopes().back().get_symbols();
+    const list<symbol*>& global_symbols = symbol_table::instance().get_scopes().front().get_symbols();
 
     symbol* func_sym = global_symbols.back();
 

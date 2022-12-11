@@ -333,7 +333,7 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
 
     function_symbol* func_symbol = dynamic_cast<function_symbol*>(symbol);
 
-    std::vector<string> params_str;
+    vector<string> params_str;
 
     if (func_symbol->parameter_types.size() != 0)
     {
@@ -356,27 +356,30 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
         output::errorUndefFunc(identifier_token->definition_line, identifier);
     }
 
-    function_symbol* func_symbol = dynamic_cast<function_symbol*>(symbol);
+    vector<fundamental_type> parameter_types = dynamic_cast<function_symbol*>(symbol)->parameter_types;
 
     auto elements = expression_list->get_elements();
 
     std::vector<string> params_str;
 
-    for (expression_syntax* expr : elements)
+    for (fundamental_type type : parameter_types)
     {
-        params_str.push_back(fundamental_type_to_string(expr->expression_return_type));
+        params_str.push_back(fundamental_type_to_string(type));
     }
 
-    if (func_symbol->parameter_types.size() != elements.size())
+    if (parameter_types.size() != elements.size())
     {
         output::errorPrototypeMismatch(identifier_token->definition_line, identifier, params_str);
     }
 
     for (size_t i = 0; i < elements.size(); i++)
     {
-        if (func_symbol->parameter_types[i] != elements[i]->expression_return_type)
+        if (parameter_types[i] != elements[i]->expression_return_type)
         {
-            output::errorPrototypeMismatch(identifier_token->definition_line, identifier, params_str);
+            if (parameter_types[i] != fundamental_type::Int || elements[i]->expression_return_type != fundamental_type::Byte)
+            {
+                output::errorPrototypeMismatch(identifier_token->definition_line, identifier, params_str);
+            }
         }
     }
 
