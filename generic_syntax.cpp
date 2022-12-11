@@ -49,7 +49,7 @@ formal_syntax::formal_syntax(type_syntax* type, syntax_token* identifier_token):
 {
     if (type->type == fundamental_type::Void)
     {
-        output::errorMismatch(0);
+        output::errorMismatch(identifier_token->definition_line);
     }
 
     if (symbol_table::instance().contains_symbol(identifier))

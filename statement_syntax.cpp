@@ -229,12 +229,7 @@ assignment_statement_syntax::assignment_statement_syntax(syntax_token* identifie
 {
     symbol* identifier_symbol = symbol_table::instance().get_symbol(identifier);
 
-    if (identifier_symbol == nullptr)
-    {
-        output::errorUndef(identifier_token->definition_line, identifier);
-    }
-
-    if (identifier_symbol->sym_type != symbol_type::Var)
+    if (identifier_symbol == nullptr || identifier_symbol->sym_type != symbol_type::Var)
     {
         output::errorUndef(identifier_token->definition_line, identifier);
     }

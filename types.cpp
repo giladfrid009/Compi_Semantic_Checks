@@ -30,6 +30,11 @@ fundamental_type types::from_string(string str)
 
 bool types::is_convertible(fundamental_type source, fundamental_type destiation)
 {
+    if (source == fundamental_type::Void || destiation == fundamental_type::Void)
+    {
+        return false;
+    }
+    
     if (source == destiation)
     {
         return true;

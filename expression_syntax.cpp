@@ -215,12 +215,9 @@ relational_expression_syntax::relational_operator relational_expression_syntax::
 conditional_expression_syntax::conditional_expression_syntax(expression_syntax* true_value, syntax_token* if_token, expression_syntax* condition, syntax_token* const else_token, expression_syntax* false_value):
     expression_syntax(types::cast_up(true_value->return_type, false_value->return_type)), true_value(true_value), if_token(if_token), condition(condition), else_token(else_token), false_value(false_value)
 {
-    if (true_value->return_type != false_value->return_type)
+    if (return_type == fundamental_type::Void)
     {
-        if (true_value->is_numeric() == false || false_value->is_numeric() == false)
-        {
-            output::errorMismatch(if_token->definition_line);
-        }
+        output::errorMismatch(if_token->definition_line);
     }
 
     if (condition->return_type != fundamental_type::Bool)
@@ -261,12 +258,7 @@ identifier_expression_syntax::identifier_expression_syntax(syntax_token* identif
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
-    if (symbol == nullptr)
-    {
-        output::errorUndef(identifier_token->definition_line, identifier);
-    }
-
-    if (symbol->sym_type != symbol_type::Var)
+    if (symbol == nullptr || symbol->sym_type != symbol_type::Var)
     {
         output::errorUndef(identifier_token->definition_line, identifier);
     }
@@ -286,7 +278,7 @@ fundamental_type identifier_expression_syntax::get_return_type(string identifier
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
-    if (symbol == nullptr)
+    if (symbol == nullptr || symbol->sym_type != symbol_type::Var)
     {
         return fundamental_type::Void;
     }
@@ -312,12 +304,7 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
-    if (symbol == nullptr)
-    {
-        output::errorUndefFunc(identifier_token->definition_line, identifier);
-    }
-
-    if (symbol->sym_type != symbol_type::Func)
+    if (symbol == nullptr || symbol->sym_type != symbol_type::Func)
     {
         output::errorUndefFunc(identifier_token->definition_line, identifier);
     }
@@ -337,12 +324,7 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
-    if (symbol == nullptr)
-    {
-        output::errorUndefFunc(identifier_token->definition_line, identifier);
-    }
-
-    if (symbol->sym_type != symbol_type::Func)
+    if (symbol == nullptr || symbol->sym_type != symbol_type::Func)
     {
         output::errorUndefFunc(identifier_token->definition_line, identifier);
     }
@@ -391,7 +373,7 @@ fundamental_type invocation_expression_syntax::get_return_type(string identifier
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
-    if (symbol == nullptr)
+    if (symbol == nullptr || symbol->sym_type != symbol_type::Func)
     {
         return fundamental_type::Void;
     }
