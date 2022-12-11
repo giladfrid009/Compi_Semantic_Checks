@@ -3,6 +3,7 @@
 #include "hw3_output.hpp"
 #include "symbol_table.hpp"
 #include "generic_syntax.hpp" 
+#include "types.hpp"
 #include <list>
 #include <string>
 
@@ -237,7 +238,7 @@ void print_current_scope()
     {
         if (sym->sym_type == symbol_type::Var)
         {
-            output::printID(sym->name, sym->offset, fundamental_type_to_string(sym->type));
+            output::printID(sym->name, sym->offset, types::to_string(sym->type));
         }
         else if (sym->sym_type == symbol_type::Func)
         {
@@ -247,10 +248,10 @@ void print_current_scope()
 
             for (fundamental_type ft : func_sym->parameter_types)
             {
-                param_types.push_back(fundamental_type_to_string(ft));
+                param_types.push_back(types::to_string(ft));
             }
 
-            string func_type = output::makeFunctionType(fundamental_type_to_string(func_sym->type), param_types);
+            string func_type = output::makeFunctionType(types::to_string(func_sym->type), param_types);
 
             output::printID(sym->name, sym->offset, func_type);
         }

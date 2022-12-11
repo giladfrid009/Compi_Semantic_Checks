@@ -46,7 +46,7 @@ cast_expression_syntax::~cast_expression_syntax()
 not_expression_syntax::not_expression_syntax(syntax_token* not_token, expression_syntax* expression):
     expression_syntax(fundamental_type::Bool), not_token(not_token), expression(expression)
 {
-    if (expression->expression_return_type != fundamental_type::Bool)
+    if (expression->return_type != fundamental_type::Bool)
     {
         output::errorMismatch(not_token->definition_line);
     }
@@ -80,7 +80,7 @@ not_expression_syntax::~not_expression_syntax()
 logical_expression_syntax::logical_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right):
     expression_syntax(fundamental_type::Bool), left(left), oper_token(oper_token), right(right), oper(parse_operator(oper_token->text))
 {
-    if (left->expression_return_type != fundamental_type::Bool || right->expression_return_type != fundamental_type::Bool)
+    if (left->return_type != fundamental_type::Bool || right->return_type != fundamental_type::Bool)
     {
         output::errorMismatch(oper_token->definition_line);
     }
@@ -121,7 +121,7 @@ logical_expression_syntax::logical_operator logical_expression_syntax::parse_ope
 }
 
 arithmetic_expression_syntax::arithmetic_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right):
-    expression_syntax(get_return_type(left, right)), left(left), oper_token(oper_token), right(right), oper(parse_operator(oper_token->text))
+    expression_syntax(types::cast_up(left->return_type, right->return_type)), left(left), oper_token(oper_token), right(right), oper(parse_operator(oper_token->text))
 {
     if (left->is_numeric() == false || right->is_numeric() == false)
     {
@@ -130,21 +130,6 @@ arithmetic_expression_syntax::arithmetic_expression_syntax(expression_syntax* le
 
     left->set_parent(this);
     right->set_parent(this);
-}
-
-fundamental_type arithmetic_expression_syntax::get_return_type(expression_syntax* left, expression_syntax* right)
-{
-    if (left->is_numeric() && right->is_numeric())
-    {
-        if (left->expression_return_type == fundamental_type::Int || right->expression_return_type == fundamental_type::Int)
-        {
-            return fundamental_type::Int;
-        }
-
-        return fundamental_type::Byte;
-    }
-
-    return fundamental_type::Void;
 }
 
 vector<syntax_base*> arithmetic_expression_syntax::get_children() const
@@ -228,9 +213,9 @@ relational_expression_syntax::relational_operator relational_expression_syntax::
 }
 
 conditional_expression_syntax::conditional_expression_syntax(expression_syntax* true_value, syntax_token* if_token, expression_syntax* condition, syntax_token* const else_token, expression_syntax* false_value):
-    expression_syntax(get_return_type(true_value, false_value)), true_value(true_value), if_token(if_token), condition(condition), else_token(else_token), false_value(false_value)
+    expression_syntax(types::cast_up(true_value->return_type, false_value->return_type)), true_value(true_value), if_token(if_token), condition(condition), else_token(else_token), false_value(false_value)
 {
-    if (true_value->expression_return_type != false_value->expression_return_type)
+    if (true_value->return_type != false_value->return_type)
     {
         if (true_value->is_numeric() == false || false_value->is_numeric() == false)
         {
@@ -238,7 +223,7 @@ conditional_expression_syntax::conditional_expression_syntax(expression_syntax* 
         }
     }
 
-    if (condition->expression_return_type != fundamental_type::Bool)
+    if (condition->return_type != fundamental_type::Bool)
     {
         output::errorMismatch(if_token->definition_line);
     }
@@ -256,26 +241,6 @@ vector<syntax_base*> conditional_expression_syntax::get_children() const
 vector<syntax_token*> conditional_expression_syntax::get_tokens() const
 {
     return vector<syntax_token*>{if_token, else_token};
-}
-
-fundamental_type conditional_expression_syntax::get_return_type(expression_syntax* left, expression_syntax* right)
-{
-    if (left->is_numeric() && right->is_numeric())
-    {
-        if (left->expression_return_type == fundamental_type::Int || right->expression_return_type == fundamental_type::Int)
-        {
-            return fundamental_type::Int;
-        }
-
-        return fundamental_type::Byte;
-    }
-
-    if (left->expression_return_type == right->expression_return_type)
-    {
-        return left->expression_return_type;
-    }
-
-    return fundamental_type::Void;
 }
 
 conditional_expression_syntax::~conditional_expression_syntax()
@@ -390,7 +355,7 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
 
     for (fundamental_type type : parameter_types)
     {
-        params_str.push_back(fundamental_type_to_string(type));
+        params_str.push_back(types::to_string(type));
     }
 
     if (parameter_types.size() != elements.size())
@@ -400,9 +365,9 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
 
     for (size_t i = 0; i < elements.size(); i++)
     {
-        if (parameter_types[i] != elements[i]->expression_return_type)
+        if (parameter_types[i] != elements[i]->return_type)
         {
-            if (parameter_types[i] != fundamental_type::Int || elements[i]->expression_return_type != fundamental_type::Byte)
+            if (types::is_convertible(elements[i]->return_type, parameter_types[i]) == false)
             {
                 output::errorPrototypeMismatch(identifier_token->definition_line, identifier, params_str);
             }

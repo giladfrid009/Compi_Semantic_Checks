@@ -13,7 +13,7 @@ using std::list;
 if_statement_syntax::if_statement_syntax(syntax_token* if_token, expression_syntax* condition, statement_syntax* body):
     if_token(if_token), condition(condition), body(body), else_token(nullptr), else_clause(nullptr)
 {
-    if (condition->expression_return_type != fundamental_type::Bool)
+    if (condition->return_type != fundamental_type::Bool)
     {
         output::errorMismatch(if_token->definition_line);
     }
@@ -25,7 +25,7 @@ if_statement_syntax::if_statement_syntax(syntax_token* if_token, expression_synt
 if_statement_syntax::if_statement_syntax(syntax_token* if_token, expression_syntax* condition, statement_syntax* body, syntax_token* else_token, statement_syntax* else_clause):
     if_token(if_token), condition(condition), body(body), else_token(else_token), else_clause(else_clause)
 {
-    if (condition->expression_return_type != fundamental_type::Bool)
+    if (condition->return_type != fundamental_type::Bool)
     {
         output::errorMismatch(if_token->definition_line);
     }
@@ -61,7 +61,7 @@ if_statement_syntax::~if_statement_syntax()
 while_statement_syntax::while_statement_syntax(syntax_token* while_token, expression_syntax* condition, statement_syntax* body):
     while_token(while_token), condition(condition), body(body)
 {
-    if (condition->expression_return_type != fundamental_type::Bool)
+    if (condition->return_type != fundamental_type::Bool)
     {
         output::errorMismatch(while_token->definition_line);
     }
@@ -165,12 +165,9 @@ return_statement_syntax::return_statement_syntax(syntax_token* return_token, exp
 
     symbol* func_sym = global_symbols.back();
 
-    if (func_sym->type != expression->expression_return_type)
+    if (types::is_convertible(expression->return_type, func_sym->type) == false)
     {
-        if (func_sym->type != fundamental_type::Int || expression->expression_return_type != fundamental_type::Byte)
-        {
-            output::errorMismatch(return_token->definition_line);
-        }
+        output::errorMismatch(return_token->definition_line);
     }
 
     expression->set_parent(this);
@@ -242,12 +239,9 @@ assignment_statement_syntax::assignment_statement_syntax(syntax_token* identifie
         output::errorUndef(identifier_token->definition_line, identifier);
     }
 
-    if (identifier_symbol->type != value->expression_return_type)
+    if (types::is_convertible(value->return_type, identifier_symbol->type) == false)
     {
-        if (identifier_symbol->type != fundamental_type::Int || value->expression_return_type != fundamental_type::Byte)
-        {
-            output::errorMismatch(assign_token->definition_line);
-        }
+        output::errorMismatch(assign_token->definition_line);
     }
 
     value->set_parent(this);
@@ -302,12 +296,9 @@ declaration_statement_syntax::declaration_statement_syntax(type_syntax* type, sy
         output::errorMismatch(identifier_token->definition_line);
     }
 
-    if (type->type != value->expression_return_type)
+    if (types::is_convertible(value->return_type, type->type) == false)
     {
-        if (type->type != fundamental_type::Int || value->expression_return_type != fundamental_type::Byte)
-        {
-            output::errorMismatch(identifier_token->definition_line);
-        }
+        output::errorMismatch(identifier_token->definition_line);
     }
 
     if (symbol_table::instance().contains_symbol(identifier))

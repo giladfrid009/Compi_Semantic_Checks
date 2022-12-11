@@ -150,10 +150,6 @@ class arithmetic_expression_syntax final: public expression_syntax
     ~arithmetic_expression_syntax();
 
     static arithmetic_operator parse_operator(std::string str);
-
-    private:
-
-    static fundamental_type get_return_type(expression_syntax* left, expression_syntax* right);
 };
 
 class relational_expression_syntax final: public expression_syntax

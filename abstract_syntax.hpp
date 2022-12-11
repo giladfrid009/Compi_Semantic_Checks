@@ -2,12 +2,9 @@
 #define _ABSTRACT_SYNTAX_HPP_
 
 #include "syntax_token.hpp"
+#include "types.hpp"
 #include <vector>
 #include <string>
-
-enum class fundamental_type { Void, Int, Bool, Byte, String };
-
-std::string fundamental_type_to_string(fundamental_type type);
 
 class syntax_base
 {
@@ -38,7 +35,7 @@ class expression_syntax: public syntax_base
 {
     public:
 
-    const fundamental_type expression_return_type;
+    const fundamental_type return_type;
 
     expression_syntax(fundamental_type return_type);
 

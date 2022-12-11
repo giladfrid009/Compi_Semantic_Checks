@@ -95,8 +95,6 @@ class type_syntax final: public syntax_base
     std::vector<syntax_token*> get_tokens() const override;
 
     ~type_syntax();
-
-    static fundamental_type parse_type(std::string str);
 };
 
 class formal_syntax final: public syntax_base
