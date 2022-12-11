@@ -159,7 +159,10 @@ return_statement_syntax::return_statement_syntax(syntax_token* return_token, exp
 
     if (func_sym->type != expression->expression_return_type)
     {
-        output::errorMismatch(return_token->definition_line);
+        if (func_sym->type != fundamental_type::Int || expression->expression_return_type != fundamental_type::Byte)
+        {
+            output::errorMismatch(return_token->definition_line);
+        }
     }
 
     expression->set_parent(this);

@@ -136,8 +136,6 @@ fundamental_type arithmetic_expression_syntax::get_return_type(expression_syntax
         return fundamental_type::Byte;
     }
 
-    output::errorMismatch(0);
-
     return fundamental_type::Void;
 }
 
@@ -212,7 +210,7 @@ conditional_expression_syntax::conditional_expression_syntax(expression_syntax* 
 
     if (condition->expression_return_type != fundamental_type::Bool)
     {
-        output::errorMismatch(0);
+        output::errorMismatch(if_token->definition_line);
     }
 
     true_value->set_parent(this);
@@ -246,8 +244,6 @@ fundamental_type conditional_expression_syntax::get_return_type(expression_synta
     {
         return left->expression_return_type;
     }
-
-    output::errorMismatch(0);
 
     return fundamental_type::Void;
 }
@@ -297,7 +293,7 @@ fundamental_type identifier_expression_syntax::get_return_type(string identifier
 
     if (symbol == nullptr)
     {
-        output::errorUndef(yylineno, identifier);
+        return fundamental_type::Void;
     }
 
     return symbol->type;
@@ -402,7 +398,7 @@ fundamental_type invocation_expression_syntax::get_return_type(string identifier
 
     if (symbol == nullptr)
     {
-        output::errorUndefFunc(yylineno, identifier);
+        return fundamental_type::Void;
     }
 
     return symbol->type;
