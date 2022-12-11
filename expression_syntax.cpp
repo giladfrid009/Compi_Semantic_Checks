@@ -25,7 +25,7 @@ vector<syntax_base*> cast_expression_syntax::get_children() const
     return vector<syntax_base*>{destination_type, expression};
 }
 
-std::vector<syntax_token*> cast_expression_syntax::get_tokens() const
+vector<syntax_token*> cast_expression_syntax::get_tokens() const
 {
     return vector<syntax_token*>();
 }
@@ -59,7 +59,7 @@ vector<syntax_base*> not_expression_syntax::get_children() const
     return vector<syntax_base*>{expression};
 }
 
-std::vector<syntax_token*> not_expression_syntax::get_tokens() const
+vector<syntax_token*> not_expression_syntax::get_tokens() const
 {
     return vector<syntax_token*>{not_token};
 }
@@ -112,7 +112,7 @@ logical_expression_syntax::~logical_expression_syntax()
     }
 }
 
-logical_expression_syntax::logical_operator logical_expression_syntax::parse_operator(std::string str)
+logical_expression_syntax::logical_operator logical_expression_syntax::parse_operator(string str)
 {
     if (str == "and") return logical_operator::And;
     if (str == "or") return logical_operator::Or;
@@ -170,7 +170,7 @@ arithmetic_expression_syntax::~arithmetic_expression_syntax()
     }
 }
 
-arithmetic_expression_syntax::arithmetic_operator arithmetic_expression_syntax::parse_operator(std::string str)
+arithmetic_expression_syntax::arithmetic_operator arithmetic_expression_syntax::parse_operator(string str)
 {
     if (str == "+") return arithmetic_operator::Add;
     if (str == "-") return arithmetic_operator::Sub;
@@ -215,7 +215,7 @@ relational_expression_syntax::~relational_expression_syntax()
     }
 }
 
-relational_expression_syntax::relational_operator relational_expression_syntax::parse_operator(std::string str)
+relational_expression_syntax::relational_operator relational_expression_syntax::parse_operator(string str)
 {
     if (str == "<") return relational_operator::Less;
     if (str == "<=") return relational_operator::LessEqual;
@@ -386,7 +386,7 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
 
     auto elements = expression_list->get_elements();
 
-    std::vector<string> params_str;
+    vector<string> params_str;
 
     for (fundamental_type type : parameter_types)
     {

@@ -44,7 +44,7 @@ type_syntax::~type_syntax()
     }
 }
 
-fundamental_type type_syntax::parse_type(std::string str)
+fundamental_type type_syntax::parse_type(string str)
 {
     if (str == "bool") return fundamental_type::Bool;
     if (str == "int") return fundamental_type::Int;

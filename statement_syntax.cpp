@@ -137,7 +137,7 @@ branch_statement_syntax::~branch_statement_syntax()
     }
 }
 
-branch_statement_syntax::branch_type branch_statement_syntax::parse_type(std::string str)
+branch_statement_syntax::branch_type branch_statement_syntax::parse_type(string str)
 {
     if (str == "break") return branch_type::Break;
     if (str == "continue") return branch_type::Continue;

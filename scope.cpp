@@ -7,6 +7,7 @@
 
 using std::string;
 using std::vector;
+using std::list;
 
 scope::scope(int offset, bool is_loop_scope):
     symbol_list(), symbol_map(), current_offset(offset), formal_offset(offset - 1), is_loop_scope(is_loop_scope)
@@ -36,7 +37,7 @@ symbol* scope::get_symbol(string symbol_name) const
     return symbol_map.at(symbol_name);
 }
 
-const std::list<symbol*>& scope::get_symbols() const
+const list<symbol*>& scope::get_symbols() const
 {
     return symbol_list;
 }
@@ -73,7 +74,7 @@ bool scope::add_formal(string name, fundamental_type type)
     return true;
 }
 
-bool scope::add_function(string name, fundamental_type return_type, std::vector<fundamental_type> parameter_types)
+bool scope::add_function(string name, fundamental_type return_type, vector<fundamental_type> parameter_types)
 {
     if (contains_symbol(name))
     {
