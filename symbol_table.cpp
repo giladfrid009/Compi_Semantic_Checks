@@ -5,9 +5,9 @@ using std::string;
 using std::vector;
 using std::list;
 
-symbol_table::symbol_table() : scope_list()
+symbol_table::symbol_table(): scope_list()
 {
-    
+
 }
 
 symbol_table& symbol_table::instance()

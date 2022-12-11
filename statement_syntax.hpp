@@ -8,7 +8,7 @@
 #include <vector>
 #include <string>
 
-class if_statement_syntax final : public statement_syntax
+class if_statement_syntax final: public statement_syntax
 {
     public:
 
@@ -33,7 +33,7 @@ class if_statement_syntax final : public statement_syntax
     ~if_statement_syntax();
 };
 
-class while_statement_syntax final : public statement_syntax
+class while_statement_syntax final: public statement_syntax
 {
     public:
 
@@ -54,7 +54,7 @@ class while_statement_syntax final : public statement_syntax
     ~while_statement_syntax();
 };
 
-class branch_statement_syntax final : public statement_syntax
+class branch_statement_syntax final: public statement_syntax
 {
     public:
 
@@ -78,11 +78,11 @@ class branch_statement_syntax final : public statement_syntax
     static branch_type parse_type(std::string str);
 };
 
-class return_statement_syntax final : public statement_syntax
+class return_statement_syntax final: public statement_syntax
 {
     public:
 
-    syntax_token* const return_token; 
+    syntax_token* const return_token;
     expression_syntax* const expression;
 
     return_statement_syntax(syntax_token* return_token);
@@ -100,7 +100,7 @@ class return_statement_syntax final : public statement_syntax
     ~return_statement_syntax();
 };
 
-class expression_statement_syntax final : public statement_syntax
+class expression_statement_syntax final: public statement_syntax
 {
     public:
 
@@ -119,7 +119,7 @@ class expression_statement_syntax final : public statement_syntax
     ~expression_statement_syntax();
 };
 
-class assignment_statement_syntax final : public statement_syntax
+class assignment_statement_syntax final: public statement_syntax
 {
     public:
 
@@ -141,7 +141,7 @@ class assignment_statement_syntax final : public statement_syntax
     ~assignment_statement_syntax();
 };
 
-class declaration_statement_syntax final : public statement_syntax
+class declaration_statement_syntax final: public statement_syntax
 {
     public:
 
@@ -166,7 +166,7 @@ class declaration_statement_syntax final : public statement_syntax
     ~declaration_statement_syntax();
 };
 
-class block_statement_syntax final : public statement_syntax
+class block_statement_syntax final: public statement_syntax
 {
     public:
 

@@ -9,8 +9,6 @@ enum class fundamental_type { Void, Int, Bool, Byte, String };
 
 std::string fundamental_type_to_string(fundamental_type type);
 
-fundamental_type string_to_fundamental_type(std::string type);
-
 class syntax_base
 {
     private:
@@ -36,7 +34,7 @@ class syntax_base
     virtual std::vector<syntax_token*> get_tokens() const = 0;
 };
 
-class expression_syntax : public syntax_base
+class expression_syntax: public syntax_base
 {
     public:
 
@@ -59,7 +57,7 @@ class expression_syntax : public syntax_base
     virtual std::vector<syntax_token*> get_tokens() const = 0;
 };
 
-class statement_syntax : public syntax_base
+class statement_syntax: public syntax_base
 {
     public:
 

@@ -9,14 +9,14 @@
 #include <type_traits>
 #include <stdexcept>
 
-template<typename literal_type> class literal_expression_syntax final : public expression_syntax
+template<typename literal_type> class literal_expression_syntax final: public expression_syntax
 {
     public:
 
     const literal_type value;
     syntax_token* const value_token;
 
-    literal_expression_syntax(literal_type value, syntax_token* value_token) : 
+    literal_expression_syntax(literal_type value, syntax_token* value_token):
         expression_syntax(get_return_type()), value(value), value_token(value_token)
     {
     }
@@ -60,7 +60,7 @@ template<typename literal_type> class literal_expression_syntax final : public e
     }
 };
 
-class cast_expression_syntax final : public expression_syntax
+class cast_expression_syntax final: public expression_syntax
 {
     public:
 
@@ -80,7 +80,7 @@ class cast_expression_syntax final : public expression_syntax
     ~cast_expression_syntax();
 };
 
-class not_expression_syntax final : public expression_syntax
+class not_expression_syntax final: public expression_syntax
 {
     public:
 
@@ -100,7 +100,7 @@ class not_expression_syntax final : public expression_syntax
     ~not_expression_syntax();
 };
 
-class logical_expression_syntax final : public expression_syntax
+class logical_expression_syntax final: public expression_syntax
 {
     public:
 
@@ -126,7 +126,7 @@ class logical_expression_syntax final : public expression_syntax
     static logical_operator parse_operator(std::string str);
 };
 
-class arithmetic_expression_syntax final : public expression_syntax
+class arithmetic_expression_syntax final: public expression_syntax
 {
     public:
 
@@ -156,7 +156,7 @@ class arithmetic_expression_syntax final : public expression_syntax
     static fundamental_type get_return_type(expression_syntax* left, expression_syntax* right);
 };
 
-class relational_expression_syntax final : public expression_syntax
+class relational_expression_syntax final: public expression_syntax
 {
     public:
 
@@ -182,7 +182,7 @@ class relational_expression_syntax final : public expression_syntax
     static relational_operator parse_operator(std::string str);
 };
 
-class conditional_expression_syntax final : public expression_syntax
+class conditional_expression_syntax final: public expression_syntax
 {
     public:
 
@@ -209,7 +209,7 @@ class conditional_expression_syntax final : public expression_syntax
     static fundamental_type get_return_type(expression_syntax* left, expression_syntax* right);
 };
 
-class identifier_expression_syntax final : public expression_syntax
+class identifier_expression_syntax final: public expression_syntax
 {
     public:
 
@@ -221,7 +221,7 @@ class identifier_expression_syntax final : public expression_syntax
     identifier_expression_syntax(const identifier_expression_syntax& other) = delete;
 
     identifier_expression_syntax& operator=(const identifier_expression_syntax& other) = delete;
-    
+
     std::vector<syntax_base*> get_children() const override;
 
     std::vector<syntax_token*> get_tokens() const override;
@@ -233,7 +233,7 @@ class identifier_expression_syntax final : public expression_syntax
     static fundamental_type get_return_type(std::string identifier);
 };
 
-class invocation_expression_syntax final : public expression_syntax
+class invocation_expression_syntax final: public expression_syntax
 {
     public:
 
@@ -250,7 +250,7 @@ class invocation_expression_syntax final : public expression_syntax
     invocation_expression_syntax& operator=(const invocation_expression_syntax& other) = delete;
 
     std::vector<syntax_base*> get_children() const override;
-    
+
     std::vector<syntax_token*> get_tokens() const override;
 
     ~invocation_expression_syntax();

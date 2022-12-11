@@ -24,14 +24,14 @@ class symbol
     virtual ~symbol() = default;
 };
 
-class variable_symbol : public symbol
+class variable_symbol: public symbol
 {
     public:
 
     variable_symbol(std::string name, fundamental_type type, int offset);
 };
 
-class function_symbol : public symbol
+class function_symbol: public symbol
 {
     public:
 

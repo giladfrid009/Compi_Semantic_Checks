@@ -8,7 +8,7 @@ using std::vector;
 
 extern int yylineno;
 
-cast_expression_syntax::cast_expression_syntax(type_syntax* destination_type, expression_syntax* expression) :
+cast_expression_syntax::cast_expression_syntax(type_syntax* destination_type, expression_syntax* expression):
     expression_syntax(destination_type->type), destination_type(destination_type), expression(expression)
 {
     if (expression->is_numeric() == false || destination_type->is_numeric() == false)
@@ -43,7 +43,7 @@ cast_expression_syntax::~cast_expression_syntax()
     }
 }
 
-not_expression_syntax::not_expression_syntax(syntax_token* not_token, expression_syntax* expression) :
+not_expression_syntax::not_expression_syntax(syntax_token* not_token, expression_syntax* expression):
     expression_syntax(fundamental_type::Bool), not_token(not_token), expression(expression)
 {
     if (expression->expression_return_type != fundamental_type::Bool)
@@ -77,7 +77,7 @@ not_expression_syntax::~not_expression_syntax()
     }
 }
 
-logical_expression_syntax::logical_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right) :
+logical_expression_syntax::logical_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right):
     expression_syntax(fundamental_type::Bool), left(left), oper_token(oper_token), right(right), oper(parse_operator(oper_token->text))
 {
     if (left->expression_return_type != fundamental_type::Bool || right->expression_return_type != fundamental_type::Bool)
@@ -120,7 +120,7 @@ logical_expression_syntax::logical_operator logical_expression_syntax::parse_ope
     throw std::invalid_argument("unknown oper");
 }
 
-arithmetic_expression_syntax::arithmetic_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right) :
+arithmetic_expression_syntax::arithmetic_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right):
     expression_syntax(get_return_type(left, right)), left(left), oper_token(oper_token), right(right), oper(parse_operator(oper_token->text))
 {
     if (left->is_numeric() == false || right->is_numeric() == false)
@@ -180,7 +180,7 @@ arithmetic_expression_syntax::arithmetic_operator arithmetic_expression_syntax::
     throw std::invalid_argument("unknown oper");
 }
 
-relational_expression_syntax::relational_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right) :
+relational_expression_syntax::relational_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right):
     expression_syntax(fundamental_type::Bool), left(left), oper_token(oper_token), right(right), oper(parse_operator(oper_token->text))
 {
     if (left->is_numeric() == false || right->is_numeric() == false)
@@ -227,7 +227,7 @@ relational_expression_syntax::relational_operator relational_expression_syntax::
     throw std::invalid_argument("unknown oper");
 }
 
-conditional_expression_syntax::conditional_expression_syntax(expression_syntax* true_value, syntax_token* if_token, expression_syntax* condition, syntax_token* const else_token, expression_syntax* false_value) :
+conditional_expression_syntax::conditional_expression_syntax(expression_syntax* true_value, syntax_token* if_token, expression_syntax* condition, syntax_token* const else_token, expression_syntax* false_value):
     expression_syntax(get_return_type(true_value, false_value)), true_value(true_value), if_token(if_token), condition(condition), else_token(else_token), false_value(false_value)
 {
     if (true_value->expression_return_type != false_value->expression_return_type)
@@ -291,7 +291,7 @@ conditional_expression_syntax::~conditional_expression_syntax()
     }
 }
 
-identifier_expression_syntax::identifier_expression_syntax(syntax_token* identifier_token) :
+identifier_expression_syntax::identifier_expression_syntax(syntax_token* identifier_token):
     expression_syntax(get_return_type(identifier_token->text)), identifier_token(identifier_token), identifier(identifier_token->text)
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
@@ -342,7 +342,7 @@ identifier_expression_syntax::~identifier_expression_syntax()
     }
 }
 
-invocation_expression_syntax::invocation_expression_syntax(syntax_token* identifier_token) :
+invocation_expression_syntax::invocation_expression_syntax(syntax_token* identifier_token):
     expression_syntax(get_return_type(identifier_token->text)), identifier_token(identifier_token), identifier(identifier_token->text), expression_list(nullptr)
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
@@ -367,7 +367,7 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
     }
 }
 
-invocation_expression_syntax::invocation_expression_syntax(syntax_token* identifier_token, list_syntax<expression_syntax>* expression_list) :
+invocation_expression_syntax::invocation_expression_syntax(syntax_token* identifier_token, list_syntax<expression_syntax>* expression_list):
     expression_syntax(get_return_type(identifier_token->text)), identifier_token(identifier_token), identifier(identifier_token->text), expression_list(expression_list)
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);

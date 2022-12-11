@@ -8,7 +8,7 @@
 #include <string>
 #include <type_traits>
 
-template<typename element_type> class list_syntax final : public syntax_base
+template<typename element_type> class list_syntax final: public syntax_base
 {
     private:
 
@@ -16,12 +16,12 @@ template<typename element_type> class list_syntax final : public syntax_base
 
     public:
 
-    list_syntax() : elements()
+    list_syntax(): elements()
     {
         static_assert(std::is_base_of<syntax_base, element_type>::value, "must be of type syntax_base");
     }
 
-    list_syntax(element_type* element) : elements{ element }
+    list_syntax(element_type* element): elements{ element }
     {
         static_assert(std::is_base_of<syntax_base, element_type>::value, "must be of type syntax_base");
 
@@ -73,7 +73,7 @@ template<typename element_type> class list_syntax final : public syntax_base
     }
 };
 
-class type_syntax final : public syntax_base
+class type_syntax final: public syntax_base
 {
     public:
 
@@ -95,9 +95,11 @@ class type_syntax final : public syntax_base
     std::vector<syntax_token*> get_tokens() const override;
 
     ~type_syntax();
+
+    static fundamental_type parse_type(std::string str);
 };
 
-class formal_syntax final : public syntax_base
+class formal_syntax final: public syntax_base
 {
     public:
 
@@ -118,7 +120,7 @@ class formal_syntax final : public syntax_base
     ~formal_syntax();
 };
 
-class function_declaration_syntax final : public syntax_base
+class function_declaration_syntax final: public syntax_base
 {
     public:
 
@@ -141,7 +143,7 @@ class function_declaration_syntax final : public syntax_base
     ~function_declaration_syntax();
 };
 
-class root_syntax final : public syntax_base
+class root_syntax final: public syntax_base
 {
     public:
 

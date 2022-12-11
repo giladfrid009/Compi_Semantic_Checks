@@ -7,7 +7,7 @@ using std::vector;
 using std::string;
 
 type_syntax::type_syntax(syntax_token* type_token):
-    type_token(type_token), type(string_to_fundamental_type(type_token->text))
+    type_token(type_token), type(parse_type(type_token->text))
 {
 }
 
@@ -42,6 +42,17 @@ type_syntax::~type_syntax()
     {
         delete token;
     }
+}
+
+fundamental_type type_syntax::parse_type(std::string str)
+{
+    if (str == "bool") return fundamental_type::Bool;
+    if (str == "int") return fundamental_type::Int;
+    if (str == "byte") return fundamental_type::Byte;
+    if (str == "string") return fundamental_type::String;
+    if (str == "void") return fundamental_type::Void;
+
+    throw std::invalid_argument("unknown type");
 }
 
 formal_syntax::formal_syntax(type_syntax* type, syntax_token* identifier_token):
