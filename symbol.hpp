@@ -15,9 +15,11 @@ class symbol
 
     const std::string name;
 
+    const int offset;
+
     const fundamental_type type;
 
-    symbol(std::string name, fundamental_type type, symbol_type sym_type);
+    symbol(std::string name, fundamental_type type, int offset, symbol_type sym_type);
 
     virtual ~symbol() = default;
 };
@@ -25,8 +27,6 @@ class symbol
 class variable_symbol : public symbol
 {
     public:
-
-    const int offset;
 
     variable_symbol(std::string name, fundamental_type type, int offset);
 };

@@ -237,9 +237,7 @@ void print_current_scope()
     {
         if (sym->sym_type == symbol_type::Var)
         {
-            variable_symbol* var_sym = dynamic_cast<variable_symbol*>(sym);
-
-            output::printID(var_sym->name, var_sym->offset, fundamental_type_to_string(var_sym->type));
+            output::printID(sym->name, sym->offset, fundamental_type_to_string(sym->type));
         }
         else if (sym->sym_type == symbol_type::Func)
         {
@@ -254,7 +252,7 @@ void print_current_scope()
 
             string func_type = output::makeFunctionType(fundamental_type_to_string(func_sym->type), param_types);
 
-            output::printID(func_sym->name, 0, func_type);
+            output::printID(sym->name, sym->offset, func_type);
         }
         else
         {
