@@ -4,20 +4,21 @@
 #include "syntax_token.hpp"
 #include "abstract_syntax.hpp"
 #include "generic_syntax.hpp"
+#include "hw3_output.hpp"
 #include <vector>
 #include <string>
 #include <type_traits>
 #include <stdexcept>
 
-template<typename literal_type> class literal_expression_syntax final: public expression_syntax
+template<typename literal_type> class literal_expression_syntax final : public expression_syntax
 {
     public:
 
-    const literal_type value;
     syntax_token* const value_token;
+    const literal_type value;
 
-    literal_expression_syntax(literal_type value, syntax_token* value_token):
-        expression_syntax(get_return_type()), value(value), value_token(value_token)
+    literal_expression_syntax(syntax_token* value_token) : 
+        expression_syntax(get_return_type()), value_token(value_token), value(get_literal_value(value_token))
     {
     }
 
@@ -38,11 +39,16 @@ template<typename literal_type> class literal_expression_syntax final: public ex
     fundamental_type get_return_type() const
     {
         if (std::is_same<literal_type, char>::value) return fundamental_type::Byte;
-        if (std::is_same<literal_type, int>::value) return fundamental_type::Int;
+        if (std::is_same<literal_type, int>::value) return fundamental_type::Byte;
         if (std::is_same<literal_type, bool>::value) return fundamental_type::Bool;
         if (std::is_same<literal_type, std::string>::value) return fundamental_type::String;
         if (std::is_same<literal_type, void>::value) return fundamental_type::Void;
 
+        throw std::runtime_error("invalid literal_type");
+    }
+
+    inline literal_type get_literal_value(syntax_token* value_token) const
+    {
         throw std::runtime_error("invalid literal_type");
     }
 
@@ -59,6 +65,36 @@ template<typename literal_type> class literal_expression_syntax final: public ex
         }
     }
 };
+
+template<> inline int literal_expression_syntax<int>::get_literal_value(syntax_token* value_token) const
+{
+    return std::stoi(value_token->text);
+}
+
+template<> inline char literal_expression_syntax<char>::get_literal_value(syntax_token* value_token) const
+{
+    int value = std::stoi(value_token->text);
+
+    if (value < 0 || value > 255)
+    {
+        output::errorByteTooLarge(value_token->definition_line, value_token->text);
+    }
+
+    return (char)value;
+}
+
+template<> inline std::string literal_expression_syntax<std::string>::get_literal_value(syntax_token* value_token) const
+{
+    return std::string(value_token->text);
+}
+
+template<> inline bool literal_expression_syntax<bool>::get_literal_value(syntax_token* value_token) const
+{
+    if (value_token->text == "true") return true;
+    if (value_token->text == "false") return false;
+    
+    throw std::runtime_error("invalid value_token text");
+}
 
 class cast_expression_syntax final: public expression_syntax
 {
