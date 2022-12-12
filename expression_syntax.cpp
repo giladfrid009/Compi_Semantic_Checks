@@ -280,7 +280,7 @@ fundamental_type identifier_expression_syntax::get_return_type(string identifier
 
     if (symbol == nullptr || symbol->sym_type != symbol_type::Var)
     {
-        return fundamental_type::Void;
+        return fundamental_type::Invalid;
     }
 
     return symbol->type;
@@ -375,7 +375,7 @@ fundamental_type invocation_expression_syntax::get_return_type(string identifier
 
     if (symbol == nullptr || symbol->sym_type != symbol_type::Func)
     {
-        return fundamental_type::Void;
+        return fundamental_type::Invalid;
     }
 
     return symbol->type;

@@ -3,7 +3,7 @@
 
 #include <string>
 
-enum class fundamental_type { Void, Int, Bool, Byte, String };
+enum class fundamental_type { Invalid, Void, Int, Bool, Byte, String };
 
 namespace types
 {

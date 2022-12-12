@@ -30,6 +30,11 @@ fundamental_type types::from_string(string str)
 
 bool types::is_convertible(fundamental_type source, fundamental_type destiation)
 {
+    if (source == fundamental_type::Invalid || destiation == fundamental_type::Invalid)
+    {
+        return false;
+    }
+
     if (source == fundamental_type::Void || destiation == fundamental_type::Void)
     {
         return false;
@@ -50,6 +55,16 @@ bool types::is_convertible(fundamental_type source, fundamental_type destiation)
 
 fundamental_type types::cast_up(fundamental_type first, fundamental_type second)
 {
+    if (first == fundamental_type::Invalid || second == fundamental_type::Invalid)
+    {
+        return fundamental_type::Invalid;
+    }
+
+    if (first == fundamental_type::Void || second == fundamental_type::Void)
+    {
+        return fundamental_type::Invalid;
+    }
+
     if (first == second)
     {
         return first;
@@ -65,15 +80,20 @@ fundamental_type types::cast_up(fundamental_type first, fundamental_type second)
         return fundamental_type::Int;
     }
 
-    return fundamental_type::Void;
+    return fundamental_type::Invalid;
 }
 
 bool types::is_numeric(fundamental_type type)
 {
+    if (type == fundamental_type::Invalid)
+    {
+        return false;
+    }
+
     return type == fundamental_type::Int || type == fundamental_type::Byte;
 }
 
 bool types::is_special(fundamental_type type)
 {
-    return type == fundamental_type::Void || type == fundamental_type::String;
+    return type == fundamental_type::Invalid || type == fundamental_type::Void || type == fundamental_type::String;
 }
