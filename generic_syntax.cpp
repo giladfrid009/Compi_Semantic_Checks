@@ -93,7 +93,7 @@ function_declaration_syntax::function_declaration_syntax(type_syntax* return_typ
         throw std::logic_error("function should be defined.");
     }
 
-    function_symbol* func_symbol = dynamic_cast<function_symbol*>(symbol);
+    function_symbol* func_symbol = static_cast<function_symbol*>(symbol);
 
     auto elements = formal_list->get_elements();
 
@@ -147,7 +147,7 @@ root_syntax::root_syntax(list_syntax<function_declaration_syntax>* function_list
         output::errorMainMissing();
     }
 
-    function_symbol* func_sym = dynamic_cast<function_symbol*>(main_sym);
+    function_symbol* func_sym = static_cast<function_symbol*>(main_sym);
 
     if (func_sym->type != fundamental_type::Void || func_sym->parameter_types.size() != 0)
     {

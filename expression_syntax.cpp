@@ -309,7 +309,7 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
         output::errorUndefFunc(identifier_token->definition_line, identifier);
     }
 
-    function_symbol* func_symbol = dynamic_cast<function_symbol*>(symbol);
+    function_symbol* func_symbol = static_cast<function_symbol*>(symbol);
 
     vector<string> params_str;
 
@@ -329,7 +329,7 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
         output::errorUndefFunc(identifier_token->definition_line, identifier);
     }
 
-    vector<fundamental_type> parameter_types = dynamic_cast<function_symbol*>(symbol)->parameter_types;
+    vector<fundamental_type> parameter_types = static_cast<function_symbol*>(symbol)->parameter_types;
 
     auto elements = expression_list->get_elements();
 

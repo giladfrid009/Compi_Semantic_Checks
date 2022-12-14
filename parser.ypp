@@ -273,7 +273,7 @@ void print_current_scope()
         }
         else if (sym->sym_type == symbol_type::Func)
         {
-            function_symbol* func_sym = dynamic_cast<function_symbol*>(sym);
+            function_symbol* func_sym = static_cast<function_symbol*>(sym);
 
             vector<string> param_types;
 
