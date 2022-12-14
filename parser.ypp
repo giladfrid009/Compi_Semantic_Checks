@@ -20,8 +20,6 @@ void yyerror(const char* message);
 
 void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_token, list_syntax<formal_syntax>* formal_list);
 
-expression_syntax* create_byte_literal_expression(syntax_token* value_token, syntax_token* b_token);
-
 root_syntax* create_root_syntax(list_syntax<function_declaration_syntax>* function_list);
 
 expression_syntax* validate_bool_expression(expression_syntax* expression);
@@ -155,11 +153,11 @@ Exp 		: LPAREN Exp RPAREN	                            { $$ = $2; }
             | Exp MULOP Exp                                 { $$ = new arithmetic_expression_syntax($1, $2, $3); }
 			| ID                                            { $$ = new identifier_expression_syntax($1); }
 			| Call                                          { $$ = $1; }
-			| NUM                                           { $$ = new literal_expression_syntax<int>(std::stoi($1->text), $1); }
-			| NUM B                                         { $$ = create_byte_literal_expression($1, $2); }
-			| STRING                                        { $$ = new literal_expression_syntax<string>($1->text, $1); }
-			| TRUE                                          { $$ = new literal_expression_syntax<bool>(true, $1); }
-			| FALSE                                         { $$ = new literal_expression_syntax<bool>(false, $1); }
+			| NUM                                           { $$ = new literal_expression_syntax<int>($1); }
+			| NUM B                                         { $$ = new literal_expression_syntax<char>($1); delete $2; }
+			| STRING                                        { $$ = new literal_expression_syntax<string>($1); }
+			| TRUE                                          { $$ = new literal_expression_syntax<bool>($1); }
+			| FALSE                                         { $$ = new literal_expression_syntax<bool>($1); }
 			| NOT Exp                                       { $$ = new not_expression_syntax($1, $2); }
 			| Exp AND Exp                                   { $$ = new logical_expression_syntax($1, $2, $3); }
 			| Exp OR Exp                                    { $$ = new logical_expression_syntax($1, $2, $3); }
@@ -225,20 +223,6 @@ void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_tok
 
         symtab.add_formal(fs->identifier, fs->type->type);
     }
-}
-
-expression_syntax* create_byte_literal_expression(syntax_token* value_token, syntax_token* b_token)
-{
-    delete b_token;
-
-    int value = std::stoi(value_token->text);
-
-    if (value >= 256 || value < 0) 
-    {
-        output::errorByteTooLarge(value_token->definition_line, value_token->text);
-    }
-
-    return new literal_expression_syntax<char>(value, value_token); 
 }
 
 expression_syntax* validate_bool_expression(expression_syntax* expression)
