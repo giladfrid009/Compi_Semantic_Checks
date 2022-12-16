@@ -309,11 +309,16 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
         output::errorUndefFunc(identifier_token->definition_line, identifier);
     }
 
-    function_symbol* func_symbol = static_cast<function_symbol*>(symbol);
+    vector<fundamental_type> parameter_types = static_cast<function_symbol*>(symbol)->parameter_types;
 
     vector<string> params_str;
 
-    if (func_symbol->parameter_types.size() != 0)
+    for (fundamental_type type : parameter_types)
+    {
+        params_str.push_back(types::to_string(type));
+    }
+
+    if (parameter_types.size() != 0)
     {
         output::errorPrototypeMismatch(identifier_token->definition_line, identifier, params_str);
     }
