@@ -163,7 +163,7 @@ Exp 		: LPAREN Exp RPAREN	                            { $$ = $2; }
 			| Exp OR Exp                                    { $$ = new logical_expression_syntax($1, $2, $3); }
 			| Exp RELOP Exp                                 { $$ = new relational_expression_syntax($1, $2, $3); }
             | Exp EQOP Exp                                  { $$ = new relational_expression_syntax($1, $2, $3); } 
-			| LPAREN Type RPAREN Exp                        { $$ = new cast_expression_syntax($2, $4); }
+			| LPAREN Type RPAREN Exp %prec NOT              { $$ = new cast_expression_syntax($2, $4); }
 			;
 BoolExp     : Exp                                           { $$ = validate_bool_expression($1); }
             ;

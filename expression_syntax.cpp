@@ -354,7 +354,7 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
     {
         if (parameter_types[i] != elements[i]->return_type)
         {
-            if (types::is_convertible(elements[i]->return_type, parameter_types[i]) == false)
+            if (types::is_implictly_convertible(elements[i]->return_type, parameter_types[i]) == false)
             {
                 output::errorPrototypeMismatch(identifier_token->definition_line, identifier, params_str);
             }

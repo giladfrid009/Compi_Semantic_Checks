@@ -10,14 +10,14 @@
 #include <type_traits>
 #include <stdexcept>
 
-template<typename literal_type> class literal_expression_syntax final : public expression_syntax
+template<typename literal_type> class literal_expression_syntax final: public expression_syntax
 {
     public:
 
     syntax_token* const value_token;
     const literal_type value;
 
-    literal_expression_syntax(syntax_token* value_token) : 
+    literal_expression_syntax(syntax_token* value_token):
         expression_syntax(get_return_type()), value_token(value_token), value(get_literal_value(value_token))
     {
     }
@@ -42,7 +42,6 @@ template<typename literal_type> class literal_expression_syntax final : public e
         if (std::is_same<literal_type, int>::value) return fundamental_type::Int;
         if (std::is_same<literal_type, bool>::value) return fundamental_type::Bool;
         if (std::is_same<literal_type, std::string>::value) return fundamental_type::String;
-        if (std::is_same<literal_type, void>::value) return fundamental_type::Void;
 
         throw std::runtime_error("invalid literal_type");
     }
@@ -92,7 +91,7 @@ template<> inline bool literal_expression_syntax<bool>::get_literal_value(syntax
 {
     if (value_token->text == "true") return true;
     if (value_token->text == "false") return false;
-    
+
     throw std::runtime_error("invalid value_token text");
 }
 

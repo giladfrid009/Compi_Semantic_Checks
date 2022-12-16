@@ -28,7 +28,7 @@ fundamental_type types::from_string(string str)
     throw std::invalid_argument("can't parse str");
 }
 
-bool types::is_convertible(fundamental_type source, fundamental_type destiation)
+bool types::is_implictly_convertible(fundamental_type source, fundamental_type destiation)
 {
     if (source == fundamental_type::Invalid || destiation == fundamental_type::Invalid)
     {
@@ -39,7 +39,7 @@ bool types::is_convertible(fundamental_type source, fundamental_type destiation)
     {
         return false;
     }
-    
+
     if (source == destiation)
     {
         return true;
@@ -85,11 +85,6 @@ fundamental_type types::cast_up(fundamental_type first, fundamental_type second)
 
 bool types::is_numeric(fundamental_type type)
 {
-    if (type == fundamental_type::Invalid)
-    {
-        return false;
-    }
-
     return type == fundamental_type::Int || type == fundamental_type::Byte;
 }
 

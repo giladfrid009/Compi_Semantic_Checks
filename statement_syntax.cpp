@@ -165,7 +165,7 @@ return_statement_syntax::return_statement_syntax(syntax_token* return_token, exp
 
     symbol* func_sym = global_symbols.back();
 
-    if (types::is_convertible(expression->return_type, func_sym->type) == false)
+    if (types::is_implictly_convertible(expression->return_type, func_sym->type) == false)
     {
         output::errorMismatch(return_token->definition_line);
     }
@@ -234,7 +234,7 @@ assignment_statement_syntax::assignment_statement_syntax(syntax_token* identifie
         output::errorUndef(identifier_token->definition_line, identifier);
     }
 
-    if (types::is_convertible(value->return_type, identifier_symbol->type) == false)
+    if (types::is_implictly_convertible(value->return_type, identifier_symbol->type) == false)
     {
         output::errorMismatch(assign_token->definition_line);
     }
@@ -291,7 +291,7 @@ declaration_statement_syntax::declaration_statement_syntax(type_syntax* type, sy
         output::errorMismatch(identifier_token->definition_line);
     }
 
-    if (types::is_convertible(value->return_type, type->type) == false)
+    if (types::is_implictly_convertible(value->return_type, type->type) == false)
     {
         output::errorMismatch(identifier_token->definition_line);
     }

@@ -11,7 +11,7 @@ namespace types
 
     fundamental_type from_string(std::string str);
 
-    bool is_convertible(fundamental_type source, fundamental_type destiation);
+    bool is_implictly_convertible(fundamental_type source, fundamental_type destiation);
 
     bool is_numeric(fundamental_type type);
 
