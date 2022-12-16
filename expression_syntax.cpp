@@ -335,7 +335,7 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
 
     vector<string> params_str;
 
-    for (fundamental_type type : parameter_types) 
+    for (fundamental_type type : parameter_types)
     {
         params_str.push_back(types::to_string(type));
     }
