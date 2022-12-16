@@ -218,7 +218,7 @@ void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_tok
     {
         if (symtab.contains_symbol(fs->identifier))
         {
-            output::errorDef(fs->identifier_token->definition_line, name);
+            output::errorDef(fs->identifier_token->definition_line, fs->identifier);
         }
 
         symtab.add_formal(fs->identifier, fs->type->type);
