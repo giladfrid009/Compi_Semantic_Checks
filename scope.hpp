@@ -25,17 +25,17 @@ class scope
 
     ~scope();
 
-    bool contains_symbol(std::string symbol_name) const;
+    bool contains_symbol(const std::string& symbol_name) const;
 
-    symbol* get_symbol(std::string symbol_name) const;
+    symbol* get_symbol(const std::string& symbol_name) const;
 
     const std::list<symbol*>& get_symbols() const;
 
-    bool add_variable(std::string name, type_kind type);
+    bool add_variable(const std::string& name, type_kind type);
 
-    bool add_parameter(std::string name, type_kind type);
+    bool add_parameter(const std::string& name, type_kind type);
 
-    bool add_function(std::string name, type_kind return_type, std::vector<type_kind> parameter_types);
+    bool add_function(const std::string& name, type_kind return_type, const std::vector<type_kind>& parameter_types);
 };
 
 #endif

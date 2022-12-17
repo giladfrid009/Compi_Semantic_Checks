@@ -22,12 +22,12 @@ scope::~scope()
     }
 }
 
-bool scope::contains_symbol(string symbol_name) const
+bool scope::contains_symbol(const string& symbol_name) const
 {
     return symbol_map.find(symbol_name) != symbol_map.end();
 }
 
-symbol* scope::get_symbol(string symbol_name) const
+symbol* scope::get_symbol(const string& symbol_name) const
 {
     if (contains_symbol(symbol_name) == false)
     {
@@ -42,7 +42,7 @@ const list<symbol*>& scope::get_symbols() const
     return symbol_list;
 }
 
-bool scope::add_variable(string name, type_kind type)
+bool scope::add_variable(const string& name, type_kind type)
 {
     if (contains_symbol(name))
     {
@@ -58,7 +58,7 @@ bool scope::add_variable(string name, type_kind type)
     return true;
 }
 
-bool scope::add_parameter(string name, type_kind type)
+bool scope::add_parameter(const string& name, type_kind type)
 {
     if (contains_symbol(name))
     {
@@ -74,7 +74,7 @@ bool scope::add_parameter(string name, type_kind type)
     return true;
 }
 
-bool scope::add_function(string name, type_kind return_type, vector<type_kind> parameter_types)
+bool scope::add_function(const string& name, type_kind return_type, const vector<type_kind>& parameter_types)
 {
     if (contains_symbol(name))
     {

@@ -12,11 +12,11 @@ class if_statement_syntax final: public statement_syntax
 {
     public:
 
-    syntax_token* const if_token;
-    expression_syntax* const condition;
-    statement_syntax* const body;
-    syntax_token* const else_token;
-    statement_syntax* const else_clause;
+    const syntax_token* const if_token;
+    const expression_syntax* const condition;
+    const statement_syntax* const body;
+    const syntax_token* const else_token;
+    const statement_syntax* const else_clause;
 
     if_statement_syntax(syntax_token* if_token, expression_syntax* condition, statement_syntax* body);
 
@@ -33,9 +33,9 @@ class while_statement_syntax final: public statement_syntax
 {
     public:
 
-    syntax_token* const while_token;
-    expression_syntax* const condition;
-    statement_syntax* const body;
+    const syntax_token* const while_token;
+    const expression_syntax* const condition;
+    const statement_syntax* const body;
 
     while_statement_syntax(syntax_token* while_token, expression_syntax* condition, statement_syntax* body);
 
@@ -52,7 +52,7 @@ class branch_statement_syntax final: public statement_syntax
 
     enum class branch_kind { Break, Continue };
 
-    syntax_token* const branch_token;
+    const syntax_token* const branch_token;
     const branch_kind kind;
 
     branch_statement_syntax(syntax_token* branch_token);
@@ -70,8 +70,8 @@ class return_statement_syntax final: public statement_syntax
 {
     public:
 
-    syntax_token* const return_token;
-    expression_syntax* const expression;
+    const syntax_token* const return_token;
+    const expression_syntax* const expression;
 
     return_statement_syntax(syntax_token* return_token);
 
@@ -88,7 +88,7 @@ class expression_statement_syntax final: public statement_syntax
 {
     public:
 
-    expression_syntax* const expression;
+    const expression_syntax* const expression;
 
     expression_statement_syntax(expression_syntax* expression);
 
@@ -103,10 +103,10 @@ class assignment_statement_syntax final: public statement_syntax
 {
     public:
 
-    syntax_token* const identifier_token;
+    const syntax_token* const identifier_token;
     const std::string identifier;
-    syntax_token* const assign_token;
-    expression_syntax* const value;
+    const syntax_token* const assign_token;
+    const expression_syntax* const value;
 
     assignment_statement_syntax(syntax_token* identifier_token, syntax_token* assign_token, expression_syntax* value);
 
@@ -121,11 +121,11 @@ class declaration_statement_syntax final: public statement_syntax
 {
     public:
 
-    type_syntax* const type;
-    syntax_token* const identifier_token;
+    const type_syntax* const type;
+    const syntax_token* const identifier_token;
     const std::string identifier;
-    syntax_token* const assign_token;
-    expression_syntax* const value;
+    const syntax_token* const assign_token;
+    const expression_syntax* const value;
 
     declaration_statement_syntax(type_syntax* type, syntax_token* identifier_token);
 

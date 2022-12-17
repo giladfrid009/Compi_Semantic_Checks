@@ -9,7 +9,7 @@ syntax_base::syntax_base() : children(), parent(nullptr)
 {
 }
 
-syntax_base* syntax_base::get_parent() const
+const syntax_base* syntax_base::get_parent() const
 {
     return parent;
 }
@@ -31,7 +31,7 @@ void syntax_base::push_front_child(syntax_base* child)
     {
         return;
     }
-    
+
     children.push_front(child);
     child->parent = this;
 }

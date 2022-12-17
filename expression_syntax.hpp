@@ -14,7 +14,7 @@ template<typename literal_type> class literal_expression_syntax final: public ex
 {
     public:
 
-    syntax_token* const value_token;
+    const syntax_token* const value_token;
     const literal_type value;
 
     literal_expression_syntax(syntax_token* value_token):
@@ -86,8 +86,8 @@ class cast_expression_syntax final: public expression_syntax
 {
     public:
 
-    type_syntax* const destination_type;
-    expression_syntax* const expression;
+    const type_syntax* const destination_type;
+    const expression_syntax* const expression;
 
     cast_expression_syntax(type_syntax* destination_type, expression_syntax* expression);
 
@@ -102,8 +102,8 @@ class not_expression_syntax final: public expression_syntax
 {
     public:
 
-    syntax_token* const not_token;
-    expression_syntax* const expression;
+    const syntax_token* const not_token;
+    const expression_syntax* const expression;
 
     not_expression_syntax(syntax_token* not_token, expression_syntax* expression);
 
@@ -120,9 +120,9 @@ class logical_expression_syntax final: public expression_syntax
 
     enum class operator_kind { And, Or };
 
-    expression_syntax* const left;
-    syntax_token* const oper_token;
-    expression_syntax* const right;
+    const expression_syntax* const left;
+    const syntax_token* const oper_token;
+    const expression_syntax* const right;
     const operator_kind oper;
 
     logical_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right);
@@ -142,9 +142,9 @@ class arithmetic_expression_syntax final: public expression_syntax
 
     enum class operator_kind { Add, Sub, Mul, Div };
 
-    expression_syntax* const left;
-    syntax_token* const oper_token;
-    expression_syntax* const right;
+    const expression_syntax* const left;
+    const syntax_token* const oper_token;
+    const expression_syntax* const right;
     const operator_kind oper;
 
     arithmetic_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right);
@@ -164,9 +164,9 @@ class relational_expression_syntax final: public expression_syntax
 
     enum class operator_kind { Less, LessEqual, Greater, GreaterEqual, Equal, NotEqual };
 
-    expression_syntax* const left;
-    syntax_token* const oper_token;
-    expression_syntax* const right;
+    const expression_syntax* const left;
+    const syntax_token* const oper_token;
+    const expression_syntax* const right;
     const operator_kind oper;
 
     relational_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right);
@@ -184,11 +184,11 @@ class conditional_expression_syntax final: public expression_syntax
 {
     public:
 
-    expression_syntax* const true_value;
-    syntax_token* const if_token;
-    expression_syntax* const condition;
-    syntax_token* const else_token;
-    expression_syntax* const false_value;
+    const expression_syntax* const true_value;
+    const syntax_token* const if_token;
+    const expression_syntax* const condition;
+    const syntax_token* const else_token;
+    const expression_syntax* const false_value;
 
     conditional_expression_syntax(expression_syntax* true_value, syntax_token* if_token, expression_syntax* condition, syntax_token* const else_token, expression_syntax* false_value);
 
@@ -207,7 +207,7 @@ class identifier_expression_syntax final: public expression_syntax
 {
     public:
 
-    syntax_token* const identifier_token;
+    const syntax_token* const identifier_token;
     const std::string identifier;
 
     identifier_expression_syntax(syntax_token* identifier_token);
@@ -227,9 +227,9 @@ class invocation_expression_syntax final: public expression_syntax
 {
     public:
 
-    syntax_token* const identifier_token;
+    const syntax_token* const identifier_token;
     const std::string identifier;
-    list_syntax<expression_syntax>* const expression_list;
+    const list_syntax<expression_syntax>* const expression_list;
 
     invocation_expression_syntax(syntax_token* identifier_token);
 

@@ -23,7 +23,7 @@ class syntax_base
 
     syntax_base& operator=(const syntax_base& other) = delete;
 
-    syntax_base* get_parent() const;
+    const syntax_base* get_parent() const;
 
     const std::list<syntax_base*>& get_children() const;
 

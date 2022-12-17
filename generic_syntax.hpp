@@ -64,7 +64,7 @@ class type_syntax final: public syntax_base
 {
     public:
 
-    syntax_token* const type_token;
+    const syntax_token* const type_token;
     const type_kind kind;
 
     type_syntax(syntax_token* type_token);
@@ -84,8 +84,8 @@ class parameter_syntax final: public syntax_base
 {
     public:
 
-    type_syntax* const type;
-    syntax_token* const identifier_token;
+    const type_syntax* const type;
+    const syntax_token* const identifier_token;
     const std::string identifier;
 
     parameter_syntax(type_syntax* type, syntax_token* identifier_token);
@@ -101,11 +101,11 @@ class function_declaration_syntax final: public syntax_base
 {
     public:
 
-    type_syntax* const return_type;
-    syntax_token* const identifier_token;
+    const type_syntax* const return_type;
+    const syntax_token* const identifier_token;
     const std::string identifier;
-    list_syntax<parameter_syntax>* const parameter_list;
-    list_syntax<statement_syntax>* const body;
+    const list_syntax<parameter_syntax>* const parameter_list;
+    const list_syntax<statement_syntax>* const body;
 
     function_declaration_syntax(type_syntax* return_type, syntax_token* identifier_token, list_syntax<parameter_syntax>* parameter_list, list_syntax<statement_syntax>* body);
 
@@ -120,7 +120,7 @@ class root_syntax final: public syntax_base
 {
     public:
 
-    list_syntax<function_declaration_syntax>* const function_list;
+    const list_syntax<function_declaration_syntax>* const function_list;
 
     root_syntax(list_syntax<function_declaration_syntax>* function_list);
 

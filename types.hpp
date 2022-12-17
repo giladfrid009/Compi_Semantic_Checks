@@ -9,7 +9,7 @@ namespace types
 {
     std::string to_string(type_kind type);
 
-    type_kind from_string(std::string str);
+    type_kind from_string(const std::string& str);
 
     bool is_implictly_convertible(type_kind from, type_kind to);
 

@@ -19,7 +19,7 @@ class symbol
 
     const type_kind type;
 
-    symbol(std::string name, type_kind type, int offset, symbol_kind kind);
+    symbol(const std::string& name, type_kind type, int offset, symbol_kind kind);
 
     virtual ~symbol() = default;
 };
@@ -28,7 +28,7 @@ class variable_symbol: public symbol
 {
     public:
 
-    variable_symbol(std::string name, type_kind type, int offset);
+    variable_symbol(const std::string& name, type_kind type, int offset);
 };
 
 class function_symbol: public symbol
@@ -37,7 +37,7 @@ class function_symbol: public symbol
 
     const std::vector<type_kind> parameter_types;
 
-    function_symbol(std::string name, type_kind return_type, std::vector<type_kind> parameter_types);
+    function_symbol(const std::string& name, type_kind return_type, const std::vector<type_kind>& parameter_types);
 };
 
 #endif
