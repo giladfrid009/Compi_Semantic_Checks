@@ -26,10 +26,6 @@ class if_statement_syntax final: public statement_syntax
 
     if_statement_syntax& operator=(const if_statement_syntax& other) = delete;
 
-    std::vector<syntax_base*> get_children() const override;
-
-    std::vector<syntax_token*> get_tokens() const override;
-
     ~if_statement_syntax();
 };
 
@@ -46,10 +42,6 @@ class while_statement_syntax final: public statement_syntax
     while_statement_syntax(const while_statement_syntax& other) = delete;
 
     while_statement_syntax& operator=(const while_statement_syntax& other) = delete;
-
-    std::vector<syntax_base*> get_children() const override;
-
-    std::vector<syntax_token*> get_tokens() const override;
 
     ~while_statement_syntax();
 };
@@ -68,10 +60,6 @@ class branch_statement_syntax final: public statement_syntax
     branch_statement_syntax(const branch_statement_syntax& other) = delete;
 
     branch_statement_syntax& operator=(const branch_statement_syntax& other) = delete;
-
-    std::vector<syntax_base*> get_children() const override;
-
-    std::vector<syntax_token*> get_tokens() const override;
 
     ~branch_statement_syntax();
 
@@ -93,10 +81,6 @@ class return_statement_syntax final: public statement_syntax
 
     return_statement_syntax& operator=(const return_statement_syntax& other) = delete;
 
-    std::vector<syntax_base*> get_children() const override;
-
-    std::vector<syntax_token*> get_tokens() const override;
-
     ~return_statement_syntax();
 };
 
@@ -111,10 +95,6 @@ class expression_statement_syntax final: public statement_syntax
     expression_statement_syntax(const expression_statement_syntax& other) = delete;
 
     expression_statement_syntax& operator=(const expression_statement_syntax& other) = delete;
-
-    std::vector<syntax_base*> get_children() const override;
-
-    std::vector<syntax_token*> get_tokens() const override;
 
     ~expression_statement_syntax();
 };
@@ -133,10 +113,6 @@ class assignment_statement_syntax final: public statement_syntax
     assignment_statement_syntax(const assignment_statement_syntax& other) = delete;
 
     assignment_statement_syntax& operator=(const assignment_statement_syntax& other) = delete;
-
-    std::vector<syntax_base*> get_children() const override;
-
-    std::vector<syntax_token*> get_tokens() const override;
 
     ~assignment_statement_syntax();
 };
@@ -159,10 +135,6 @@ class declaration_statement_syntax final: public statement_syntax
 
     declaration_statement_syntax& operator=(const declaration_statement_syntax& other) = delete;
 
-    std::vector<syntax_base*> get_children() const override;
-
-    std::vector<syntax_token*> get_tokens() const override;
-
     ~declaration_statement_syntax();
 };
 
@@ -177,10 +149,6 @@ class block_statement_syntax final: public statement_syntax
     block_statement_syntax(const block_statement_syntax& other) = delete;
 
     block_statement_syntax& operator=(const block_statement_syntax& other) = delete;
-
-    std::vector<syntax_base*> get_children() const override;
-
-    std::vector<syntax_token*> get_tokens() const override;
 
     ~block_statement_syntax();
 };

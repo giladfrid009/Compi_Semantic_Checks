@@ -22,16 +22,6 @@ template<typename literal_type> class literal_expression_syntax final: public ex
     {
     }
 
-    std::vector<syntax_base*> get_children() const override
-    {
-        return std::vector<syntax_base*>();
-    }
-
-    std::vector<syntax_token*> get_tokens() const override
-    {
-        return std::vector<syntax_token*>{value_token};
-    }
-
     literal_expression_syntax(const literal_expression_syntax& other) = delete;
 
     literal_expression_syntax& operator=(const literal_expression_syntax& other) = delete;
@@ -58,10 +48,7 @@ template<typename literal_type> class literal_expression_syntax final: public ex
             delete child;
         }
 
-        for (syntax_token* token : get_tokens())
-        {
-            delete token;
-        }
+        delete value_token;
     }
 };
 
@@ -108,10 +95,6 @@ class cast_expression_syntax final: public expression_syntax
 
     cast_expression_syntax& operator=(const cast_expression_syntax& other) = delete;
 
-    std::vector<syntax_base*> get_children() const override;
-
-    std::vector<syntax_token*> get_tokens() const override;
-
     ~cast_expression_syntax();
 };
 
@@ -127,10 +110,6 @@ class not_expression_syntax final: public expression_syntax
     not_expression_syntax(const not_expression_syntax& other) = delete;
 
     not_expression_syntax& operator=(const not_expression_syntax& other) = delete;
-
-    std::vector<syntax_base*> get_children() const override;
-
-    std::vector<syntax_token*> get_tokens() const override;
 
     ~not_expression_syntax();
 };
@@ -151,10 +130,6 @@ class logical_expression_syntax final: public expression_syntax
     logical_expression_syntax(const logical_expression_syntax& other) = delete;
 
     logical_expression_syntax& operator=(const logical_expression_syntax& other) = delete;
-
-    std::vector<syntax_base*> get_children() const override;
-
-    std::vector<syntax_token*> get_tokens() const override;
 
     ~logical_expression_syntax();
 
@@ -178,10 +153,6 @@ class arithmetic_expression_syntax final: public expression_syntax
 
     arithmetic_expression_syntax& operator=(const arithmetic_expression_syntax& other) = delete;
 
-    std::vector<syntax_base*> get_children() const override;
-
-    std::vector<syntax_token*> get_tokens() const override;
-
     ~arithmetic_expression_syntax();
 
     static operator_kind parse_operator(std::string str);
@@ -204,10 +175,6 @@ class relational_expression_syntax final: public expression_syntax
 
     relational_expression_syntax& operator=(const relational_expression_syntax& other) = delete;
 
-    std::vector<syntax_base*> get_children() const override;
-
-    std::vector<syntax_token*> get_tokens() const override;
-
     ~relational_expression_syntax();
 
     static operator_kind parse_operator(std::string str);
@@ -229,10 +196,6 @@ class conditional_expression_syntax final: public expression_syntax
 
     conditional_expression_syntax& operator=(const conditional_expression_syntax& other) = delete;
 
-    std::vector<syntax_base*> get_children() const override;
-
-    std::vector<syntax_token*> get_tokens() const override;
-
     ~conditional_expression_syntax();
 
     private:
@@ -252,10 +215,6 @@ class identifier_expression_syntax final: public expression_syntax
     identifier_expression_syntax(const identifier_expression_syntax& other) = delete;
 
     identifier_expression_syntax& operator=(const identifier_expression_syntax& other) = delete;
-
-    std::vector<syntax_base*> get_children() const override;
-
-    std::vector<syntax_token*> get_tokens() const override;
 
     ~identifier_expression_syntax();
 
@@ -279,10 +238,6 @@ class invocation_expression_syntax final: public expression_syntax
     invocation_expression_syntax(const invocation_expression_syntax& other) = delete;
 
     invocation_expression_syntax& operator=(const invocation_expression_syntax& other) = delete;
-
-    std::vector<syntax_base*> get_children() const override;
-
-    std::vector<syntax_token*> get_tokens() const override;
 
     ~invocation_expression_syntax();
 

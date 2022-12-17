@@ -25,7 +25,7 @@ template<typename element_type> class list_syntax final: public syntax_base
     {
         static_assert(std::is_base_of<syntax_base, element_type>::value, "must be of type syntax_base");
 
-        element->set_parent(this);
+        push_back_child(element);
     }
 
     list_syntax(const list_syntax& other) = delete;
@@ -35,12 +35,14 @@ template<typename element_type> class list_syntax final: public syntax_base
     list_syntax<element_type>* push_back(element_type* element)
     {
         elements.push_back(element);
+        push_back_child(element);
         return this;
     }
 
     list_syntax<element_type>* push_front(element_type* element)
     {
         elements.push_front(element);
+        push_front_child(element);
         return this;
     }
 
@@ -49,26 +51,11 @@ template<typename element_type> class list_syntax final: public syntax_base
         return std::vector<element_type*>(elements.begin(), elements.end());
     }
 
-    std::vector<syntax_base*> get_children() const override
-    {
-        return std::vector<syntax_base*>(elements.begin(), elements.end());
-    }
-
-    std::vector<syntax_token*> get_tokens() const override
-    {
-        return std::vector<syntax_token*>();
-    }
-
     ~list_syntax()
     {
         for (syntax_base* child : get_children())
         {
             delete child;
-        }
-
-        for (syntax_token* token : get_tokens())
-        {
-            delete token;
         }
     }
 };
@@ -90,10 +77,6 @@ class type_syntax final: public syntax_base
 
     bool is_special() const;
 
-    std::vector<syntax_base*> get_children() const override;
-
-    std::vector<syntax_token*> get_tokens() const override;
-
     ~type_syntax();
 };
 
@@ -110,10 +93,6 @@ class parameter_syntax final: public syntax_base
     parameter_syntax(const parameter_syntax& other) = delete;
 
     parameter_syntax& operator=(const parameter_syntax& other) = delete;
-
-    std::vector<syntax_base*> get_children() const override;
-
-    std::vector<syntax_token*> get_tokens() const override;
 
     ~parameter_syntax();
 };
@@ -134,10 +113,6 @@ class function_declaration_syntax final: public syntax_base
 
     function_declaration_syntax& operator=(const function_declaration_syntax& other) = delete;
 
-    std::vector<syntax_base*> get_children() const override;
-
-    std::vector<syntax_token*> get_tokens() const override;
-
     ~function_declaration_syntax();
 };
 
@@ -152,10 +127,6 @@ class root_syntax final: public syntax_base
     root_syntax(const root_syntax& other) = delete;
 
     root_syntax& operator=(const root_syntax& other) = delete;
-
-    std::vector<syntax_base*> get_children() const override;
-
-    std::vector<syntax_token*> get_tokens() const override;
 
     ~root_syntax();
 };

@@ -18,8 +18,8 @@ if_statement_syntax::if_statement_syntax(syntax_token* if_token, expression_synt
         output::error_mismatch(if_token->position);
     }
 
-    condition->set_parent(this);
-    body->set_parent(this);
+    push_back_child(condition);
+    push_back_child(body);
 }
 
 if_statement_syntax::if_statement_syntax(syntax_token* if_token, expression_syntax* condition, statement_syntax* body, syntax_token* else_token, statement_syntax* else_clause):
@@ -30,19 +30,9 @@ if_statement_syntax::if_statement_syntax(syntax_token* if_token, expression_synt
         output::error_mismatch(if_token->position);
     }
 
-    condition->set_parent(this);
-    body->set_parent(this);
-    else_clause->set_parent(this);
-}
-
-vector<syntax_base*> if_statement_syntax::get_children() const
-{
-    return vector<syntax_base*>{condition, body, else_clause};
-}
-
-vector<syntax_token*> if_statement_syntax::get_tokens() const
-{
-    return vector<syntax_token*>{if_token, else_token};
+    push_back_child(condition);
+    push_back_child(body);
+    push_back_child(else_clause);
 }
 
 if_statement_syntax::~if_statement_syntax()
@@ -52,10 +42,8 @@ if_statement_syntax::~if_statement_syntax()
         delete child;
     }
 
-    for (syntax_token* token : get_tokens())
-    {
-        delete token;
-    }
+    delete if_token;
+    delete else_token;
 }
 
 while_statement_syntax::while_statement_syntax(syntax_token* while_token, expression_syntax* condition, statement_syntax* body):
@@ -66,18 +54,8 @@ while_statement_syntax::while_statement_syntax(syntax_token* while_token, expres
         output::error_mismatch(while_token->position);
     }
 
-    condition->set_parent(this);
-    body->set_parent(this);
-}
-
-vector<syntax_base*> while_statement_syntax::get_children() const
-{
-    return vector<syntax_base*>{condition, body};
-}
-
-vector<syntax_token*> while_statement_syntax::get_tokens() const
-{
-    return vector<syntax_token*>{while_token};
+    push_back_child(condition);
+    push_back_child(body);
 }
 
 while_statement_syntax::~while_statement_syntax()
@@ -87,10 +65,7 @@ while_statement_syntax::~while_statement_syntax()
         delete child;
     }
 
-    for (syntax_token* token : get_tokens())
-    {
-        delete token;
-    }
+    delete while_token;
 }
 
 branch_statement_syntax::branch_statement_syntax(syntax_token* branch_token):
@@ -114,16 +89,6 @@ branch_statement_syntax::branch_statement_syntax(syntax_token* branch_token):
     }
 }
 
-vector<syntax_base*> branch_statement_syntax::get_children() const
-{
-    return vector<syntax_base*>();
-}
-
-vector<syntax_token*> branch_statement_syntax::get_tokens() const
-{
-    return vector<syntax_token*>{branch_token};
-}
-
 branch_statement_syntax::~branch_statement_syntax()
 {
     for (syntax_base* child : get_children())
@@ -131,10 +96,7 @@ branch_statement_syntax::~branch_statement_syntax()
         delete child;
     }
 
-    for (syntax_token* token : get_tokens())
-    {
-        delete token;
-    }
+    delete branch_token;
 }
 
 branch_statement_syntax::branch_kind branch_statement_syntax::parse_kind(string str)
@@ -170,17 +132,7 @@ return_statement_syntax::return_statement_syntax(syntax_token* return_token, exp
         output::error_mismatch(return_token->position);
     }
 
-    expression->set_parent(this);
-}
-
-vector<syntax_base*> return_statement_syntax::get_children() const
-{
-    return vector<syntax_base*>{expression};
-}
-
-vector<syntax_token*> return_statement_syntax::get_tokens() const
-{
-    return vector<syntax_token*>{return_token};
+    push_back_child(expression);
 }
 
 return_statement_syntax::~return_statement_syntax()
@@ -190,25 +142,12 @@ return_statement_syntax::~return_statement_syntax()
         delete child;
     }
 
-    for (syntax_token* token : get_tokens())
-    {
-        delete token;
-    }
+    delete return_token;
 }
 
 expression_statement_syntax::expression_statement_syntax(expression_syntax* expression): expression(expression)
 {
-    expression->set_parent(this);
-}
-
-vector<syntax_base*> expression_statement_syntax::get_children() const
-{
-    return vector<syntax_base*>{expression};
-}
-
-vector<syntax_token*> expression_statement_syntax::get_tokens() const
-{
-    return vector<syntax_token*>();
+    push_back_child(expression);
 }
 
 expression_statement_syntax::~expression_statement_syntax()
@@ -216,11 +155,6 @@ expression_statement_syntax::~expression_statement_syntax()
     for (syntax_base* child : get_children())
     {
         delete child;
-    }
-
-    for (syntax_token* token : get_tokens())
-    {
-        delete token;
     }
 }
 
@@ -239,17 +173,7 @@ assignment_statement_syntax::assignment_statement_syntax(syntax_token* identifie
         output::error_mismatch(assign_token->position);
     }
 
-    value->set_parent(this);
-}
-
-vector<syntax_base*> assignment_statement_syntax::get_children() const
-{
-    return vector<syntax_base*>{value};
-}
-
-vector<syntax_token*> assignment_statement_syntax::get_tokens() const
-{
-    return vector<syntax_token*>{identifier_token, assign_token};
+    push_back_child(value);
 }
 
 assignment_statement_syntax::~assignment_statement_syntax()
@@ -259,10 +183,8 @@ assignment_statement_syntax::~assignment_statement_syntax()
         delete child;
     }
 
-    for (syntax_token* token : get_tokens())
-    {
-        delete token;
-    }
+    delete identifier_token;
+    delete assign_token;
 }
 
 declaration_statement_syntax::declaration_statement_syntax(type_syntax* type, syntax_token* identifier_token):
@@ -280,7 +202,7 @@ declaration_statement_syntax::declaration_statement_syntax(type_syntax* type, sy
 
     symbol_table::instance().add_variable(identifier, type->kind);
 
-    type->set_parent(this);
+    push_back_child(type);
 }
 
 declaration_statement_syntax::declaration_statement_syntax(type_syntax* type, syntax_token* identifier_token, syntax_token* assign_token, expression_syntax* value):
@@ -303,18 +225,8 @@ declaration_statement_syntax::declaration_statement_syntax(type_syntax* type, sy
 
     symbol_table::instance().add_variable(identifier, type->kind);
 
-    type->set_parent(this);
-    value->set_parent(this);
-}
-
-vector<syntax_base*> declaration_statement_syntax::get_children() const
-{
-    return vector<syntax_base*>{type, value};
-}
-
-vector<syntax_token*> declaration_statement_syntax::get_tokens() const
-{
-    return vector<syntax_token*>{identifier_token, assign_token};
+    push_back_child(type);
+    push_back_child(value);
 }
 
 declaration_statement_syntax::~declaration_statement_syntax()
@@ -324,25 +236,13 @@ declaration_statement_syntax::~declaration_statement_syntax()
         delete child;
     }
 
-    for (syntax_token* token : get_tokens())
-    {
-        delete token;
-    }
+    delete identifier_token;
+    delete assign_token;
 }
 
 block_statement_syntax::block_statement_syntax(list_syntax<statement_syntax>* statement_list): statement_list(statement_list)
 {
-    statement_list->set_parent(this);
-}
-
-vector<syntax_base*> block_statement_syntax::get_children() const
-{
-    return vector<syntax_base*>{statement_list};
-}
-
-vector<syntax_token*> block_statement_syntax::get_tokens() const
-{
-    return vector<syntax_token*>();
+    push_back_child(statement_list);
 }
 
 block_statement_syntax::~block_statement_syntax()
@@ -350,10 +250,5 @@ block_statement_syntax::~block_statement_syntax()
     for (syntax_base* child : get_children())
     {
         delete child;
-    }
-
-    for (syntax_token* token : get_tokens())
-    {
-        delete token;
     }
 }

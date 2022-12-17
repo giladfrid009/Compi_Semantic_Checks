@@ -5,10 +5,13 @@
 #include "types.hpp"
 #include <vector>
 #include <string>
+#include <list>
 
 class syntax_base
 {
     private:
+
+    std::list<syntax_base*> children;
 
     syntax_base* parent = nullptr;
 
@@ -22,13 +25,15 @@ class syntax_base
 
     syntax_base* get_parent() const;
 
-    void set_parent(syntax_base* new_parent);
+    const std::list<syntax_base*>& get_children() const;
 
     virtual ~syntax_base() = default;
 
-    virtual std::vector<syntax_base*> get_children() const = 0;
+    protected:
 
-    virtual std::vector<syntax_token*> get_tokens() const = 0;
+    void push_back_child(syntax_base* child);
+
+    void push_front_child(syntax_base* child);
 };
 
 class expression_syntax: public syntax_base
@@ -48,10 +53,6 @@ class expression_syntax: public syntax_base
     bool is_special() const;
 
     virtual ~expression_syntax() = default;
-
-    virtual std::vector<syntax_base*> get_children() const = 0;
-
-    virtual std::vector<syntax_token*> get_tokens() const = 0;
 };
 
 class statement_syntax: public syntax_base
@@ -65,10 +66,6 @@ class statement_syntax: public syntax_base
     statement_syntax(const statement_syntax& other) = delete;
 
     statement_syntax& operator=(const statement_syntax& other) = delete;
-
-    virtual std::vector<syntax_base*> get_children() const = 0;
-
-    virtual std::vector<syntax_token*> get_tokens() const = 0;
 };
 
 #endif

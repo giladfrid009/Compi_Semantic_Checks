@@ -14,18 +14,8 @@ cast_expression_syntax::cast_expression_syntax(type_syntax* destination_type, ex
         output::error_mismatch(destination_type->type_token->position);
     }
 
-    destination_type->set_parent(this);
-    expression->set_parent(this);
-}
-
-vector<syntax_base*> cast_expression_syntax::get_children() const
-{
-    return vector<syntax_base*>{destination_type, expression};
-}
-
-vector<syntax_token*> cast_expression_syntax::get_tokens() const
-{
-    return vector<syntax_token*>();
+    push_back_child(destination_type);
+    push_back_child(expression);
 }
 
 cast_expression_syntax::~cast_expression_syntax()
@@ -33,11 +23,6 @@ cast_expression_syntax::~cast_expression_syntax()
     for (syntax_base* child : get_children())
     {
         delete child;
-    }
-
-    for (syntax_token* token : get_tokens())
-    {
-        delete token;
     }
 }
 
@@ -49,17 +34,7 @@ not_expression_syntax::not_expression_syntax(syntax_token* not_token, expression
         output::error_mismatch(not_token->position);
     }
 
-    expression->set_parent(this);
-}
-
-vector<syntax_base*> not_expression_syntax::get_children() const
-{
-    return vector<syntax_base*>{expression};
-}
-
-vector<syntax_token*> not_expression_syntax::get_tokens() const
-{
-    return vector<syntax_token*>{not_token};
+    push_back_child(expression);
 }
 
 not_expression_syntax::~not_expression_syntax()
@@ -69,10 +44,7 @@ not_expression_syntax::~not_expression_syntax()
         delete child;
     }
 
-    for (syntax_token* token : get_tokens())
-    {
-        delete token;
-    }
+    delete not_token;
 }
 
 logical_expression_syntax::logical_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right):
@@ -83,18 +55,8 @@ logical_expression_syntax::logical_expression_syntax(expression_syntax* left, sy
         output::error_mismatch(oper_token->position);
     }
 
-    left->set_parent(this);
-    right->set_parent(this);
-}
-
-vector<syntax_base*> logical_expression_syntax::get_children() const
-{
-    return vector<syntax_base*>{left, right};
-}
-
-vector<syntax_token*> logical_expression_syntax::get_tokens() const
-{
-    return vector<syntax_token*>{oper_token};
+    push_back_child(left);
+    push_back_child(right);
 }
 
 logical_expression_syntax::~logical_expression_syntax()
@@ -104,10 +66,7 @@ logical_expression_syntax::~logical_expression_syntax()
         delete child;
     }
 
-    for (syntax_token* token : get_tokens())
-    {
-        delete token;
-    }
+    delete oper_token;
 }
 
 logical_expression_syntax::operator_kind logical_expression_syntax::parse_operator(string str)
@@ -126,18 +85,8 @@ arithmetic_expression_syntax::arithmetic_expression_syntax(expression_syntax* le
         output::error_mismatch(oper_token->position);
     }
 
-    left->set_parent(this);
-    right->set_parent(this);
-}
-
-vector<syntax_base*> arithmetic_expression_syntax::get_children() const
-{
-    return vector<syntax_base*>{left, right};
-}
-
-vector<syntax_token*> arithmetic_expression_syntax::get_tokens() const
-{
-    return vector<syntax_token*>{oper_token};
+    push_back_child(left);
+    push_back_child(right);
 }
 
 arithmetic_expression_syntax::~arithmetic_expression_syntax()
@@ -147,10 +96,7 @@ arithmetic_expression_syntax::~arithmetic_expression_syntax()
         delete child;
     }
 
-    for (syntax_token* token : get_tokens())
-    {
-        delete token;
-    }
+    delete oper_token;
 }
 
 arithmetic_expression_syntax::operator_kind arithmetic_expression_syntax::parse_operator(string str)
@@ -171,18 +117,8 @@ relational_expression_syntax::relational_expression_syntax(expression_syntax* le
         output::error_mismatch(oper_token->position);
     }
 
-    left->set_parent(this);
-    right->set_parent(this);
-}
-
-vector<syntax_base*> relational_expression_syntax::get_children() const
-{
-    return vector<syntax_base*>{left, right};
-}
-
-vector<syntax_token*> relational_expression_syntax::get_tokens() const
-{
-    return vector<syntax_token*>{oper_token};
+    push_back_child(left);
+    push_back_child(right);
 }
 
 relational_expression_syntax::~relational_expression_syntax()
@@ -192,10 +128,7 @@ relational_expression_syntax::~relational_expression_syntax()
         delete child;
     }
 
-    for (syntax_token* token : get_tokens())
-    {
-        delete token;
-    }
+    delete oper_token;
 }
 
 relational_expression_syntax::operator_kind relational_expression_syntax::parse_operator(string str)
@@ -223,19 +156,9 @@ conditional_expression_syntax::conditional_expression_syntax(expression_syntax* 
         output::error_mismatch(if_token->position);
     }
 
-    true_value->set_parent(this);
-    condition->set_parent(this);
-    false_value->set_parent(this);
-}
-
-vector<syntax_base*> conditional_expression_syntax::get_children() const
-{
-    return vector<syntax_base*>{true_value, condition, false_value};
-}
-
-vector<syntax_token*> conditional_expression_syntax::get_tokens() const
-{
-    return vector<syntax_token*>{if_token, else_token};
+    push_back_child(true_value);
+    push_back_child(condition);
+    push_back_child(false_value);
 }
 
 conditional_expression_syntax::~conditional_expression_syntax()
@@ -245,10 +168,8 @@ conditional_expression_syntax::~conditional_expression_syntax()
         delete child;
     }
 
-    for (syntax_token* token : get_tokens())
-    {
-        delete token;
-    }
+    delete if_token;
+    delete else_token;
 }
 
 identifier_expression_syntax::identifier_expression_syntax(syntax_token* identifier_token):
@@ -260,16 +181,6 @@ identifier_expression_syntax::identifier_expression_syntax(syntax_token* identif
     {
         output::error_undef(identifier_token->position, identifier);
     }
-}
-
-vector<syntax_base*> identifier_expression_syntax::get_children() const
-{
-    return vector<syntax_base*>();
-}
-
-vector<syntax_token*> identifier_expression_syntax::get_tokens() const
-{
-    return vector<syntax_token*>{identifier_token};
 }
 
 type_kind identifier_expression_syntax::get_return_type(string identifier)
@@ -291,10 +202,7 @@ identifier_expression_syntax::~identifier_expression_syntax()
         delete child;
     }
 
-    for (syntax_token* token : get_tokens())
-    {
-        delete token;
-    }
+    delete identifier_token;
 }
 
 invocation_expression_syntax::invocation_expression_syntax(syntax_token* identifier_token):
@@ -359,17 +267,7 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
         }
     }
 
-    expression_list->set_parent(this);
-}
-
-vector<syntax_base*> invocation_expression_syntax::get_children() const
-{
-    return vector<syntax_base*>{expression_list};
-}
-
-vector<syntax_token*> invocation_expression_syntax::get_tokens() const
-{
-    return vector<syntax_token*>{identifier_token};
+    push_back_child(expression_list);
 }
 
 type_kind invocation_expression_syntax::get_return_type(string identifier)
@@ -391,8 +289,5 @@ invocation_expression_syntax::~invocation_expression_syntax()
         delete child;
     }
 
-    for (syntax_token* token : get_tokens())
-    {
-        delete token;
-    }
+    delete identifier_token;
 }

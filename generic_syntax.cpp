@@ -21,16 +21,6 @@ bool type_syntax::is_special() const
     return types::is_special(kind);
 }
 
-vector<syntax_base*> type_syntax::get_children() const
-{
-    return vector<syntax_base*>();
-}
-
-vector<syntax_token*> type_syntax::get_tokens() const
-{
-    return vector<syntax_token*>{type_token};
-}
-
 type_syntax::~type_syntax()
 {
     for (syntax_base* child : get_children())
@@ -38,10 +28,7 @@ type_syntax::~type_syntax()
         delete child;
     }
 
-    for (syntax_token* token : get_tokens())
-    {
-        delete token;
-    }
+    delete type_token;
 }
 
 parameter_syntax::parameter_syntax(type_syntax* type, syntax_token* identifier_token):
@@ -57,17 +44,7 @@ parameter_syntax::parameter_syntax(type_syntax* type, syntax_token* identifier_t
         output::error_def(identifier_token->position, identifier);
     }
 
-    type->set_parent(this);
-}
-
-vector<syntax_base*> parameter_syntax::get_children() const
-{
-    return vector<syntax_base*>{type};
-}
-
-vector<syntax_token*> parameter_syntax::get_tokens() const
-{
-    return vector<syntax_token*>{identifier_token};
+    push_back_child(type);
 }
 
 parameter_syntax::~parameter_syntax()
@@ -77,10 +54,7 @@ parameter_syntax::~parameter_syntax()
         delete child;
     }
 
-    for (syntax_token* token : get_tokens())
-    {
-        delete token;
-    }
+    delete identifier_token;
 }
 
 function_declaration_syntax::function_declaration_syntax(type_syntax* return_type, syntax_token* identifier_token, list_syntax<parameter_syntax>* parameter_list, list_syntax<statement_syntax>* body):
@@ -110,19 +84,9 @@ function_declaration_syntax::function_declaration_syntax(type_syntax* return_typ
         }
     }
 
-    return_type->set_parent(this);
-    parameter_list->set_parent(this);
-    body->set_parent(this);
-}
-
-vector<syntax_base*> function_declaration_syntax::get_children() const
-{
-    return vector<syntax_base*>{return_type, parameter_list, body};
-}
-
-vector<syntax_token*> function_declaration_syntax::get_tokens() const
-{
-    return vector<syntax_token*>{identifier_token};
+    push_back_child(return_type);
+    push_back_child(parameter_list);
+    push_back_child(body);
 }
 
 function_declaration_syntax::~function_declaration_syntax()
@@ -132,10 +96,7 @@ function_declaration_syntax::~function_declaration_syntax()
         delete child;
     }
 
-    for (syntax_token* token : get_tokens())
-    {
-        delete token;
-    }
+    delete identifier_token;
 }
 
 root_syntax::root_syntax(list_syntax<function_declaration_syntax>* function_list): function_list(function_list)
@@ -154,17 +115,7 @@ root_syntax::root_syntax(list_syntax<function_declaration_syntax>* function_list
         output::error_main_missing();
     }
 
-    function_list->set_parent(this);
-}
-
-vector<syntax_base*> root_syntax::get_children() const
-{
-    return vector<syntax_base*>{function_list};
-}
-
-vector<syntax_token*> root_syntax::get_tokens() const
-{
-    return vector<syntax_token*>();
+    push_back_child(function_list);
 }
 
 root_syntax::~root_syntax()
@@ -172,10 +123,5 @@ root_syntax::~root_syntax()
     for (syntax_base* child : get_children())
     {
         delete child;
-    }
-
-    for (syntax_token* token : get_tokens())
-    {
-        delete token;
     }
 }
