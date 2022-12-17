@@ -175,7 +175,7 @@ conditional_expression_syntax::~conditional_expression_syntax()
 identifier_expression_syntax::identifier_expression_syntax(syntax_token* identifier_token):
     expression_syntax(get_return_type(identifier_token->text)), identifier_token(identifier_token), identifier(identifier_token->text)
 {
-    symbol* symbol = symbol_table::instance().get_symbol(identifier);
+    const symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
     if (symbol == nullptr || symbol->kind != symbol_kind::Variable)
     {
@@ -185,7 +185,7 @@ identifier_expression_syntax::identifier_expression_syntax(syntax_token* identif
 
 type_kind identifier_expression_syntax::get_return_type(string identifier)
 {
-    symbol* symbol = symbol_table::instance().get_symbol(identifier);
+    const symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
     if (symbol == nullptr || symbol->kind != symbol_kind::Variable)
     {
@@ -208,14 +208,14 @@ identifier_expression_syntax::~identifier_expression_syntax()
 invocation_expression_syntax::invocation_expression_syntax(syntax_token* identifier_token):
     expression_syntax(get_return_type(identifier_token->text)), identifier_token(identifier_token), identifier(identifier_token->text), expression_list(nullptr)
 {
-    symbol* symbol = symbol_table::instance().get_symbol(identifier);
+    const symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
     if (symbol == nullptr || symbol->kind != symbol_kind::Function)
     {
         output::error_undef_func(identifier_token->position, identifier);
     }
 
-    vector<type_kind> parameter_types = static_cast<function_symbol*>(symbol)->parameter_types;
+    vector<type_kind> parameter_types = static_cast<const function_symbol*>(symbol)->parameter_types;
 
     vector<string> params_str;
 
@@ -233,14 +233,14 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
 invocation_expression_syntax::invocation_expression_syntax(syntax_token* identifier_token, list_syntax<expression_syntax>* expression_list):
     expression_syntax(get_return_type(identifier_token->text)), identifier_token(identifier_token), identifier(identifier_token->text), expression_list(expression_list)
 {
-    symbol* symbol = symbol_table::instance().get_symbol(identifier);
+    const symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
     if (symbol == nullptr || symbol->kind != symbol_kind::Function)
     {
         output::error_undef_func(identifier_token->position, identifier);
     }
 
-    vector<type_kind> parameter_types = static_cast<function_symbol*>(symbol)->parameter_types;
+    vector<type_kind> parameter_types = static_cast<const function_symbol*>(symbol)->parameter_types;
 
     auto elements = expression_list->get_elements();
 
@@ -272,7 +272,7 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
 
 type_kind invocation_expression_syntax::get_return_type(string identifier)
 {
-    symbol* symbol = symbol_table::instance().get_symbol(identifier);
+    const symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
     if (symbol == nullptr || symbol->kind != symbol_kind::Function)
     {

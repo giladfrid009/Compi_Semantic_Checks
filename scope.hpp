@@ -29,7 +29,7 @@ class scope
 
     bool contains_symbol(const std::string& symbol_name) const;
 
-    symbol* get_symbol(const std::string& symbol_name) const;
+    const symbol* get_symbol(const std::string& symbol_name) const;
 
     const std::list<symbol*>& get_symbols() const;
 

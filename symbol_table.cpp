@@ -52,7 +52,7 @@ bool symbol_table::contains_symbol(const string& symbol_name) const
     return false;
 }
 
-symbol* symbol_table::get_symbol(const string& symbol_name) const
+const symbol* symbol_table::get_symbol(const string& symbol_name) const
 {
     for (const scope& sc : scope_list)
     {

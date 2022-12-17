@@ -60,14 +60,14 @@ parameter_syntax::~parameter_syntax()
 function_declaration_syntax::function_declaration_syntax(type_syntax* return_type, syntax_token* identifier_token, list_syntax<parameter_syntax>* parameter_list, list_syntax<statement_syntax>* body):
     return_type(return_type), identifier_token(identifier_token), identifier(identifier_token->text), parameter_list(parameter_list), body(body)
 {
-    symbol* symbol = symbol_table::instance().get_symbol(identifier);
+    const symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
     if (symbol == nullptr || symbol->kind != symbol_kind::Function)
     {
         throw std::logic_error("function should be defined.");
     }
 
-    function_symbol* func_symbol = static_cast<function_symbol*>(symbol);
+    const function_symbol* func_symbol = static_cast<const function_symbol*>(symbol);
 
     auto elements = parameter_list->get_elements();
 
@@ -101,14 +101,14 @@ function_declaration_syntax::~function_declaration_syntax()
 
 root_syntax::root_syntax(list_syntax<function_declaration_syntax>* function_list): function_list(function_list)
 {
-    symbol* main_sym = symbol_table::instance().get_symbol("main");
+    const symbol* main_sym = symbol_table::instance().get_symbol("main");
 
     if (main_sym == nullptr || main_sym->kind != symbol_kind::Function)
     {
         output::error_main_missing();
     }
 
-    function_symbol* func_sym = static_cast<function_symbol*>(main_sym);
+    const function_symbol* func_sym = static_cast<const function_symbol*>(main_sym);
 
     if (func_sym->type != type_kind::Void || func_sym->parameter_types.size() != 0)
     {

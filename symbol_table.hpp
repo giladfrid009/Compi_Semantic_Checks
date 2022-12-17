@@ -25,7 +25,7 @@ class symbol_table
 
     bool contains_symbol(const std::string& symbol_name) const;
 
-    symbol* get_symbol(const std::string& symbol_name) const;
+    const symbol* get_symbol(const std::string& symbol_name) const;
 
     bool add_variable(const std::string& name, type_kind type);
 

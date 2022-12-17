@@ -161,7 +161,7 @@ expression_statement_syntax::~expression_statement_syntax()
 assignment_statement_syntax::assignment_statement_syntax(syntax_token* identifier_token, syntax_token* assign_token, expression_syntax* value):
     identifier_token(identifier_token), identifier(identifier_token->text), assign_token(assign_token), value(value)
 {
-    symbol* identifier_symbol = symbol_table::instance().get_symbol(identifier);
+    const symbol* identifier_symbol = symbol_table::instance().get_symbol(identifier);
 
     if (identifier_symbol == nullptr || identifier_symbol->kind != symbol_kind::Variable)
     {

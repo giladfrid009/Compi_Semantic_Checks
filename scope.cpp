@@ -27,7 +27,7 @@ bool scope::contains_symbol(const string& symbol_name) const
     return symbol_map.find(symbol_name) != symbol_map.end();
 }
 
-symbol* scope::get_symbol(const string& symbol_name) const
+const symbol* scope::get_symbol(const string& symbol_name) const
 {
     if (contains_symbol(symbol_name) == false)
     {
