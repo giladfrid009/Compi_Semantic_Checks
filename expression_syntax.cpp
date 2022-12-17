@@ -6,14 +6,12 @@
 using std::string;
 using std::vector;
 
-extern int yylineno;
-
 cast_expression_syntax::cast_expression_syntax(type_syntax* destination_type, expression_syntax* expression):
     expression_syntax(destination_type->kind), destination_type(destination_type), expression(expression)
 {
     if (expression->is_numeric() == false || destination_type->is_numeric() == false)
     {
-        output::error_mismatch(yylineno);
+        output::error_mismatch(destination_type->type_token->definition_line);
     }
 
     destination_type->set_parent(this);
