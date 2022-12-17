@@ -11,6 +11,8 @@ class scope
 {
     friend class symbol_table;
 
+    private:
+
     std::list<symbol*> symbol_list;
     std::unordered_map<std::string, symbol*> symbol_map;
 
