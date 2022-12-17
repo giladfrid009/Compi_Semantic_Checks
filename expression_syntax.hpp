@@ -76,7 +76,7 @@ template<> inline char literal_expression_syntax<char>::get_literal_value(syntax
 
     if (value < 0 || value > 255)
     {
-        output::errorByteTooLarge(value_token->definition_line, value_token->text);
+        output::error_byte_too_large(value_token->definition_line, value_token->text);
     }
 
     return (char)value;

@@ -191,7 +191,7 @@ int main()
 
 void yyerror(const char* message)
 {
-    output::errorSyn(yylineno);
+    output::error_syn(yylineno);
 }
 
 void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_token, list_syntax<parameter_syntax>* param_list)
@@ -200,28 +200,28 @@ void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_tok
 
     if (symtab.contains_symbol(func_name))
     {
-        output::errorDef(indentifier_token->definition_line, func_name);
+        output::error_def(indentifier_token->definition_line, func_name);
     }
 
     vector<type_kind> param_types;
 
-    for (parameter_syntax* fs : param_list->get_elements())
+    for (parameter_syntax* param : param_list->get_elements())
     {
-        param_types.push_back(fs->type->kind);
+        param_types.push_back(param->type->kind);
     }
 
     symtab.add_function(func_name, return_type->kind, param_types);
 
     symtab.open_scope();
 
-    for (parameter_syntax* fs : param_list->get_elements())
+    for (parameter_syntax* param : param_list->get_elements())
     {
-        if (symtab.contains_symbol(fs->identifier))
+        if (symtab.contains_symbol(param->identifier))
         {
-            output::errorDef(fs->identifier_token->definition_line, fs->identifier);
+            output::error_def(param->identifier_token->definition_line, param->identifier);
         }
 
-        symtab.add_parameter(fs->identifier, fs->type->kind);
+        symtab.add_parameter(param->identifier, param->type->kind);
     }
 }
 
@@ -229,7 +229,7 @@ expression_syntax* validate_bool_expression(expression_syntax* expression)
 {
     if (expression->return_type != type_kind::Bool)
     {
-        output::errorMismatch(yylineno);
+        output::error_mismatch(yylineno);
     }
 
     return expression;
@@ -247,13 +247,13 @@ root_syntax* create_root_syntax(list_syntax<function_declaration_syntax>* functi
 
 void print_current_scope()
 {
-    output::endScope();
+    output::end_scope();
 
     for (symbol* sym : symbol_table::instance().current_scope().get_symbols())
     {
         if (sym->kind == symbol_kind::Variable)
         {
-            output::printID(sym->name, sym->offset, types::to_string(sym->type));
+            output::print_id(sym->name, sym->offset, types::to_string(sym->type));
         }
         else if (sym->kind == symbol_kind::Function)
         {
@@ -261,14 +261,14 @@ void print_current_scope()
 
             vector<string> param_types;
 
-            for (type_kind ft : func_sym->parameter_types)
+            for (type_kind type : func_sym->parameter_types)
             {
-                param_types.push_back(types::to_string(ft));
+                param_types.push_back(types::to_string(type));
             }
 
-            string func_type = output::makeFunctionType(types::to_string(func_sym->type), param_types);
+            string func_type = output::make_function_type(types::to_string(func_sym->type), param_types);
 
-            output::printID(sym->name, sym->offset, func_type);
+            output::print_id(sym->name, sym->offset, func_type);
         }
         else
         {

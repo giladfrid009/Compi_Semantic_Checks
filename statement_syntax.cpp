@@ -15,7 +15,7 @@ if_statement_syntax::if_statement_syntax(syntax_token* if_token, expression_synt
 {
     if (condition->return_type != type_kind::Bool)
     {
-        output::errorMismatch(if_token->definition_line);
+        output::error_mismatch(if_token->definition_line);
     }
 
     condition->set_parent(this);
@@ -27,7 +27,7 @@ if_statement_syntax::if_statement_syntax(syntax_token* if_token, expression_synt
 {
     if (condition->return_type != type_kind::Bool)
     {
-        output::errorMismatch(if_token->definition_line);
+        output::error_mismatch(if_token->definition_line);
     }
 
     condition->set_parent(this);
@@ -63,7 +63,7 @@ while_statement_syntax::while_statement_syntax(syntax_token* while_token, expres
 {
     if (condition->return_type != type_kind::Bool)
     {
-        output::errorMismatch(while_token->definition_line);
+        output::error_mismatch(while_token->definition_line);
     }
 
     condition->set_parent(this);
@@ -102,12 +102,12 @@ branch_statement_syntax::branch_statement_syntax(syntax_token* branch_token):
     {
         if (kind == branch_kind::Break)
         {
-            output::errorUnexpectedBreak(branch_token->definition_line);
+            output::error_unexpected_break(branch_token->definition_line);
         }
 
         if (kind == branch_kind::Continue)
         {
-            output::errorUnexpectedContinue(branch_token->definition_line);
+            output::error_unexpected_continue(branch_token->definition_line);
         }
 
         throw std::runtime_error("unknown branch_kind");
@@ -154,7 +154,7 @@ return_statement_syntax::return_statement_syntax(syntax_token* return_token):
 
     if (func_sym->type != type_kind::Void)
     {
-        output::errorMismatch(return_token->definition_line);
+        output::error_mismatch(return_token->definition_line);
     }
 }
 
@@ -167,7 +167,7 @@ return_statement_syntax::return_statement_syntax(syntax_token* return_token, exp
 
     if (types::is_implictly_convertible(expression->return_type, func_sym->type) == false)
     {
-        output::errorMismatch(return_token->definition_line);
+        output::error_mismatch(return_token->definition_line);
     }
 
     expression->set_parent(this);
@@ -231,12 +231,12 @@ assignment_statement_syntax::assignment_statement_syntax(syntax_token* identifie
 
     if (identifier_symbol == nullptr || identifier_symbol->kind != symbol_kind::Variable)
     {
-        output::errorUndef(identifier_token->definition_line, identifier);
+        output::error_undef(identifier_token->definition_line, identifier);
     }
 
     if (types::is_implictly_convertible(value->return_type, identifier_symbol->type) == false)
     {
-        output::errorMismatch(assign_token->definition_line);
+        output::error_mismatch(assign_token->definition_line);
     }
 
     value->set_parent(this);
@@ -270,12 +270,12 @@ declaration_statement_syntax::declaration_statement_syntax(type_syntax* type, sy
 {
     if (type->is_special())
     {
-        output::errorMismatch(identifier_token->definition_line);
+        output::error_mismatch(identifier_token->definition_line);
     }
 
     if (symbol_table::instance().contains_symbol(identifier))
     {
-        output::errorDef(identifier_token->definition_line, identifier);
+        output::error_def(identifier_token->definition_line, identifier);
     }
 
     symbol_table::instance().add_variable(identifier, type->kind);
@@ -288,17 +288,17 @@ declaration_statement_syntax::declaration_statement_syntax(type_syntax* type, sy
 {
     if (type->is_special() || value->is_special())
     {
-        output::errorMismatch(identifier_token->definition_line);
+        output::error_mismatch(identifier_token->definition_line);
     }
 
     if (types::is_implictly_convertible(value->return_type, type->kind) == false)
     {
-        output::errorMismatch(identifier_token->definition_line);
+        output::error_mismatch(identifier_token->definition_line);
     }
 
     if (symbol_table::instance().contains_symbol(identifier))
     {
-        output::errorDef(identifier_token->definition_line, identifier);
+        output::error_def(identifier_token->definition_line, identifier);
     }
 
     symbol_table::instance().add_variable(identifier, type->kind);

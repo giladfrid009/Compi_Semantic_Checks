@@ -47,7 +47,7 @@ continue                           { set_token(CONTINUE); return CONTINUE; }
 [a-zA-Z][a-zA-Z0-9]*               { set_token(ID); return ID; }
 0|[1-9][0-9]*                      { set_token(NUM); return NUM; }
 \"([^\n\r\"\\]|\\[rnt"\\])+\"      { set_token(STRING); return STRING; }
-.                                  { output::errorLex(yylineno); }
+.                                  { output::error_lex(yylineno); }
 
 %%
 

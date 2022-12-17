@@ -7,36 +7,36 @@ using namespace std;
 
 namespace output
 {
-    void endScope();
+    void end_scope();
 
-    void printID(const string& id, int offset, const string& type);
+    void print_id(const string& id, int offset, const string& type);
 
     /* Do not save the string returned from this function in a data structure
         as it is not dynamically allocated and will be destroyed(!) at the end of the calling scope.
     */
-    string makeFunctionType(const string& retType, vector<string>& argTypes);
+    string make_function_type(const string& ret_type, vector<string>& arg_types);
 
-    [[noreturn]] void errorLex(int lineno);
+    [[noreturn]] void error_lex(int lineno);
 
-    [[noreturn]] void errorSyn(int lineno);
+    [[noreturn]] void error_syn(int lineno);
 
-    [[noreturn]] void errorUndef(int lineno, const string& id);
+    [[noreturn]] void error_undef(int lineno, const string& id);
 
-    [[noreturn]] void errorDef(int lineno, const string& id);
+    [[noreturn]] void error_def(int lineno, const string& id);
 
-    [[noreturn]] void errorUndefFunc(int lineno, const string& id);
+    [[noreturn]] void error_undef_func(int lineno, const string& id);
 
-    [[noreturn]] void errorMismatch(int lineno);
+    [[noreturn]] void error_mismatch(int lineno);
 
-    [[noreturn]] void errorPrototypeMismatch(int lineno, const string& id, vector<string>& argTypes);
+    [[noreturn]] void error_prototype_mismatch(int lineno, const string& id, vector<string>& arg_types);
 
-    [[noreturn]] void errorUnexpectedBreak(int lineno);
+    [[noreturn]] void error_unexpected_break(int lineno);
 
-    [[noreturn]] void errorUnexpectedContinue(int lineno);
+    [[noreturn]] void error_unexpected_continue(int lineno);
 
-    [[noreturn]] void errorMainMissing();
+    [[noreturn]] void error_main_missing();
 
-    [[noreturn]] void errorByteTooLarge(int lineno, const string& value);
+    [[noreturn]] void error_byte_too_large(int lineno, const string& value);
 }
 
 #endif

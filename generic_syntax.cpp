@@ -49,12 +49,12 @@ parameter_syntax::parameter_syntax(type_syntax* type, syntax_token* identifier_t
 {
     if (type->kind == type_kind::Void)
     {
-        output::errorMismatch(identifier_token->definition_line);
+        output::error_mismatch(identifier_token->definition_line);
     }
 
     if (symbol_table::instance().contains_symbol(identifier))
     {
-        output::errorDef(identifier_token->definition_line, identifier);
+        output::error_def(identifier_token->definition_line, identifier);
     }
 
     type->set_parent(this);
@@ -144,14 +144,14 @@ root_syntax::root_syntax(list_syntax<function_declaration_syntax>* function_list
 
     if (main_sym == nullptr || main_sym->kind != symbol_kind::Function)
     {
-        output::errorMainMissing();
+        output::error_main_missing();
     }
 
     function_symbol* func_sym = static_cast<function_symbol*>(main_sym);
 
     if (func_sym->type != type_kind::Void || func_sym->parameter_types.size() != 0)
     {
-        output::errorMainMissing();
+        output::error_main_missing();
     }
 
     function_list->set_parent(this);
