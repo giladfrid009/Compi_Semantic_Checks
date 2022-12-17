@@ -12,7 +12,7 @@ template<typename element_type> class list_syntax final: public syntax_base
 {
     private:
 
-    std::list<element_type*> elements;
+    std::list<const element_type*> elements;
 
     public:
 
@@ -46,9 +46,9 @@ template<typename element_type> class list_syntax final: public syntax_base
         return this;
     }
 
-    const std::vector<element_type*> get_elements() const
+    const std::vector<const element_type*> get_elements() const
     {
-        return std::vector<element_type*>(elements.begin(), elements.end());
+        return std::vector<const element_type*>(elements.begin(), elements.end());
     }
 
     ~list_syntax()
