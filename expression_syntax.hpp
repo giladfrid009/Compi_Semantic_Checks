@@ -36,12 +36,12 @@ template<typename literal_type> class literal_expression_syntax final: public ex
 
     literal_expression_syntax& operator=(const literal_expression_syntax& other) = delete;
 
-    fundamental_type get_return_type() const
+    type_kind get_return_type() const
     {
-        if (std::is_same<literal_type, char>::value) return fundamental_type::Byte;
-        if (std::is_same<literal_type, int>::value) return fundamental_type::Int;
-        if (std::is_same<literal_type, bool>::value) return fundamental_type::Bool;
-        if (std::is_same<literal_type, std::string>::value) return fundamental_type::String;
+        if (std::is_same<literal_type, char>::value) return type_kind::Byte;
+        if (std::is_same<literal_type, int>::value) return type_kind::Int;
+        if (std::is_same<literal_type, bool>::value) return type_kind::Bool;
+        if (std::is_same<literal_type, std::string>::value) return type_kind::String;
 
         throw std::runtime_error("invalid literal_type");
     }
@@ -139,12 +139,12 @@ class logical_expression_syntax final: public expression_syntax
 {
     public:
 
-    enum class logical_operator { And, Or };
+    enum class operator_kind { And, Or };
 
     expression_syntax* const left;
     syntax_token* const oper_token;
     expression_syntax* const right;
-    const logical_operator oper;
+    const operator_kind oper;
 
     logical_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right);
 
@@ -158,19 +158,19 @@ class logical_expression_syntax final: public expression_syntax
 
     ~logical_expression_syntax();
 
-    static logical_operator parse_operator(std::string str);
+    static operator_kind parse_operator(std::string str);
 };
 
 class arithmetic_expression_syntax final: public expression_syntax
 {
     public:
 
-    enum class arithmetic_operator { Add, Sub, Mul, Div };
+    enum class operator_kind { Add, Sub, Mul, Div };
 
     expression_syntax* const left;
     syntax_token* const oper_token;
     expression_syntax* const right;
-    const arithmetic_operator oper;
+    const operator_kind oper;
 
     arithmetic_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right);
 
@@ -184,19 +184,19 @@ class arithmetic_expression_syntax final: public expression_syntax
 
     ~arithmetic_expression_syntax();
 
-    static arithmetic_operator parse_operator(std::string str);
+    static operator_kind parse_operator(std::string str);
 };
 
 class relational_expression_syntax final: public expression_syntax
 {
     public:
 
-    enum class relational_operator { Less, LessEqual, Greater, GreaterEqual, Equal, NotEqual };
+    enum class operator_kind { Less, LessEqual, Greater, GreaterEqual, Equal, NotEqual };
 
     expression_syntax* const left;
     syntax_token* const oper_token;
     expression_syntax* const right;
-    const relational_operator oper;
+    const operator_kind oper;
 
     relational_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right);
 
@@ -210,7 +210,7 @@ class relational_expression_syntax final: public expression_syntax
 
     ~relational_expression_syntax();
 
-    static relational_operator parse_operator(std::string str);
+    static operator_kind parse_operator(std::string str);
 };
 
 class conditional_expression_syntax final: public expression_syntax
@@ -237,7 +237,7 @@ class conditional_expression_syntax final: public expression_syntax
 
     private:
 
-    static fundamental_type get_return_type(expression_syntax* left, expression_syntax* right);
+    static type_kind get_return_type(expression_syntax* left, expression_syntax* right);
 };
 
 class identifier_expression_syntax final: public expression_syntax
@@ -261,7 +261,7 @@ class identifier_expression_syntax final: public expression_syntax
 
     private:
 
-    static fundamental_type get_return_type(std::string identifier);
+    static type_kind get_return_type(std::string identifier);
 };
 
 class invocation_expression_syntax final: public expression_syntax
@@ -288,7 +288,7 @@ class invocation_expression_syntax final: public expression_syntax
 
     private:
 
-    static fundamental_type get_return_type(std::string identifier);
+    static type_kind get_return_type(std::string identifier);
 };
 
 #endif

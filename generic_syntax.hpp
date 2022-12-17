@@ -78,7 +78,7 @@ class type_syntax final: public syntax_base
     public:
 
     syntax_token* const type_token;
-    const fundamental_type type;
+    const type_kind kind;
 
     type_syntax(syntax_token* type_token);
 
@@ -97,7 +97,7 @@ class type_syntax final: public syntax_base
     ~type_syntax();
 };
 
-class formal_syntax final: public syntax_base
+class parameter_syntax final: public syntax_base
 {
     public:
 
@@ -105,17 +105,17 @@ class formal_syntax final: public syntax_base
     syntax_token* const identifier_token;
     const std::string identifier;
 
-    formal_syntax(type_syntax* type, syntax_token* identifier_token);
+    parameter_syntax(type_syntax* type, syntax_token* identifier_token);
 
-    formal_syntax(const formal_syntax& other) = delete;
+    parameter_syntax(const parameter_syntax& other) = delete;
 
-    formal_syntax& operator=(const formal_syntax& other) = delete;
+    parameter_syntax& operator=(const parameter_syntax& other) = delete;
 
     std::vector<syntax_base*> get_children() const override;
 
     std::vector<syntax_token*> get_tokens() const override;
 
-    ~formal_syntax();
+    ~parameter_syntax();
 };
 
 class function_declaration_syntax final: public syntax_base
@@ -125,10 +125,10 @@ class function_declaration_syntax final: public syntax_base
     type_syntax* const return_type;
     syntax_token* const identifier_token;
     const std::string identifier;
-    list_syntax<formal_syntax>* const formal_list;
+    list_syntax<parameter_syntax>* const parameter_list;
     list_syntax<statement_syntax>* const body;
 
-    function_declaration_syntax(type_syntax* return_type, syntax_token* identifier_token, list_syntax<formal_syntax>* formal_list, list_syntax<statement_syntax>* body);
+    function_declaration_syntax(type_syntax* return_type, syntax_token* identifier_token, list_syntax<parameter_syntax>* parameter_list, list_syntax<statement_syntax>* body);
 
     function_declaration_syntax(const function_declaration_syntax& other) = delete;
 

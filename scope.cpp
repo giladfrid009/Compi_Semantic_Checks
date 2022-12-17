@@ -10,7 +10,7 @@ using std::vector;
 using std::list;
 
 scope::scope(int offset, bool is_loop_scope):
-    symbol_list(), symbol_map(), current_offset(offset), formal_offset(offset - 1), is_loop_scope(is_loop_scope)
+    symbol_list(), symbol_map(), current_offset(offset), param_offset(offset - 1), is_loop_scope(is_loop_scope)
 {
 }
 
@@ -42,7 +42,7 @@ const list<symbol*>& scope::get_symbols() const
     return symbol_list;
 }
 
-bool scope::add_variable(string name, fundamental_type type)
+bool scope::add_variable(string name, type_kind type)
 {
     if (contains_symbol(name))
     {
@@ -58,23 +58,23 @@ bool scope::add_variable(string name, fundamental_type type)
     return true;
 }
 
-bool scope::add_formal(string name, fundamental_type type)
+bool scope::add_parameter(string name, type_kind type)
 {
     if (contains_symbol(name))
     {
         return false;
     }
 
-    symbol* new_symbol = new variable_symbol(name, type, formal_offset);
+    symbol* new_symbol = new variable_symbol(name, type, param_offset);
     symbol_list.push_back(new_symbol);
     symbol_map[name] = new_symbol;
 
-    formal_offset -= 1;
+    param_offset -= 1;
 
     return true;
 }
 
-bool scope::add_function(string name, fundamental_type return_type, vector<fundamental_type> parameter_types)
+bool scope::add_function(string name, type_kind return_type, vector<type_kind> parameter_types)
 {
     if (contains_symbol(name))
     {

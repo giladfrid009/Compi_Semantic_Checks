@@ -17,7 +17,7 @@ void syntax_base::set_parent(syntax_base* new_parent)
     parent = new_parent;
 }
 
-expression_syntax::expression_syntax(fundamental_type return_type): return_type(return_type)
+expression_syntax::expression_syntax(type_kind return_type): return_type(return_type)
 {
 
 }

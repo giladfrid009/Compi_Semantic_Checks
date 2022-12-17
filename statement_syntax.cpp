@@ -13,7 +13,7 @@ using std::list;
 if_statement_syntax::if_statement_syntax(syntax_token* if_token, expression_syntax* condition, statement_syntax* body):
     if_token(if_token), condition(condition), body(body), else_token(nullptr), else_clause(nullptr)
 {
-    if (condition->return_type != fundamental_type::Bool)
+    if (condition->return_type != type_kind::Bool)
     {
         output::errorMismatch(if_token->definition_line);
     }
@@ -25,7 +25,7 @@ if_statement_syntax::if_statement_syntax(syntax_token* if_token, expression_synt
 if_statement_syntax::if_statement_syntax(syntax_token* if_token, expression_syntax* condition, statement_syntax* body, syntax_token* else_token, statement_syntax* else_clause):
     if_token(if_token), condition(condition), body(body), else_token(else_token), else_clause(else_clause)
 {
-    if (condition->return_type != fundamental_type::Bool)
+    if (condition->return_type != type_kind::Bool)
     {
         output::errorMismatch(if_token->definition_line);
     }
@@ -61,7 +61,7 @@ if_statement_syntax::~if_statement_syntax()
 while_statement_syntax::while_statement_syntax(syntax_token* while_token, expression_syntax* condition, statement_syntax* body):
     while_token(while_token), condition(condition), body(body)
 {
-    if (condition->return_type != fundamental_type::Bool)
+    if (condition->return_type != type_kind::Bool)
     {
         output::errorMismatch(while_token->definition_line);
     }
@@ -94,23 +94,23 @@ while_statement_syntax::~while_statement_syntax()
 }
 
 branch_statement_syntax::branch_statement_syntax(syntax_token* branch_token):
-    branch_token(branch_token), type(parse_type(branch_token->text))
+    branch_token(branch_token), kind(parse_kind(branch_token->text))
 {
     const list<scope>& scopes = symbol_table::instance().get_scopes();
 
     if (std::all_of(scopes.rbegin(), scopes.rend(), [](const scope& sc) { return sc.is_loop_scope == false; }))
     {
-        if (type == branch_type::Break)
+        if (kind == branch_kind::Break)
         {
             output::errorUnexpectedBreak(branch_token->definition_line);
         }
 
-        if (type == branch_type::Continue)
+        if (kind == branch_kind::Continue)
         {
             output::errorUnexpectedContinue(branch_token->definition_line);
         }
 
-        throw std::runtime_error("unknown branch_type");
+        throw std::runtime_error("unknown branch_kind");
     }
 }
 
@@ -137,10 +137,10 @@ branch_statement_syntax::~branch_statement_syntax()
     }
 }
 
-branch_statement_syntax::branch_type branch_statement_syntax::parse_type(string str)
+branch_statement_syntax::branch_kind branch_statement_syntax::parse_kind(string str)
 {
-    if (str == "break") return branch_type::Break;
-    if (str == "continue") return branch_type::Continue;
+    if (str == "break") return branch_kind::Break;
+    if (str == "continue") return branch_kind::Continue;
 
     throw std::invalid_argument("unknown type");
 }
@@ -152,7 +152,7 @@ return_statement_syntax::return_statement_syntax(syntax_token* return_token):
 
     symbol* func_sym = global_symbols.back();
 
-    if (func_sym->type != fundamental_type::Void)
+    if (func_sym->type != type_kind::Void)
     {
         output::errorMismatch(return_token->definition_line);
     }
@@ -229,7 +229,7 @@ assignment_statement_syntax::assignment_statement_syntax(syntax_token* identifie
 {
     symbol* identifier_symbol = symbol_table::instance().get_symbol(identifier);
 
-    if (identifier_symbol == nullptr || identifier_symbol->sym_type != symbol_type::Var)
+    if (identifier_symbol == nullptr || identifier_symbol->kind != symbol_kind::Variable)
     {
         output::errorUndef(identifier_token->definition_line, identifier);
     }
@@ -278,7 +278,7 @@ declaration_statement_syntax::declaration_statement_syntax(type_syntax* type, sy
         output::errorDef(identifier_token->definition_line, identifier);
     }
 
-    symbol_table::instance().add_variable(identifier, type->type);
+    symbol_table::instance().add_variable(identifier, type->kind);
 
     type->set_parent(this);
 }
@@ -291,7 +291,7 @@ declaration_statement_syntax::declaration_statement_syntax(type_syntax* type, sy
         output::errorMismatch(identifier_token->definition_line);
     }
 
-    if (types::is_implictly_convertible(value->return_type, type->type) == false)
+    if (types::is_implictly_convertible(value->return_type, type->kind) == false)
     {
         output::errorMismatch(identifier_token->definition_line);
     }
@@ -301,7 +301,7 @@ declaration_statement_syntax::declaration_statement_syntax(type_syntax* type, sy
         output::errorDef(identifier_token->definition_line, identifier);
     }
 
-    symbol_table::instance().add_variable(identifier, type->type);
+    symbol_table::instance().add_variable(identifier, type->kind);
 
     type->set_parent(this);
     value->set_parent(this);

@@ -35,9 +35,9 @@ class expression_syntax: public syntax_base
 {
     public:
 
-    const fundamental_type return_type;
+    const type_kind return_type;
 
-    expression_syntax(fundamental_type return_type);
+    expression_syntax(type_kind return_type);
 
     expression_syntax(const expression_syntax& other) = delete;
 

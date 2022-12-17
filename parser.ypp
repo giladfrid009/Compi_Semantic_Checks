@@ -18,7 +18,7 @@ static symbol_table& symtab = symbol_table::instance();
 
 void yyerror(const char* message);
 
-void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_token, list_syntax<formal_syntax>* formal_list);
+void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_token, list_syntax<parameter_syntax>* param_list);
 
 root_syntax* create_root_syntax(list_syntax<function_declaration_syntax>* function_list);
 
@@ -42,11 +42,11 @@ void print_current_scope();
     syntax_token*                             token;
     root_syntax*                              root;
     type_syntax*                              type;                  
-    formal_syntax*                            formal;     
+    parameter_syntax*                         param;     
     function_declaration_syntax*              function;            
     statement_syntax*                         statement; 	
     expression_syntax*                        expression;  
-    list_syntax<formal_syntax>*               formal_list;		         
+    list_syntax<parameter_syntax>*            param_list;		         
     list_syntax<function_declaration_syntax>* function_list;	
     list_syntax<statement_syntax>*            statement_list;
     list_syntax<expression_syntax>*           expression_list;                
@@ -88,9 +88,9 @@ void print_current_scope();
 %type <function_list>   Funcs
 %type <function>        FuncDecl
 %type <type>            RetType
-%type <formal_list> 	Formals
-%type <formal_list>     FormalsList
-%type <formal>          FormalDecl
+%type <param_list> 	    Params
+%type <param_list>      ParamsList
+%type <param>           ParamDecl
 %type <statement_list>  Statements
 %type <statement>   	Statement
 %type <expression>      Call
@@ -106,19 +106,19 @@ Program 	: Funcs 										{ $$ = create_root_syntax($1); delete $$; }
 Funcs   	: %empty                                        { $$ = new list_syntax<function_declaration_syntax>(); }
       		| FuncDecl Funcs					            { $$ = $2->push_front($1); }
 			;
-FuncDecl 	: RetType ID LPAREN Formals RPAREN              { add_function_symbol($1, $2, $4); } 
+FuncDecl 	: RetType ID LPAREN Params RPAREN               { add_function_symbol($1, $2, $4); } 
               LBRACE Statements CS RBRACE                   { $$ = new function_declaration_syntax($1, $2, $4, $8); }
 			;
 RetType 	: Type                                          { $$ = $1; }
         	| VOID                                          { $$ = new type_syntax($1); }
 			;       
-Formals 	: %empty                                        { $$ = new list_syntax<formal_syntax>(); }
-        	| FormalsList                                   { $$ = $1; }
+Params 	    : %empty                                        { $$ = new list_syntax<parameter_syntax>(); }
+        	| ParamsList                                    { $$ = $1; }
 			;       
-FormalsList : FormalDecl                                    { $$ = new list_syntax<formal_syntax>($1); }
-			| FormalDecl COMMA FormalsList                  { $$ = $3->push_front($1); }
+ParamsList  : ParamDecl                                     { $$ = new list_syntax<parameter_syntax>($1); }
+			| ParamDecl COMMA ParamsList                    { $$ = $3->push_front($1); }
 			;       
-FormalDecl 	: Type ID                                       { $$ = new formal_syntax($1, $2); }
+ParamDecl 	: Type ID                                       { $$ = new parameter_syntax($1, $2); }
 			;       
 Statements	: Statement	                                    { $$ = new list_syntax<statement_syntax>($1); }
  			| Statements Statement                          { $$ = $1->push_back($2); }
@@ -178,8 +178,8 @@ CS          : %empty                                        { print_current_scop
 int main()
 {
     symtab.open_scope();
-    symtab.add_function("print", fundamental_type::Void, vector<fundamental_type>{fundamental_type::String});
-    symtab.add_function("printi", fundamental_type::Void, vector<fundamental_type>{fundamental_type::Int});
+    symtab.add_function("print", type_kind::Void, vector<type_kind>{type_kind::String});
+    symtab.add_function("printi", type_kind::Void, vector<type_kind>{type_kind::Int});
 
 	int res = yyparse();
 
@@ -194,7 +194,7 @@ void yyerror(const char* message)
     output::errorSyn(yylineno);
 }
 
-void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_token, list_syntax<formal_syntax>* formal_list)
+void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_token, list_syntax<parameter_syntax>* param_list)
 {
     string func_name = indentifier_token->text;
 
@@ -203,31 +203,31 @@ void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_tok
         output::errorDef(indentifier_token->definition_line, func_name);
     }
 
-    vector<fundamental_type> param_types;
+    vector<type_kind> param_types;
 
-    for (formal_syntax* fs : formal_list->get_elements())
+    for (parameter_syntax* fs : param_list->get_elements())
     {
-        param_types.push_back(fs->type->type);
+        param_types.push_back(fs->type->kind);
     }
 
-    symtab.add_function(func_name, return_type->type, param_types);
+    symtab.add_function(func_name, return_type->kind, param_types);
 
     symtab.open_scope();
 
-    for (formal_syntax* fs : formal_list->get_elements())
+    for (parameter_syntax* fs : param_list->get_elements())
     {
         if (symtab.contains_symbol(fs->identifier))
         {
             output::errorDef(fs->identifier_token->definition_line, fs->identifier);
         }
 
-        symtab.add_formal(fs->identifier, fs->type->type);
+        symtab.add_parameter(fs->identifier, fs->type->kind);
     }
 }
 
 expression_syntax* validate_bool_expression(expression_syntax* expression)
 {
-    if (expression->return_type != fundamental_type::Bool)
+    if (expression->return_type != type_kind::Bool)
     {
         output::errorMismatch(yylineno);
     }
@@ -251,17 +251,17 @@ void print_current_scope()
 
     for (symbol* sym : symbol_table::instance().current_scope().get_symbols())
     {
-        if (sym->sym_type == symbol_type::Var)
+        if (sym->kind == symbol_kind::Variable)
         {
             output::printID(sym->name, sym->offset, types::to_string(sym->type));
         }
-        else if (sym->sym_type == symbol_type::Func)
+        else if (sym->kind == symbol_kind::Function)
         {
             function_symbol* func_sym = static_cast<function_symbol*>(sym);
 
             vector<string> param_types;
 
-            for (fundamental_type ft : func_sym->parameter_types)
+            for (type_kind ft : func_sym->parameter_types)
             {
                 param_types.push_back(types::to_string(ft));
             }

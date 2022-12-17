@@ -65,7 +65,7 @@ symbol* symbol_table::get_symbol(string symbol_name) const
     return nullptr;
 }
 
-bool symbol_table::add_variable(string name, fundamental_type type)
+bool symbol_table::add_variable(string name, type_kind type)
 {
     if (scope_list.size() == 0)
     {
@@ -75,17 +75,17 @@ bool symbol_table::add_variable(string name, fundamental_type type)
     return scope_list.back().add_variable(name, type);
 }
 
-bool symbol_table::add_formal(string name, fundamental_type type)
+bool symbol_table::add_parameter(string name, type_kind type)
 {
     if (scope_list.size() == 0)
     {
         return false;
     }
 
-    return scope_list.back().add_formal(name, type);
+    return scope_list.back().add_parameter(name, type);
 }
 
-bool symbol_table::add_function(string name, fundamental_type return_type, vector<fundamental_type> parameter_types)
+bool symbol_table::add_function(string name, type_kind return_type, vector<type_kind> parameter_types)
 {
     if (scope_list.size() == 0)
     {
@@ -95,9 +95,9 @@ bool symbol_table::add_function(string name, fundamental_type return_type, vecto
     return scope_list.back().add_function(name, return_type, parameter_types);
 }
 
-bool symbol_table::add_function(string name, fundamental_type return_type)
+bool symbol_table::add_function(string name, type_kind return_type)
 {
-    return add_function(name, return_type, vector<fundamental_type>());
+    return add_function(name, return_type, vector<type_kind>());
 }
 
 const list<scope>& symbol_table::get_scopes() const

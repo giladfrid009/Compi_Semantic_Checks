@@ -9,7 +9,7 @@ using std::vector;
 extern int yylineno;
 
 cast_expression_syntax::cast_expression_syntax(type_syntax* destination_type, expression_syntax* expression):
-    expression_syntax(destination_type->type), destination_type(destination_type), expression(expression)
+    expression_syntax(destination_type->kind), destination_type(destination_type), expression(expression)
 {
     if (expression->is_numeric() == false || destination_type->is_numeric() == false)
     {
@@ -44,9 +44,9 @@ cast_expression_syntax::~cast_expression_syntax()
 }
 
 not_expression_syntax::not_expression_syntax(syntax_token* not_token, expression_syntax* expression):
-    expression_syntax(fundamental_type::Bool), not_token(not_token), expression(expression)
+    expression_syntax(type_kind::Bool), not_token(not_token), expression(expression)
 {
-    if (expression->return_type != fundamental_type::Bool)
+    if (expression->return_type != type_kind::Bool)
     {
         output::errorMismatch(not_token->definition_line);
     }
@@ -78,9 +78,9 @@ not_expression_syntax::~not_expression_syntax()
 }
 
 logical_expression_syntax::logical_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right):
-    expression_syntax(fundamental_type::Bool), left(left), oper_token(oper_token), right(right), oper(parse_operator(oper_token->text))
+    expression_syntax(type_kind::Bool), left(left), oper_token(oper_token), right(right), oper(parse_operator(oper_token->text))
 {
-    if (left->return_type != fundamental_type::Bool || right->return_type != fundamental_type::Bool)
+    if (left->return_type != type_kind::Bool || right->return_type != type_kind::Bool)
     {
         output::errorMismatch(oper_token->definition_line);
     }
@@ -112,10 +112,10 @@ logical_expression_syntax::~logical_expression_syntax()
     }
 }
 
-logical_expression_syntax::logical_operator logical_expression_syntax::parse_operator(string str)
+logical_expression_syntax::operator_kind logical_expression_syntax::parse_operator(string str)
 {
-    if (str == "and") return logical_operator::And;
-    if (str == "or") return logical_operator::Or;
+    if (str == "and") return operator_kind::And;
+    if (str == "or") return operator_kind::Or;
 
     throw std::invalid_argument("unknown oper");
 }
@@ -155,18 +155,18 @@ arithmetic_expression_syntax::~arithmetic_expression_syntax()
     }
 }
 
-arithmetic_expression_syntax::arithmetic_operator arithmetic_expression_syntax::parse_operator(string str)
+arithmetic_expression_syntax::operator_kind arithmetic_expression_syntax::parse_operator(string str)
 {
-    if (str == "+") return arithmetic_operator::Add;
-    if (str == "-") return arithmetic_operator::Sub;
-    if (str == "*") return arithmetic_operator::Mul;
-    if (str == "/") return arithmetic_operator::Div;
+    if (str == "+") return operator_kind::Add;
+    if (str == "-") return operator_kind::Sub;
+    if (str == "*") return operator_kind::Mul;
+    if (str == "/") return operator_kind::Div;
 
     throw std::invalid_argument("unknown oper");
 }
 
 relational_expression_syntax::relational_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right):
-    expression_syntax(fundamental_type::Bool), left(left), oper_token(oper_token), right(right), oper(parse_operator(oper_token->text))
+    expression_syntax(type_kind::Bool), left(left), oper_token(oper_token), right(right), oper(parse_operator(oper_token->text))
 {
     if (left->is_numeric() == false || right->is_numeric() == false)
     {
@@ -200,14 +200,14 @@ relational_expression_syntax::~relational_expression_syntax()
     }
 }
 
-relational_expression_syntax::relational_operator relational_expression_syntax::parse_operator(string str)
+relational_expression_syntax::operator_kind relational_expression_syntax::parse_operator(string str)
 {
-    if (str == "<") return relational_operator::Less;
-    if (str == "<=") return relational_operator::LessEqual;
-    if (str == ">") return relational_operator::Greater;
-    if (str == ">=") return relational_operator::GreaterEqual;
-    if (str == "==") return relational_operator::Equal;
-    if (str == "!=") return relational_operator::NotEqual;
+    if (str == "<") return operator_kind::Less;
+    if (str == "<=") return operator_kind::LessEqual;
+    if (str == ">") return operator_kind::Greater;
+    if (str == ">=") return operator_kind::GreaterEqual;
+    if (str == "==") return operator_kind::Equal;
+    if (str == "!=") return operator_kind::NotEqual;
 
     throw std::invalid_argument("unknown oper");
 }
@@ -215,12 +215,12 @@ relational_expression_syntax::relational_operator relational_expression_syntax::
 conditional_expression_syntax::conditional_expression_syntax(expression_syntax* true_value, syntax_token* if_token, expression_syntax* condition, syntax_token* const else_token, expression_syntax* false_value):
     expression_syntax(types::cast_up(true_value->return_type, false_value->return_type)), true_value(true_value), if_token(if_token), condition(condition), else_token(else_token), false_value(false_value)
 {
-    if (return_type == fundamental_type::Void)
+    if (return_type == type_kind::Void)
     {
         output::errorMismatch(if_token->definition_line);
     }
 
-    if (condition->return_type != fundamental_type::Bool)
+    if (condition->return_type != type_kind::Bool)
     {
         output::errorMismatch(if_token->definition_line);
     }
@@ -258,7 +258,7 @@ identifier_expression_syntax::identifier_expression_syntax(syntax_token* identif
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
-    if (symbol == nullptr || symbol->sym_type != symbol_type::Var)
+    if (symbol == nullptr || symbol->kind != symbol_kind::Variable)
     {
         output::errorUndef(identifier_token->definition_line, identifier);
     }
@@ -274,13 +274,13 @@ vector<syntax_token*> identifier_expression_syntax::get_tokens() const
     return vector<syntax_token*>{identifier_token};
 }
 
-fundamental_type identifier_expression_syntax::get_return_type(string identifier)
+type_kind identifier_expression_syntax::get_return_type(string identifier)
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
-    if (symbol == nullptr || symbol->sym_type != symbol_type::Var)
+    if (symbol == nullptr || symbol->kind != symbol_kind::Variable)
     {
-        return fundamental_type::Invalid;
+        return type_kind::Invalid;
     }
 
     return symbol->type;
@@ -304,16 +304,16 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
-    if (symbol == nullptr || symbol->sym_type != symbol_type::Func)
+    if (symbol == nullptr || symbol->kind != symbol_kind::Function)
     {
         output::errorUndefFunc(identifier_token->definition_line, identifier);
     }
 
-    vector<fundamental_type> parameter_types = static_cast<function_symbol*>(symbol)->parameter_types;
+    vector<type_kind> parameter_types = static_cast<function_symbol*>(symbol)->parameter_types;
 
     vector<string> params_str;
 
-    for (fundamental_type type : parameter_types)
+    for (type_kind type : parameter_types)
     {
         params_str.push_back(types::to_string(type));
     }
@@ -329,18 +329,18 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
-    if (symbol == nullptr || symbol->sym_type != symbol_type::Func)
+    if (symbol == nullptr || symbol->kind != symbol_kind::Function)
     {
         output::errorUndefFunc(identifier_token->definition_line, identifier);
     }
 
-    vector<fundamental_type> parameter_types = static_cast<function_symbol*>(symbol)->parameter_types;
+    vector<type_kind> parameter_types = static_cast<function_symbol*>(symbol)->parameter_types;
 
     auto elements = expression_list->get_elements();
 
     vector<string> params_str;
 
-    for (fundamental_type type : parameter_types)
+    for (type_kind type : parameter_types)
     {
         params_str.push_back(types::to_string(type));
     }
@@ -374,13 +374,13 @@ vector<syntax_token*> invocation_expression_syntax::get_tokens() const
     return vector<syntax_token*>{identifier_token};
 }
 
-fundamental_type invocation_expression_syntax::get_return_type(string identifier)
+type_kind invocation_expression_syntax::get_return_type(string identifier)
 {
     symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
-    if (symbol == nullptr || symbol->sym_type != symbol_type::Func)
+    if (symbol == nullptr || symbol->kind != symbol_kind::Function)
     {
-        return fundamental_type::Invalid;
+        return type_kind::Invalid;
     }
 
     return symbol->type;

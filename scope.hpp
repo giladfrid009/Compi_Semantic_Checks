@@ -15,7 +15,7 @@ class scope
     std::unordered_map<std::string, symbol*> symbol_map;
 
     int current_offset;
-    int formal_offset;
+    int param_offset;
 
     public:
 
@@ -31,11 +31,11 @@ class scope
 
     const std::list<symbol*>& get_symbols() const;
 
-    bool add_variable(std::string name, fundamental_type type);
+    bool add_variable(std::string name, type_kind type);
 
-    bool add_formal(std::string name, fundamental_type type);
+    bool add_parameter(std::string name, type_kind type);
 
-    bool add_function(std::string name, fundamental_type return_type, std::vector<fundamental_type> parameter_types);
+    bool add_function(std::string name, type_kind return_type, std::vector<type_kind> parameter_types);
 };
 
 #endif
