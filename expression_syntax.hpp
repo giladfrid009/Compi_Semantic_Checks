@@ -79,7 +79,7 @@ template<> inline char literal_expression_syntax<char>::get_literal_value(syntax
         output::error_byte_too_large(value_token->position, value_token->text);
     }
 
-    return (char)value;
+    return static_cast<char>(value);
 }
 
 template<> inline std::string literal_expression_syntax<std::string>::get_literal_value(syntax_token* value_token) const
