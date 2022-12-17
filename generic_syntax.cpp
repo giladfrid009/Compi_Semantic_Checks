@@ -49,12 +49,12 @@ parameter_syntax::parameter_syntax(type_syntax* type, syntax_token* identifier_t
 {
     if (type->kind == type_kind::Void)
     {
-        output::error_mismatch(identifier_token->definition_line);
+        output::error_mismatch(identifier_token->position);
     }
 
     if (symbol_table::instance().contains_symbol(identifier))
     {
-        output::error_def(identifier_token->definition_line, identifier);
+        output::error_def(identifier_token->position, identifier);
     }
 
     type->set_parent(this);

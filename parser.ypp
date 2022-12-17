@@ -200,7 +200,7 @@ void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_tok
 
     if (symtab.contains_symbol(func_name))
     {
-        output::error_def(indentifier_token->definition_line, func_name);
+        output::error_def(indentifier_token->position, func_name);
     }
 
     vector<type_kind> param_types;
@@ -218,7 +218,7 @@ void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_tok
     {
         if (symtab.contains_symbol(param->identifier))
         {
-            output::error_def(param->identifier_token->definition_line, param->identifier);
+            output::error_def(param->identifier_token->position, param->identifier);
         }
 
         symtab.add_parameter(param->identifier, param->type->kind);

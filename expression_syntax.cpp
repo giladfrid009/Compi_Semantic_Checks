@@ -11,7 +11,7 @@ cast_expression_syntax::cast_expression_syntax(type_syntax* destination_type, ex
 {
     if (expression->is_numeric() == false || destination_type->is_numeric() == false)
     {
-        output::error_mismatch(destination_type->type_token->definition_line);
+        output::error_mismatch(destination_type->type_token->position);
     }
 
     destination_type->set_parent(this);
@@ -46,7 +46,7 @@ not_expression_syntax::not_expression_syntax(syntax_token* not_token, expression
 {
     if (expression->return_type != type_kind::Bool)
     {
-        output::error_mismatch(not_token->definition_line);
+        output::error_mismatch(not_token->position);
     }
 
     expression->set_parent(this);
@@ -80,7 +80,7 @@ logical_expression_syntax::logical_expression_syntax(expression_syntax* left, sy
 {
     if (left->return_type != type_kind::Bool || right->return_type != type_kind::Bool)
     {
-        output::error_mismatch(oper_token->definition_line);
+        output::error_mismatch(oper_token->position);
     }
 
     left->set_parent(this);
@@ -123,7 +123,7 @@ arithmetic_expression_syntax::arithmetic_expression_syntax(expression_syntax* le
 {
     if (left->is_numeric() == false || right->is_numeric() == false)
     {
-        output::error_mismatch(oper_token->definition_line);
+        output::error_mismatch(oper_token->position);
     }
 
     left->set_parent(this);
@@ -168,7 +168,7 @@ relational_expression_syntax::relational_expression_syntax(expression_syntax* le
 {
     if (left->is_numeric() == false || right->is_numeric() == false)
     {
-        output::error_mismatch(oper_token->definition_line);
+        output::error_mismatch(oper_token->position);
     }
 
     left->set_parent(this);
@@ -215,12 +215,12 @@ conditional_expression_syntax::conditional_expression_syntax(expression_syntax* 
 {
     if (return_type == type_kind::Void)
     {
-        output::error_mismatch(if_token->definition_line);
+        output::error_mismatch(if_token->position);
     }
 
     if (condition->return_type != type_kind::Bool)
     {
-        output::error_mismatch(if_token->definition_line);
+        output::error_mismatch(if_token->position);
     }
 
     true_value->set_parent(this);
@@ -258,7 +258,7 @@ identifier_expression_syntax::identifier_expression_syntax(syntax_token* identif
 
     if (symbol == nullptr || symbol->kind != symbol_kind::Variable)
     {
-        output::error_undef(identifier_token->definition_line, identifier);
+        output::error_undef(identifier_token->position, identifier);
     }
 }
 
@@ -304,7 +304,7 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
 
     if (symbol == nullptr || symbol->kind != symbol_kind::Function)
     {
-        output::error_undef_func(identifier_token->definition_line, identifier);
+        output::error_undef_func(identifier_token->position, identifier);
     }
 
     vector<type_kind> parameter_types = static_cast<function_symbol*>(symbol)->parameter_types;
@@ -318,7 +318,7 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
 
     if (parameter_types.size() != 0)
     {
-        output::error_prototype_mismatch(identifier_token->definition_line, identifier, params_str);
+        output::error_prototype_mismatch(identifier_token->position, identifier, params_str);
     }
 }
 
@@ -329,7 +329,7 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
 
     if (symbol == nullptr || symbol->kind != symbol_kind::Function)
     {
-        output::error_undef_func(identifier_token->definition_line, identifier);
+        output::error_undef_func(identifier_token->position, identifier);
     }
 
     vector<type_kind> parameter_types = static_cast<function_symbol*>(symbol)->parameter_types;
@@ -345,7 +345,7 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
 
     if (parameter_types.size() != elements.size())
     {
-        output::error_prototype_mismatch(identifier_token->definition_line, identifier, params_str);
+        output::error_prototype_mismatch(identifier_token->position, identifier, params_str);
     }
 
     for (size_t i = 0; i < elements.size(); i++)
@@ -354,7 +354,7 @@ invocation_expression_syntax::invocation_expression_syntax(syntax_token* identif
         {
             if (types::is_implictly_convertible(elements[i]->return_type, parameter_types[i]) == false)
             {
-                output::error_prototype_mismatch(identifier_token->definition_line, identifier, params_str);
+                output::error_prototype_mismatch(identifier_token->position, identifier, params_str);
             }
         }
     }
