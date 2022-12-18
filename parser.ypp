@@ -253,7 +253,7 @@ void print_current_scope()
     {
         if (sym->kind == symbol_kind::Variable)
         {
-            output::print_id(sym->name, sym->offset, types::to_string(sym->type));
+            output::print_id(sym->identifier, sym->offset, types::to_string(sym->type));
         }
         else if (sym->kind == symbol_kind::Function)
         {
@@ -268,7 +268,7 @@ void print_current_scope()
 
             string func_type = output::make_function_type(types::to_string(func_sym->type), param_types);
 
-            output::print_id(sym->name, sym->offset, func_type);
+            output::print_id(sym->identifier, sym->offset, func_type);
         }
         else
         {

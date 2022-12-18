@@ -15,9 +15,11 @@ class syntax_base
 
     syntax_base* parent = nullptr;
 
-    public:
+    protected:
 
     syntax_base();
+
+    public:
 
     syntax_base(const syntax_base& other) = delete;
 
@@ -42,7 +44,11 @@ class expression_syntax: public syntax_base
 
     const type_kind return_type;
 
+    protected:
+
     expression_syntax(type_kind return_type);
+
+    public:
 
     expression_syntax(const expression_syntax& other) = delete;
 
@@ -57,9 +63,11 @@ class expression_syntax: public syntax_base
 
 class statement_syntax: public syntax_base
 {
-    public:
+    protected:
 
     statement_syntax();
+
+    public:
 
     virtual ~statement_syntax() = default;
 

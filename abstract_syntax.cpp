@@ -5,7 +5,7 @@
 
 using std::list;
 
-syntax_base::syntax_base() : children(), parent(nullptr)
+syntax_base::syntax_base(): children(), parent(nullptr)
 {
 }
 

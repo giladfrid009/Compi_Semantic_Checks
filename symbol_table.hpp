@@ -23,17 +23,17 @@ class symbol_table
 
     const scope& current_scope() const;
 
-    bool contains_symbol(const std::string& symbol_name) const;
+    bool contains_symbol(const std::string& identifier) const;
 
-    const symbol* get_symbol(const std::string& symbol_name) const;
+    const symbol* get_symbol(const std::string& identifier) const;
 
-    bool add_variable(const std::string& name, type_kind type);
+    bool add_variable(const std::string& identifier, type_kind type);
 
-    bool add_parameter(const std::string& name, type_kind type);
+    bool add_parameter(const std::string& identifier, type_kind type);
 
-    bool add_function(const std::string& name, type_kind return_type, const std::vector<type_kind>& parameter_types);
+    bool add_function(const std::string& identifier, type_kind return_type, const std::vector<type_kind>& parameter_types);
 
-    bool add_function(const std::string& name, type_kind return_type);
+    bool add_function(const std::string& identifier, type_kind return_type);
 
     const std::list<scope>& get_scopes() const;
 };
