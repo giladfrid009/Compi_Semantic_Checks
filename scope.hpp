@@ -14,7 +14,7 @@ class scope
     private:
 
     std::list<const symbol*> symbol_list;
-    std::unordered_map<std::string, symbol*> symbol_map;
+    std::unordered_map<std::string, const symbol*> symbol_map;
 
     int current_offset;
     int param_offset;
