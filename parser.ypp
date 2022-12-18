@@ -249,7 +249,7 @@ void print_current_scope()
 {
     output::end_scope();
 
-    for (symbol* sym : symbol_table::instance().current_scope().get_symbols())
+    for (const symbol* sym : symbol_table::instance().current_scope().get_symbols())
     {
         if (sym->kind == symbol_kind::Variable)
         {
@@ -257,7 +257,7 @@ void print_current_scope()
         }
         else if (sym->kind == symbol_kind::Function)
         {
-            function_symbol* func_sym = static_cast<function_symbol*>(sym);
+            const function_symbol* func_sym = static_cast<const function_symbol*>(sym);
 
             vector<string> param_types;
 

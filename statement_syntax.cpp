@@ -110,9 +110,9 @@ branch_statement_syntax::branch_kind branch_statement_syntax::parse_kind(string 
 return_statement_syntax::return_statement_syntax(syntax_token* return_token):
     return_token(return_token), expression(nullptr)
 {
-    const list<symbol*>& global_symbols = symbol_table::instance().get_scopes().front().get_symbols();
+    auto& global_symbols = symbol_table::instance().get_scopes().front().get_symbols();
 
-    symbol* func_sym = global_symbols.back();
+    const symbol* func_sym = global_symbols.back();
 
     if (func_sym->type != type_kind::Void)
     {
@@ -123,9 +123,9 @@ return_statement_syntax::return_statement_syntax(syntax_token* return_token):
 return_statement_syntax::return_statement_syntax(syntax_token* return_token, expression_syntax* expression):
     return_token(return_token), expression(expression)
 {
-    const list<symbol*>& global_symbols = symbol_table::instance().get_scopes().front().get_symbols();
+    auto& global_symbols = symbol_table::instance().get_scopes().front().get_symbols();
 
-    symbol* func_sym = global_symbols.back();
+    const symbol* func_sym = global_symbols.back();
 
     if (types::is_implictly_convertible(expression->return_type, func_sym->type) == false)
     {

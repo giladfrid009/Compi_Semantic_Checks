@@ -16,7 +16,7 @@ scope::scope(int offset, bool is_loop_scope):
 
 scope::~scope()
 {
-    for (symbol* sym : symbol_list)
+    for (const symbol* sym : symbol_list)
     {
         delete sym;
     }
@@ -37,7 +37,7 @@ const symbol* scope::get_symbol(const string& identifier) const
     return symbol_map.at(identifier);
 }
 
-const list<symbol*>& scope::get_symbols() const
+const list<const symbol*>& scope::get_symbols() const
 {
     return symbol_list;
 }

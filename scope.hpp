@@ -13,7 +13,7 @@ class scope
 
     private:
 
-    std::list<symbol*> symbol_list;
+    std::list<const symbol*> symbol_list;
     std::unordered_map<std::string, symbol*> symbol_map;
 
     int current_offset;
@@ -31,7 +31,7 @@ class scope
 
     const symbol* get_symbol(const std::string& identifier) const;
 
-    const std::list<symbol*>& get_symbols() const;
+    const std::list<const symbol*>& get_symbols() const;
 
     bool add_variable(const std::string& identifier, type_kind type);
 
