@@ -6,17 +6,11 @@
 
 using namespace std;
 
-string value_lists_to_string(const std::vector<string>& values);
 string type_list_to_string(const std::vector<string>& arg_types);
 
 void output::end_scope()
 {
     cout << "---end scope---" << endl;
-}
-
-void output::print_id(const string& id, int offset, const string& type)
-{
-    cout << id << " " << type << " " << offset << endl;
 }
 
 string type_list_to_string(const std::vector<string>& arg_types)
@@ -30,27 +24,6 @@ string type_list_to_string(const std::vector<string>& arg_types)
             res << ",";
     }
     res << ")";
-    return res.str();
-}
-
-string value_lists_to_string(const std::vector<string>& values)
-{
-    stringstream res;
-    res << "{";
-    for (size_t i = 0; i < values.size(); ++i)
-    {
-        res << values[i];
-        if (i + 1 < values.size())
-            res << ",";
-    }
-    res << "}";
-    return res.str();
-}
-
-string output::make_function_type(const string& ret_type, std::vector<string>& arg_types)
-{
-    stringstream res;
-    res << type_list_to_string(arg_types) << "->" << ret_type;
     return res.str();
 }
 

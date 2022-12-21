@@ -6,6 +6,7 @@
 #include "types.hpp"
 #include <list>
 #include <string>
+#include <iostream>
 
 using std::vector;
 using std::string;
@@ -251,28 +252,6 @@ void print_current_scope()
 
     for (const symbol* sym : symbol_table::instance().current_scope().get_symbols())
     {
-        if (sym->kind == symbol_kind::Variable)
-        {
-            output::print_id(sym->name, sym->offset, types::to_string(sym->type));
-        }
-        else if (sym->kind == symbol_kind::Function)
-        {
-            const function_symbol* func_sym = static_cast<const function_symbol*>(sym);
-
-            vector<string> param_types;
-
-            for (type_kind type : func_sym->parameter_types)
-            {
-                param_types.push_back(types::to_string(type));
-            }
-
-            string func_type = output::make_function_type(types::to_string(func_sym->type), param_types);
-
-            output::print_id(sym->name, sym->offset, func_type);
-        }
-        else
-        {
-            throw std::runtime_error("unknown symbol type");
-        }
+        std::cout << sym->to_string() << std::endl;
     }
 }

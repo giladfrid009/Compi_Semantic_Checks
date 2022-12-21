@@ -17,7 +17,7 @@ string types::to_string(type_kind type)
     }
 }
 
-type_kind types::from_string(const string& str)
+type_kind types::parse(const string& str)
 {
     if (str == "bool") return type_kind::Bool;
     if (str == "int") return type_kind::Int;

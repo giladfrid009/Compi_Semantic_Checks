@@ -8,13 +8,6 @@ namespace output
 {
     void end_scope();
 
-    void print_id(const std::string& id, int offset, const std::string& type);
-
-    /* Do not save the string returned from this function in a data structure
-        as it is not dynamically allocated and will be destroyed(!) at the end of the calling scope.
-    */
-    std::string make_function_type(const std::string& ret_type, std::vector<std::string>& arg_types);
-
     [[noreturn]] void error_lex(int lineno);
 
     [[noreturn]] void error_syn(int lineno);

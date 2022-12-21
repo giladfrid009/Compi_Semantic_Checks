@@ -7,7 +7,7 @@ using std::vector;
 using std::string;
 
 type_syntax::type_syntax(syntax_token* type_token):
-    type_token(type_token), kind(types::from_string(type_token->text))
+    type_token(type_token), kind(types::parse(type_token->text))
 {
 }
 
