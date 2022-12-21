@@ -4,7 +4,7 @@
 #include "syntax_token.hpp"
 #include "abstract_syntax.hpp"
 #include "generic_syntax.hpp"
-#include "hw3_output.hpp"
+#include "output.hpp"
 #include <vector>
 #include <string>
 #include <type_traits>

@@ -1,5 +1,4 @@
 #include "scope.hpp"
-#include "hw3_output.hpp"
 #include <vector>
 #include <string>
 #include <stdexcept>
@@ -22,19 +21,19 @@ scope::~scope()
     }
 }
 
-bool scope::contains_symbol(const string& identifier) const
+bool scope::contains_symbol(const string& name) const
 {
-    return symbol_map.find(identifier) != symbol_map.end();
+    return symbol_map.find(name) != symbol_map.end();
 }
 
-const symbol* scope::get_symbol(const string& identifier) const
+const symbol* scope::get_symbol(const string& name) const
 {
-    if (contains_symbol(identifier) == false)
+    if (contains_symbol(name) == false)
     {
         return nullptr;
     }
 
-    return symbol_map.at(identifier);
+    return symbol_map.at(name);
 }
 
 const list<const symbol*>& scope::get_symbols() const
@@ -42,48 +41,48 @@ const list<const symbol*>& scope::get_symbols() const
     return symbol_list;
 }
 
-bool scope::add_variable(const string& identifier, type_kind type)
+bool scope::add_variable(const string& name, type_kind type)
 {
-    if (contains_symbol(identifier))
+    if (contains_symbol(name))
     {
         return false;
     }
 
-    symbol* new_symbol = new variable_symbol(identifier, type, current_offset);
+    symbol* new_symbol = new variable_symbol(name, type, current_offset);
     symbol_list.push_back(new_symbol);
-    symbol_map[identifier] = new_symbol;
+    symbol_map[name] = new_symbol;
 
     current_offset += 1;
 
     return true;
 }
 
-bool scope::add_parameter(const string& identifier, type_kind type)
+bool scope::add_parameter(const string& name, type_kind type)
 {
-    if (contains_symbol(identifier))
+    if (contains_symbol(name))
     {
         return false;
     }
 
-    symbol* new_symbol = new variable_symbol(identifier, type, param_offset);
+    symbol* new_symbol = new variable_symbol(name, type, param_offset);
     symbol_list.push_back(new_symbol);
-    symbol_map[identifier] = new_symbol;
+    symbol_map[name] = new_symbol;
 
     param_offset -= 1;
 
     return true;
 }
 
-bool scope::add_function(const string& identifier, type_kind return_type, const vector<type_kind>& parameter_types)
+bool scope::add_function(const string& name, type_kind return_type, const vector<type_kind>& parameter_types)
 {
-    if (contains_symbol(identifier))
+    if (contains_symbol(name))
     {
         return false;
     }
 
-    symbol* new_symbol = new function_symbol(identifier, return_type, parameter_types);
+    symbol* new_symbol = new function_symbol(name, return_type, parameter_types);
     symbol_list.push_back(new_symbol);
-    symbol_map[identifier] = new_symbol;
+    symbol_map[name] = new_symbol;
 
     return true;
 }

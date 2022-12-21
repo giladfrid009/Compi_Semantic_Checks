@@ -39,11 +39,11 @@ const scope& symbol_table::current_scope() const
 }
 
 
-bool symbol_table::contains_symbol(const string& identifier) const
+bool symbol_table::contains_symbol(const string& name) const
 {
     for (const scope& sc : scope_list)
     {
-        if (sc.contains_symbol(identifier))
+        if (sc.contains_symbol(name))
         {
             return true;
         }
@@ -52,52 +52,52 @@ bool symbol_table::contains_symbol(const string& identifier) const
     return false;
 }
 
-const symbol* symbol_table::get_symbol(const string& identifier) const
+const symbol* symbol_table::get_symbol(const string& name) const
 {
     for (const scope& sc : scope_list)
     {
-        if (sc.contains_symbol(identifier))
+        if (sc.contains_symbol(name))
         {
-            return sc.get_symbol(identifier);
+            return sc.get_symbol(name);
         }
     }
 
     return nullptr;
 }
 
-bool symbol_table::add_variable(const string& identifier, type_kind type)
+bool symbol_table::add_variable(const string& name, type_kind type)
 {
     if (scope_list.size() == 0)
     {
         return false;
     }
 
-    return scope_list.back().add_variable(identifier, type);
+    return scope_list.back().add_variable(name, type);
 }
 
-bool symbol_table::add_parameter(const string& identifier, type_kind type)
+bool symbol_table::add_parameter(const string& name, type_kind type)
 {
     if (scope_list.size() == 0)
     {
         return false;
     }
 
-    return scope_list.back().add_parameter(identifier, type);
+    return scope_list.back().add_parameter(name, type);
 }
 
-bool symbol_table::add_function(const string& identifier, type_kind return_type, const vector<type_kind>& parameter_types)
+bool symbol_table::add_function(const string& name, type_kind return_type, const vector<type_kind>& parameter_types)
 {
     if (scope_list.size() == 0)
     {
         return false;
     }
 
-    return scope_list.back().add_function(identifier, return_type, parameter_types);
+    return scope_list.back().add_function(name, return_type, parameter_types);
 }
 
-bool symbol_table::add_function(const string& identifier, type_kind return_type)
+bool symbol_table::add_function(const string& name, type_kind return_type)
 {
-    return add_function(identifier, return_type, vector<type_kind>());
+    return add_function(name, return_type, vector<type_kind>());
 }
 
 const list<scope>& symbol_table::get_scopes() const

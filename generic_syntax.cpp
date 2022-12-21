@@ -1,5 +1,5 @@
 #include "generic_syntax.hpp"
-#include "hw3_output.hpp"
+#include "output.hpp"
 #include "symbol.hpp"
 #include "symbol_table.hpp"
 

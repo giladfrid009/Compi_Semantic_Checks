@@ -1,6 +1,6 @@
 #include "expression_syntax.hpp"
 #include "symbol_table.hpp"
-#include "hw3_output.hpp"
+#include "output.hpp"
 #include <stdexcept>
 
 using std::string;
