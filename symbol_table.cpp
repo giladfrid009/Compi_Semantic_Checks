@@ -16,15 +16,15 @@ symbol_table& symbol_table::instance()
     return instance;
 }
 
-void symbol_table::open_scope(bool is_loop_scope)
+void symbol_table::open_scope(bool loop_scope)
 {
     if (scope_list.size() == 0)
     {
-        scope_list.push_back(scope(0, is_loop_scope));
+        scope_list.push_back(scope(0, loop_scope));
     }
     else
     {
-        scope_list.push_back(scope(scope_list.back().current_offset, is_loop_scope));
+        scope_list.push_back(scope(scope_list.back().offset, loop_scope));
     }
 }
 

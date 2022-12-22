@@ -7,9 +7,9 @@
 
 class symbol_table
 {
-    std::list<scope> scope_list;
-
     private:
+
+    std::list<scope> scope_list;
 
     symbol_table();
 
@@ -17,7 +17,7 @@ class symbol_table
 
     static symbol_table& instance();
 
-    void open_scope(bool is_loop_scope = false);
+    void open_scope(bool loop_scope = false);
 
     void close_scope();
 

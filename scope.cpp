@@ -8,8 +8,8 @@ using std::string;
 using std::vector;
 using std::list;
 
-scope::scope(int offset, bool is_loop_scope):
-    symbol_list(), symbol_map(), current_offset(offset), param_offset(offset - 1), is_loop_scope(is_loop_scope)
+scope::scope(int offset, bool loop_scope):
+    symbol_list(), symbol_map(), offset(offset), param_offset(offset - 1), loop_scope(loop_scope)
 {
 }
 
@@ -48,11 +48,11 @@ bool scope::add_variable(const string& name, type_kind type)
         return false;
     }
 
-    symbol* new_symbol = new variable_symbol(name, type, current_offset);
+    symbol* new_symbol = new variable_symbol(name, type, offset);
     symbol_list.push_back(new_symbol);
     symbol_map[name] = new_symbol;
 
-    current_offset += 1;
+    offset += 1;
 
     return true;
 }

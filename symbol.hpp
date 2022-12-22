@@ -12,11 +12,8 @@ class symbol
     public:
 
     const symbol_kind kind;
-
     const std::string name;
-
     const int offset;
-
     const type_kind type;
 
     protected:

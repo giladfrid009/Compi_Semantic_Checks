@@ -9,9 +9,7 @@ class syntax_token
     public:
 
     const int type;
-
     const int position;
-
     const std::string text;
 
     syntax_token(int type, int position, const std::string& text):

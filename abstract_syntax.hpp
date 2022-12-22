@@ -12,7 +12,6 @@ class syntax_base
     private:
 
     std::list<syntax_base*> children;
-
     syntax_base* parent = nullptr;
 
     protected:

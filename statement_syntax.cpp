@@ -73,7 +73,7 @@ branch_statement_syntax::branch_statement_syntax(syntax_token* branch_token):
 {
     const list<scope>& scopes = symbol_table::instance().get_scopes();
 
-    if (std::all_of(scopes.rbegin(), scopes.rend(), [](const scope& sc) { return sc.is_loop_scope == false; }))
+    if (std::all_of(scopes.rbegin(), scopes.rend(), [](const scope& sc) { return sc.loop_scope == false; }))
     {
         if (kind == branch_kind::Break)
         {

@@ -15,15 +15,14 @@ class scope
 
     std::list<const symbol*> symbol_list;
     std::unordered_map<std::string, const symbol*> symbol_map;
-
-    int current_offset;
+    int offset;
     int param_offset;
 
     public:
 
-    const bool is_loop_scope;
+    const bool loop_scope;
 
-    scope(int offset, bool is_loop_scope);
+    scope(int offset, bool loop_scope);
 
     ~scope();
 
