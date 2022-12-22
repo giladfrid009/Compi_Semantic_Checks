@@ -21,8 +21,6 @@ void yyerror(const char* message);
 
 void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_token, list_syntax<parameter_syntax>* param_list);
 
-root_syntax* create_root_syntax(list_syntax<function_declaration_syntax>* function_list);
-
 expression_syntax* validate_bool_expression(expression_syntax* expression);
 
 void print_current_scope();
@@ -53,6 +51,7 @@ void print_current_scope();
     list_syntax<expression_syntax>*           expression_list;                
  };
 
+%token END 0
 %token <token> VOID
 %token <token> INT
 %token <token> BYTE
@@ -102,7 +101,7 @@ void print_current_scope();
 
 %%
 
-Program 	: Funcs 										{ $$ = create_root_syntax($1); delete $$; }
+Program 	: Funcs END										{ $$ = new root_syntax($1); delete $$; }
 			;       
 Funcs   	: %empty                                        { $$ = new list_syntax<function_declaration_syntax>(); }
       		| FuncDecl Funcs					            { $$ = $2->push_front($1); }
@@ -234,16 +233,6 @@ expression_syntax* validate_bool_expression(expression_syntax* expression)
     }
 
     return expression;
-}
-
-root_syntax* create_root_syntax(list_syntax<function_declaration_syntax>* function_list)
-{
-    if (yychar != YYEOF) 
-    {
-        yyerror(nullptr); 
-    }
-
-    return new root_syntax(function_list);
 }
 
 void print_current_scope()

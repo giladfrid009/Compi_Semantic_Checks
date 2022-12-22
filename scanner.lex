@@ -48,6 +48,7 @@ continue                           { return new_token(CONTINUE); }
 [a-zA-Z][a-zA-Z0-9]*               { return new_token(ID); }
 0|[1-9][0-9]*                      { return new_token(NUM); }
 \"([^\n\r\"\\]|\\[rnt"\\])+\"      { return new_token(STRING); }
+<<EOF>>                            { return END; }
 .                                  { output::error_lex(yylineno); }
 
 %%
