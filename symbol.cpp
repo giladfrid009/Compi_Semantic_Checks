@@ -39,11 +39,11 @@ string function_symbol::to_string() const
 
     res << name << " " << "(";
 
-    for (size_t i = 0; i < parameter_types.size(); i++)
+    for (auto& param : parameter_types)
     {
-        res << types::to_string(parameter_types[i]);
+        res << types::to_string(param);
 
-        if (i + 1 < parameter_types.size())
+        if (&param != &parameter_types.back())
         {
             res << ",";
         }
