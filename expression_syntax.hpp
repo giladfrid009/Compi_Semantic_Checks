@@ -10,21 +10,21 @@
 #include <type_traits>
 #include <stdexcept>
 
-template<typename literal_type> class literal_expression_syntax final: public expression_syntax
+template<typename literal_type> class literal_expression final: public expression_syntax
 {
     public:
 
     const syntax_token* const value_token;
     const literal_type value;
 
-    literal_expression_syntax(syntax_token* value_token):
+    literal_expression(syntax_token* value_token):
         expression_syntax(get_return_type()), value_token(value_token), value(get_literal_value(value_token))
     {
     }
 
-    literal_expression_syntax(const literal_expression_syntax& other) = delete;
+    literal_expression(const literal_expression& other) = delete;
 
-    literal_expression_syntax& operator=(const literal_expression_syntax& other) = delete;
+    literal_expression& operator=(const literal_expression& other) = delete;
 
     type_kind get_return_type() const
     {
@@ -41,7 +41,7 @@ template<typename literal_type> class literal_expression_syntax final: public ex
         throw std::runtime_error("invalid literal_type");
     }
 
-    ~literal_expression_syntax()
+    ~literal_expression()
     {
         for (syntax_base* child : get_children())
         {
@@ -52,12 +52,12 @@ template<typename literal_type> class literal_expression_syntax final: public ex
     }
 };
 
-template<> inline int literal_expression_syntax<int>::get_literal_value(syntax_token* value_token) const
+template<> inline int literal_expression<int>::get_literal_value(syntax_token* value_token) const
 {
     return std::stoi(value_token->text);
 }
 
-template<> inline char literal_expression_syntax<char>::get_literal_value(syntax_token* value_token) const
+template<> inline char literal_expression<char>::get_literal_value(syntax_token* value_token) const
 {
     int value = std::stoi(value_token->text);
 
@@ -69,12 +69,12 @@ template<> inline char literal_expression_syntax<char>::get_literal_value(syntax
     return static_cast<char>(value);
 }
 
-template<> inline std::string literal_expression_syntax<std::string>::get_literal_value(syntax_token* value_token) const
+template<> inline std::string literal_expression<std::string>::get_literal_value(syntax_token* value_token) const
 {
     return std::string(value_token->text);
 }
 
-template<> inline bool literal_expression_syntax<bool>::get_literal_value(syntax_token* value_token) const
+template<> inline bool literal_expression<bool>::get_literal_value(syntax_token* value_token) const
 {
     if (value_token->text == "true") return true;
     if (value_token->text == "false") return false;
@@ -82,39 +82,35 @@ template<> inline bool literal_expression_syntax<bool>::get_literal_value(syntax
     throw std::runtime_error("invalid value_token text");
 }
 
-class cast_expression_syntax final: public expression_syntax
+class cast_expression final: public expression_syntax
 {
     public:
 
     const type_syntax* const destination_type;
     const expression_syntax* const expression;
 
-    cast_expression_syntax(type_syntax* destination_type, expression_syntax* expression);
+    cast_expression(type_syntax* destination_type, expression_syntax* expression);
+    ~cast_expression();
 
-    cast_expression_syntax(const cast_expression_syntax& other) = delete;
-
-    cast_expression_syntax& operator=(const cast_expression_syntax& other) = delete;
-
-    ~cast_expression_syntax();
+    cast_expression(const cast_expression& other) = delete;
+    cast_expression& operator=(const cast_expression& other) = delete;
 };
 
-class not_expression_syntax final: public expression_syntax
+class not_expression final: public expression_syntax
 {
     public:
 
     const syntax_token* const not_token;
     const expression_syntax* const expression;
 
-    not_expression_syntax(syntax_token* not_token, expression_syntax* expression);
+    not_expression(syntax_token* not_token, expression_syntax* expression);
+    ~not_expression();
 
-    not_expression_syntax(const not_expression_syntax& other) = delete;
-
-    not_expression_syntax& operator=(const not_expression_syntax& other) = delete;
-
-    ~not_expression_syntax();
+    not_expression(const not_expression& other) = delete;
+    not_expression& operator=(const not_expression& other) = delete;
 };
 
-class logical_expression_syntax final: public expression_syntax
+class logical_expression final: public expression_syntax
 {
     public:
 
@@ -125,18 +121,16 @@ class logical_expression_syntax final: public expression_syntax
     const expression_syntax* const right;
     const operator_kind oper;
 
-    logical_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right);
+    logical_expression(expression_syntax* left, syntax_token* oper_token, expression_syntax* right);
+    ~logical_expression();
 
-    logical_expression_syntax(const logical_expression_syntax& other) = delete;
-
-    logical_expression_syntax& operator=(const logical_expression_syntax& other) = delete;
-
-    ~logical_expression_syntax();
+    logical_expression(const logical_expression& other) = delete;
+    logical_expression& operator=(const logical_expression& other) = delete;
 
     static operator_kind parse_operator(std::string str);
 };
 
-class arithmetic_expression_syntax final: public expression_syntax
+class arithmetic_expression final: public expression_syntax
 {
     public:
 
@@ -147,18 +141,16 @@ class arithmetic_expression_syntax final: public expression_syntax
     const expression_syntax* const right;
     const operator_kind oper;
 
-    arithmetic_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right);
+    arithmetic_expression(expression_syntax* left, syntax_token* oper_token, expression_syntax* right);
+    ~arithmetic_expression();
 
-    arithmetic_expression_syntax(const arithmetic_expression_syntax& other) = delete;
-
-    arithmetic_expression_syntax& operator=(const arithmetic_expression_syntax& other) = delete;
-
-    ~arithmetic_expression_syntax();
+    arithmetic_expression(const arithmetic_expression& other) = delete;
+    arithmetic_expression& operator=(const arithmetic_expression& other) = delete;
 
     static operator_kind parse_operator(std::string str);
 };
 
-class relational_expression_syntax final: public expression_syntax
+class relational_expression final: public expression_syntax
 {
     public:
 
@@ -169,18 +161,16 @@ class relational_expression_syntax final: public expression_syntax
     const expression_syntax* const right;
     const operator_kind oper;
 
-    relational_expression_syntax(expression_syntax* left, syntax_token* oper_token, expression_syntax* right);
+    relational_expression(expression_syntax* left, syntax_token* oper_token, expression_syntax* right);
+    ~relational_expression();
 
-    relational_expression_syntax(const relational_expression_syntax& other) = delete;
-
-    relational_expression_syntax& operator=(const relational_expression_syntax& other) = delete;
-
-    ~relational_expression_syntax();
+    relational_expression(const relational_expression& other) = delete;
+    relational_expression& operator=(const relational_expression& other) = delete;
 
     static operator_kind parse_operator(std::string str);
 };
 
-class conditional_expression_syntax final: public expression_syntax
+class conditional_expression final: public expression_syntax
 {
     public:
 
@@ -190,40 +180,36 @@ class conditional_expression_syntax final: public expression_syntax
     const syntax_token* const else_token;
     const expression_syntax* const false_value;
 
-    conditional_expression_syntax(expression_syntax* true_value, syntax_token* if_token, expression_syntax* condition, syntax_token* const else_token, expression_syntax* false_value);
+    conditional_expression(expression_syntax* true_value, syntax_token* if_token, expression_syntax* condition, syntax_token* const else_token, expression_syntax* false_value);
+    ~conditional_expression();
 
-    conditional_expression_syntax(const conditional_expression_syntax& other) = delete;
-
-    conditional_expression_syntax& operator=(const conditional_expression_syntax& other) = delete;
-
-    ~conditional_expression_syntax();
+    conditional_expression(const conditional_expression& other) = delete;
+    conditional_expression& operator=(const conditional_expression& other) = delete;
 
     private:
 
     static type_kind get_return_type(expression_syntax* left, expression_syntax* right);
 };
 
-class identifier_expression_syntax final: public expression_syntax
+class identifier_expression final: public expression_syntax
 {
     public:
 
     const syntax_token* const identifier_token;
     const std::string identifier;
 
-    identifier_expression_syntax(syntax_token* identifier_token);
+    identifier_expression(syntax_token* identifier_token);
+    ~identifier_expression();
 
-    identifier_expression_syntax(const identifier_expression_syntax& other) = delete;
-
-    identifier_expression_syntax& operator=(const identifier_expression_syntax& other) = delete;
-
-    ~identifier_expression_syntax();
+    identifier_expression(const identifier_expression& other) = delete;
+    identifier_expression& operator=(const identifier_expression& other) = delete;
 
     private:
 
     static type_kind get_return_type(std::string identifier);
 };
 
-class invocation_expression_syntax final: public expression_syntax
+class invocation_expression final: public expression_syntax
 {
     public:
 
@@ -231,15 +217,12 @@ class invocation_expression_syntax final: public expression_syntax
     const std::string identifier;
     const list_syntax<expression_syntax>* const expression_list;
 
-    invocation_expression_syntax(syntax_token* identifier_token);
+    invocation_expression(syntax_token* identifier_token);
+    invocation_expression(syntax_token* identifier_token, list_syntax<expression_syntax>* expression_list);
+    ~invocation_expression();
 
-    invocation_expression_syntax(syntax_token* identifier_token, list_syntax<expression_syntax>* expression_list);
-
-    invocation_expression_syntax(const invocation_expression_syntax& other) = delete;
-
-    invocation_expression_syntax& operator=(const invocation_expression_syntax& other) = delete;
-
-    ~invocation_expression_syntax();
+    invocation_expression(const invocation_expression& other) = delete;
+    invocation_expression& operator=(const invocation_expression& other) = delete;
 
     private:
 

@@ -68,16 +68,13 @@ class type_syntax final: public syntax_base
     const type_kind kind;
 
     type_syntax(syntax_token* type_token);
+    ~type_syntax();
 
     type_syntax(const type_syntax& other) = delete;
-
     type_syntax& operator=(const type_syntax& other) = delete;
 
     bool is_numeric() const;
-
     bool is_special() const;
-
-    ~type_syntax();
 };
 
 class parameter_syntax final: public syntax_base
@@ -89,12 +86,10 @@ class parameter_syntax final: public syntax_base
     const std::string identifier;
 
     parameter_syntax(type_syntax* type, syntax_token* identifier_token);
+    ~parameter_syntax();
 
     parameter_syntax(const parameter_syntax& other) = delete;
-
     parameter_syntax& operator=(const parameter_syntax& other) = delete;
-
-    ~parameter_syntax();
 };
 
 class function_declaration_syntax final: public syntax_base
@@ -108,12 +103,10 @@ class function_declaration_syntax final: public syntax_base
     const list_syntax<statement_syntax>* const body;
 
     function_declaration_syntax(type_syntax* return_type, syntax_token* identifier_token, list_syntax<parameter_syntax>* parameter_list, list_syntax<statement_syntax>* body);
+    ~function_declaration_syntax();
 
     function_declaration_syntax(const function_declaration_syntax& other) = delete;
-
     function_declaration_syntax& operator=(const function_declaration_syntax& other) = delete;
-
-    ~function_declaration_syntax();
 };
 
 class root_syntax final: public syntax_base
@@ -123,12 +116,10 @@ class root_syntax final: public syntax_base
     const list_syntax<function_declaration_syntax>* const function_list;
 
     root_syntax(list_syntax<function_declaration_syntax>* function_list);
+    ~root_syntax();
 
     root_syntax(const root_syntax& other) = delete;
-
     root_syntax& operator=(const root_syntax& other) = delete;
-
-    ~root_syntax();
 };
 
 #endif
