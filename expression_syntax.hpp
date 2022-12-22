@@ -215,10 +215,10 @@ class invocation_expression final: public expression_syntax
 
     const syntax_token* const identifier_token;
     const std::string identifier;
-    const list_syntax<expression_syntax>* const expression_list;
+    const list_syntax<expression_syntax>* const arguments;
 
     invocation_expression(syntax_token* identifier_token);
-    invocation_expression(syntax_token* identifier_token, list_syntax<expression_syntax>* expression_list);
+    invocation_expression(syntax_token* identifier_token, list_syntax<expression_syntax>* arguments);
     ~invocation_expression();
 
     invocation_expression(const invocation_expression& other) = delete;

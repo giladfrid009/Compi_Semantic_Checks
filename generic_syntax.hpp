@@ -46,6 +46,11 @@ template<typename element_type> class list_syntax final: public syntax_base
         return this;
     }
 
+    std::size_t size() const
+    {
+        return elements.size();
+    }
+
     const std::vector<const element_type*> get_elements() const
     {
         return std::vector<const element_type*>(elements.begin(), elements.end());
@@ -99,10 +104,10 @@ class function_declaration_syntax final: public syntax_base
     const type_syntax* const return_type;
     const syntax_token* const identifier_token;
     const std::string identifier;
-    const list_syntax<parameter_syntax>* const parameter_list;
+    const list_syntax<parameter_syntax>* const parameters;
     const list_syntax<statement_syntax>* const body;
 
-    function_declaration_syntax(type_syntax* return_type, syntax_token* identifier_token, list_syntax<parameter_syntax>* parameter_list, list_syntax<statement_syntax>* body);
+    function_declaration_syntax(type_syntax* return_type, syntax_token* identifier_token, list_syntax<parameter_syntax>* parameters, list_syntax<statement_syntax>* body);
     ~function_declaration_syntax();
 
     function_declaration_syntax(const function_declaration_syntax& other) = delete;
@@ -113,9 +118,9 @@ class root_syntax final: public syntax_base
 {
     public:
 
-    const list_syntax<function_declaration_syntax>* const function_list;
+    const list_syntax<function_declaration_syntax>* const functions;
 
-    root_syntax(list_syntax<function_declaration_syntax>* function_list);
+    root_syntax(list_syntax<function_declaration_syntax>* functions);
     ~root_syntax();
 
     root_syntax(const root_syntax& other) = delete;

@@ -108,7 +108,7 @@ branch_statement::branch_kind branch_statement::parse_kind(string str)
 }
 
 return_statement::return_statement(syntax_token* return_token):
-    return_token(return_token), expression(nullptr)
+    return_token(return_token), value(nullptr)
 {
     auto& global_symbols = symbol_table::instance().get_scopes().front().get_symbols();
 
@@ -120,19 +120,19 @@ return_statement::return_statement(syntax_token* return_token):
     }
 }
 
-return_statement::return_statement(syntax_token* return_token, expression_syntax* expression):
-    return_token(return_token), expression(expression)
+return_statement::return_statement(syntax_token* return_token, expression_syntax* value):
+    return_token(return_token), value(value)
 {
     auto& global_symbols = symbol_table::instance().get_scopes().front().get_symbols();
 
     const symbol* func_sym = global_symbols.back();
 
-    if (types::is_implictly_convertible(expression->return_type, func_sym->type) == false)
+    if (types::is_implictly_convertible(value->return_type, func_sym->type) == false)
     {
         output::error_mismatch(return_token->position);
     }
 
-    push_back_child(expression);
+    push_back_child(value);
 }
 
 return_statement::~return_statement()
@@ -240,9 +240,9 @@ declaration_statement::~declaration_statement()
     delete assign_token;
 }
 
-block_statement::block_statement(list_syntax<statement_syntax>* statement_list): statement_list(statement_list)
+block_statement::block_statement(list_syntax<statement_syntax>* statements): statements(statements)
 {
-    push_back_child(statement_list);
+    push_back_child(statements);
 }
 
 block_statement::~block_statement()

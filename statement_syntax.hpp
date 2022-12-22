@@ -64,10 +64,10 @@ class return_statement final: public statement_syntax
     public:
 
     const syntax_token* const return_token;
-    const expression_syntax* const expression;
+    const expression_syntax* const value;
 
     return_statement(syntax_token* return_token);
-    return_statement(syntax_token* return_token, expression_syntax* expression);
+    return_statement(syntax_token* return_token, expression_syntax* value);
     ~return_statement();
 
     return_statement(const return_statement& other) = delete;
@@ -125,9 +125,9 @@ class block_statement final: public statement_syntax
 {
     public:
 
-    list_syntax<statement_syntax>* const statement_list;
+    list_syntax<statement_syntax>* const statements;
 
-    block_statement(list_syntax<statement_syntax>* statement_list);
+    block_statement(list_syntax<statement_syntax>* statements);
     ~block_statement();
 
     block_statement(const block_statement& other) = delete;

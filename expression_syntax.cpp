@@ -206,7 +206,7 @@ identifier_expression::~identifier_expression()
 }
 
 invocation_expression::invocation_expression(syntax_token* identifier_token):
-    expression_syntax(get_return_type(identifier_token->text)), identifier_token(identifier_token), identifier(identifier_token->text), expression_list(nullptr)
+    expression_syntax(get_return_type(identifier_token->text)), identifier_token(identifier_token), identifier(identifier_token->text), arguments(nullptr)
 {
     const symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
@@ -230,8 +230,8 @@ invocation_expression::invocation_expression(syntax_token* identifier_token):
     }
 }
 
-invocation_expression::invocation_expression(syntax_token* identifier_token, list_syntax<expression_syntax>* expression_list):
-    expression_syntax(get_return_type(identifier_token->text)), identifier_token(identifier_token), identifier(identifier_token->text), expression_list(expression_list)
+invocation_expression::invocation_expression(syntax_token* identifier_token, list_syntax<expression_syntax>* arguments):
+    expression_syntax(get_return_type(identifier_token->text)), identifier_token(identifier_token), identifier(identifier_token->text), arguments(arguments)
 {
     const symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
@@ -242,7 +242,7 @@ invocation_expression::invocation_expression(syntax_token* identifier_token, lis
 
     vector<type_kind> parameter_types = static_cast<const function_symbol*>(symbol)->parameter_types;
 
-    auto elements = expression_list->get_elements();
+    auto elements = arguments->get_elements();
 
     vector<string> params_str;
 
@@ -267,7 +267,7 @@ invocation_expression::invocation_expression(syntax_token* identifier_token, lis
         }
     }
 
-    push_back_child(expression_list);
+    push_back_child(arguments);
 }
 
 type_kind invocation_expression::get_return_type(string identifier)

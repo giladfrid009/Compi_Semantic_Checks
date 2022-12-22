@@ -57,8 +57,8 @@ parameter_syntax::~parameter_syntax()
     delete identifier_token;
 }
 
-function_declaration_syntax::function_declaration_syntax(type_syntax* return_type, syntax_token* identifier_token, list_syntax<parameter_syntax>* parameter_list, list_syntax<statement_syntax>* body):
-    return_type(return_type), identifier_token(identifier_token), identifier(identifier_token->text), parameter_list(parameter_list), body(body)
+function_declaration_syntax::function_declaration_syntax(type_syntax* return_type, syntax_token* identifier_token, list_syntax<parameter_syntax>* parameters, list_syntax<statement_syntax>* body):
+    return_type(return_type), identifier_token(identifier_token), identifier(identifier_token->text), parameters(parameters), body(body)
 {
     const symbol* symbol = symbol_table::instance().get_symbol(identifier);
 
@@ -69,7 +69,7 @@ function_declaration_syntax::function_declaration_syntax(type_syntax* return_typ
 
     const function_symbol* func_symbol = static_cast<const function_symbol*>(symbol);
 
-    auto elements = parameter_list->get_elements();
+    auto elements = parameters->get_elements();
 
     if (func_symbol->parameter_types.size() != elements.size())
     {
@@ -85,7 +85,7 @@ function_declaration_syntax::function_declaration_syntax(type_syntax* return_typ
     }
 
     push_back_child(return_type);
-    push_back_child(parameter_list);
+    push_back_child(parameters);
     push_back_child(body);
 }
 
@@ -99,7 +99,7 @@ function_declaration_syntax::~function_declaration_syntax()
     delete identifier_token;
 }
 
-root_syntax::root_syntax(list_syntax<function_declaration_syntax>* function_list): function_list(function_list)
+root_syntax::root_syntax(list_syntax<function_declaration_syntax>* functions): functions(functions)
 {
     const symbol* main_sym = symbol_table::instance().get_symbol("main");
 
@@ -115,7 +115,7 @@ root_syntax::root_syntax(list_syntax<function_declaration_syntax>* function_list
         output::error_main_missing();
     }
 
-    push_back_child(function_list);
+    push_back_child(functions);
 }
 
 root_syntax::~root_syntax()
