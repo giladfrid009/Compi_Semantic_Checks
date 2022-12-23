@@ -19,7 +19,7 @@ static symbol_table& symtab = symbol_table::instance();
 
 void yyerror(const char* message);
 
-void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_token, list_syntax<parameter_syntax>* param_list);
+void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_token, list_syntax<parameter_syntax>* parameters);
 
 expression_syntax* validate_bool_expression(expression_syntax* expression);
 
@@ -194,7 +194,7 @@ void yyerror(const char* message)
     output::error_syn(yylineno);
 }
 
-void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_token, list_syntax<parameter_syntax>* param_list)
+void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_token, list_syntax<parameter_syntax>* parameters)
 {
     string func_name = indentifier_token->text;
 
@@ -205,7 +205,7 @@ void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_tok
 
     vector<type_kind> param_types;
 
-    for (auto param : param_list->get_elements())
+    for (auto param : *parameters)
     {
         param_types.push_back(param->type->kind);
     }
@@ -214,7 +214,7 @@ void add_function_symbol(type_syntax* return_type, syntax_token* indentifier_tok
 
     symtab.open_scope();
 
-    for (auto param : param_list->get_elements())
+    for (auto param : *parameters)
     {
         if (symtab.contains_symbol(param->identifier))
         {

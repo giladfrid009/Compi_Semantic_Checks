@@ -242,8 +242,6 @@ invocation_expression::invocation_expression(syntax_token* identifier_token, lis
 
     vector<type_kind> parameter_types = static_cast<const function_symbol*>(symbol)->parameter_types;
 
-    auto elements = arguments->get_elements();
-
     vector<string> params_str;
 
     for (type_kind type : parameter_types)
@@ -251,19 +249,18 @@ invocation_expression::invocation_expression(syntax_token* identifier_token, lis
         params_str.push_back(types::to_string(type));
     }
 
-    if (parameter_types.size() != elements.size())
+    if (parameter_types.size() != arguments->size())
     {
         output::error_prototype_mismatch(identifier_token->position, identifier, params_str);
     }
 
-    for (size_t i = 0; i < elements.size(); i++)
+
+    size_t i = 0;
+    for (auto arg : *arguments)
     {
-        if (parameter_types[i] != elements[i]->return_type)
+        if (types::is_implictly_convertible(arg->return_type, parameter_types[i++]) == false)
         {
-            if (types::is_implictly_convertible(elements[i]->return_type, parameter_types[i]) == false)
-            {
-                output::error_prototype_mismatch(identifier_token->position, identifier, params_str);
-            }
+            output::error_prototype_mismatch(identifier_token->position, identifier, params_str);
         }
     }
 

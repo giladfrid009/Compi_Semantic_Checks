@@ -50,6 +50,6 @@ string function_symbol::to_string() const
     }
 
     res << ")" << "->" << types::to_string(type) << " " << offset;
-    
+
     return res.str();
 }

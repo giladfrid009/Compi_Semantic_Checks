@@ -51,9 +51,14 @@ template<typename element_type> class list_syntax final: public syntax_base
         return elements.size();
     }
 
-    const std::vector<const element_type*> get_elements() const
+    typename std::list<const element_type*>::const_iterator begin() const
     {
-        return std::vector<const element_type*>(elements.begin(), elements.end());
+        return elements.begin();
+    }
+
+    typename std::list<const element_type*>::const_iterator end() const
+    {
+        return elements.end();
     }
 
     ~list_syntax()

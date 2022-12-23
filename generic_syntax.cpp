@@ -69,16 +69,15 @@ function_declaration_syntax::function_declaration_syntax(type_syntax* return_typ
 
     const function_symbol* func_symbol = static_cast<const function_symbol*>(symbol);
 
-    auto elements = parameters->get_elements();
-
-    if (func_symbol->parameter_types.size() != elements.size())
+    if (func_symbol->parameter_types.size() != parameters->size())
     {
         throw std::logic_error("function parameter length mismatch.");
     }
 
-    for (size_t i = 0; i < elements.size(); i++)
+    size_t i = 0;
+    for (auto param : *parameters)
     {
-        if (func_symbol->parameter_types[i] != elements[i]->type->kind)
+        if (func_symbol->parameter_types[i++] != param->type->kind)
         {
             throw std::logic_error("function parameter type mismatch.");
         }
